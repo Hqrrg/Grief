@@ -8,10 +8,14 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PaperFlipbookComponent.h"
 
 AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
 {
+	FlipbookComponent = GetSprite();
+	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
@@ -31,6 +35,12 @@ void AGriefCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
+	}
+
+	if (FlipbookDataTable)
+	{
+		static const FString ContextString(TEXT("Grief Character Flipbooks Context"));
+		Flipbooks = FlipbookDataTable->FindRow<FCharacterFlipbooks>(FName("Default"), ContextString, true);
 	}
 }
 
@@ -62,21 +72,28 @@ void AGriefCharacter::Move(const FInputActionValue& Value)
 		
 		AddMovementInput(RightDirection, MovementVector.X);
 		UpdateDirections(MovementVector);
+		Moving = MovementVector != FVector2D::ZeroVector;
+		UpdateFlipbook();
 	}
 }
 
 void AGriefCharacter::Attack(const FInputActionValue& Value)
 {
-	const FString ReplacementString = AttackDirection == EDirection::Up ? "UP" :
-								AttackDirection == EDirection::Down ? "DOWN" :
-								AttackDirection == EDirection::Left ? "LEFT" :
-								AttackDirection == EDirection::Right ? "RIGHT" :
-								AttackDirection == EDirection::UpLeft ? "UP-LEFT" :
-								AttackDirection == EDirection::UpRight ? "UP-RIGHT" :
-								AttackDirection == EDirection::DownLeft ? "DOWN-LEFT" :
-								AttackDirection == EDirection::DownRight ? "DOWN-RIGHT" : "NONE";
+	Attacking = true;
 	
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("ATTACK: %s"), *ReplacementString));
+	UpdateFlipbook();
+	
+	float AttackDuration = 1.0f;
+	if (Flipbooks) AttackDuration = Flipbooks->Attacking->GetTotalDuration();
+	
+	FTimerHandle AttackTimerHandle;
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AGriefCharacter::StopAttacking, AttackDuration, false, AttackDuration);
+}
+
+void AGriefCharacter::SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode)
+{
+	PlatformerMovementMode = InPlatformerMovementMode;
+	UpdateFlipbook();
 }
 
 void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
@@ -112,4 +129,58 @@ void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
 	{
 		AttackDirection = MovementDirection;
 	}
+}
+
+void AGriefCharacter::UpdateFlipbook()
+{
+	if (!Flipbooks) return;
+
+	UPaperFlipbook* Flipbook = Flipbooks->Idling;
+
+	if (IsMoving())
+	{
+		Flipbook = Flipbooks->Walking;
+	}
+	
+	switch (MovementDirection)
+	{
+	case EDirection::Left:
+		FlipbookComponent->SetRelativeRotation(FRotator(0.0f , -90.0f, 0.0f));
+		break;
+		
+	case EDirection::Right:
+		FlipbookComponent->SetRelativeRotation(FRotator(0.0f , 90.0f, 0.0f));
+		break;
+		
+	default:
+		break;
+	}
+
+	switch (PlatformerMovementMode)
+	{
+	case EPlatformerMovementMode::Grounded:
+		break;
+		
+	case EPlatformerMovementMode::Jumping:
+		Flipbook = Flipbooks->Jumping;
+		break;
+		
+	case EPlatformerMovementMode::Falling:
+		Flipbook = Flipbooks->Falling;
+		break;
+	}
+
+	if (IsAttacking())
+	{
+		Flipbook = Flipbooks->Attacking;
+	}
+
+	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
+}
+
+void AGriefCharacter::StopAttacking()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Hello"));
+	Attacking = false;
+	UpdateFlipbook();
 }

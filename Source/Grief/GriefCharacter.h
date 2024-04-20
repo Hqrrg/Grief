@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "InputActionValue.h"
+#include "Engine/DataTable.h"
+#include "PaperFlipbook.h"
 #include "GriefCharacter.generated.h"
 
 /**
@@ -35,10 +37,34 @@ enum class EPlatformerMovementMode : uint8
 	Falling
 };
 
+USTRUCT(BlueprintType)
+struct FCharacterFlipbooks : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Jumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Falling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Idling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Walking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Attacking;
+};
+
 UCLASS()
 class GRIEF_API AGriefCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbookComponent* FlipbookComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera = nullptr;
@@ -84,15 +110,29 @@ public:
 	FORCEINLINE EPlatformerMovementMode GetPlatformerMovementMode() const { return PlatformerMovementMode; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode) { PlatformerMovementMode = InPlatformerMovementMode; }
+	void SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode);
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UPlatformCameraComponent* GetPlatformCameraComponent() const { return PlatformCameraComponent; }
 	
 private:
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsAttacking() const { return Attacking; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsMoving() const { return Moving; }
+	
 	void UpdateDirections(const FVector2D MovementVector);
+
+	void UpdateFlipbook();
 	
 private:
+	bool Attacking = false;
+	bool Moving = false;
+
+	UFUNCTION()
+	void StopAttacking();
+	
 	UPROPERTY()
 	EDirection MovementDirection = EDirection::Right;
 
@@ -101,4 +141,9 @@ private:
 
 	UPROPERTY()
 	EPlatformerMovementMode PlatformerMovementMode = EPlatformerMovementMode::Grounded;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UDataTable* FlipbookDataTable = nullptr;
+	
+	FCharacterFlipbooks* Flipbooks;
 };
