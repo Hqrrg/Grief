@@ -28,6 +28,11 @@ float AEnemyCharacter::GetHealth()
 	return Health;
 }
 
+UBehaviorTree* AEnemyCharacter::GetBehaviourTree()
+{
+	return BehaviourTree;
+}
+
 bool AEnemyCharacter::IsObscured(const AActor* TargetActor)
 {
 	bool Obscured = false;

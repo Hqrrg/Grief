@@ -34,6 +34,9 @@ public:
 	virtual float GetHealth() override;
 
 	UFUNCTION(BlueprintPure)
+	virtual class UBehaviorTree* GetBehaviourTree() override;
+
+	UFUNCTION(BlueprintPure)
 	virtual bool IsObscured(const AActor* TargetActor) override;
 
 private:
@@ -46,6 +49,9 @@ private:
 	virtual void Killed() override;
 	
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+	class UBehaviorTree* BehaviourTree = nullptr;
+	
 	UPROPERTY()
 	float MaxHealth = 100.0f;
 	

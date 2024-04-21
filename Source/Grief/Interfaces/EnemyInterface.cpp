@@ -14,6 +14,11 @@ float IEnemyInterface::GetHealth()
 	return 0.0f;
 }
 
+UBehaviorTree* IEnemyInterface::GetBehaviourTree()
+{
+	return nullptr;
+}
+
 bool IEnemyInterface::IsObscured(const AActor* TargetActor)
 {
 	return false;

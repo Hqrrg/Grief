@@ -20,6 +20,7 @@ class GRIEF_API IEnemyInterface
 public:
 	virtual float GetMaxHealth();
 	virtual float GetHealth();
+	virtual class UBehaviorTree* GetBehaviourTree();
 
 	virtual bool IsObscured(const AActor* TargetActor);
 	virtual void Killed() = 0;
