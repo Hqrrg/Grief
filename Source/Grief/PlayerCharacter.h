@@ -7,28 +7,12 @@
 #include "InputActionValue.h"
 #include "Engine/DataTable.h"
 #include "PaperFlipbook.h"
-#include "GriefCharacter.generated.h"
+#include "PlayerCharacter.generated.h"
 
+enum class EDirection : uint8;
 /**
  * 
  */
-
-UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
-enum class EDirection : uint8
-{
-	None	= 0b00000000,
-	Up		= 0b00000001,
-	Down	= 0b00000010,
-	Left	= 0b00000100,
-	Right	= 0b00001000,
-
-	UpLeft		= Up | Left,
-	UpRight		= Up | Right,
-	DownLeft	= Down | Left,
-	DownRight	= Down | Right
-};
-ENUM_CLASS_FLAGS(EDirection)
-
 UENUM(BlueprintType)
 enum class EPlatformerMovementMode : uint8
 {
@@ -59,7 +43,7 @@ struct FCharacterFlipbooks : public FTableRowBase
 };
 
 UCLASS()
-class GRIEF_API AGriefCharacter : public APaperCharacter
+class GRIEF_API APlayerCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 
@@ -94,7 +78,7 @@ class GRIEF_API AGriefCharacter : public APaperCharacter
 	class UHitboxComponent* LowHitbox = nullptr;
 	
 public:
-	AGriefCharacter(const FObjectInitializer& ObjectInitializer);
+	APlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the actor is spawned
@@ -142,19 +126,19 @@ private:
 	bool Attacking = false;
 	bool Moving = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float MeleeDamage = 10.0f;
 	
 	UPROPERTY()
-	EDirection MovementDirection = EDirection::Right;
+	EDirection MovementDirection;
 
 	UPROPERTY()
-	EDirection AttackDirection = EDirection::Right;
+	EDirection AttackDirection;
 
 	UPROPERTY()
 	EPlatformerMovementMode PlatformerMovementMode = EPlatformerMovementMode::Grounded;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
 	UDataTable* FlipbookDataTable = nullptr;
 	
 	FCharacterFlipbooks* Flipbooks;

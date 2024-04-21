@@ -3,6 +3,8 @@
 
 #include "HitboxComponent.h"
 
+#include "Interfaces/EnemyInterface.h"
+
 
 // Sets default values for this component's properties
 UHitboxComponent::UHitboxComponent()
@@ -23,9 +25,18 @@ void UHitboxComponent::BeginPlay()
 
 void UHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (Cast<IEnemyInterface>(OtherActor))
+	{
+		OverlappingEnemies.AddUnique(OtherActor);
+	}
 }
 
 void UHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OverlappingEnemies.Contains(OtherActor))
+	{
+		OverlappingEnemies.Remove(OtherActor);
+	}
 }
+
 

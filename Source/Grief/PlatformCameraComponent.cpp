@@ -4,7 +4,7 @@
 #include "PlatformCameraComponent.h"
 
 #include "CameraBoundingBox.h"
-#include "GriefCharacter.h"
+#include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 
 
@@ -47,9 +47,9 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	float YInterpSpeed = 5.0f;
 	float ZInterpSpeed = 10.0f;
 
-	if (AGriefCharacter* GriefCharacter = Cast<AGriefCharacter>(GetOwner()))
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
 	{
-		EDirection MovementDirection = GriefCharacter->GetMovementDirection();
+		EDirection MovementDirection = PlayerCharacter->GetMovementDirection();
 		
 		switch (MovementDirection)
 		{
@@ -65,7 +65,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			break;
 		}
 
-		EPlatformerMovementMode PlatformerMovementMode = GriefCharacter->GetPlatformerMovementMode();
+		EPlatformerMovementMode PlatformerMovementMode = PlayerCharacter->GetPlatformerMovementMode();
 
 		switch (PlatformerMovementMode)
 		{

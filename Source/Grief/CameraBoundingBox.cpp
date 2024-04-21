@@ -3,7 +3,7 @@
 
 #include "CameraBoundingBox.h"
 
-#include "GriefCharacter.h"
+#include "PlayerCharacter.h"
 #include "PlatformCameraComponent.h"
 #include "Components/BoxComponent.h"
 
@@ -30,7 +30,7 @@ void ACameraBoundingBox::BeginPlay()
 
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const AGriefCharacter* GriefCharacter = Cast<AGriefCharacter>(OtherActor))
+	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
 	{
 		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
 		PlatformCameraComponent->AddCameraBoundingBox(this);
@@ -39,7 +39,7 @@ void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const AGriefCharacter* GriefCharacter = Cast<AGriefCharacter>(OtherActor))
+	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
 	{
 		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
 		PlatformCameraComponent->RemoveCameraBoundingBox(this);

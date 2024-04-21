@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GriefCharacter.h"
+#include "PlayerCharacter.h"
 
 #include "PlatformCameraComponent.h"
 #include "PlatformCharacterMovementComponent.h"
@@ -10,8 +10,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "HitboxComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "Enums/Direction.h"
+#include "Interfaces/EnemyInterface.h"
 
-AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
+APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
 {
 	FlipbookComponent = GetSprite();
@@ -35,9 +37,12 @@ AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
 	JumpMaxCount = 2;
 }
 
-void AGriefCharacter::BeginPlay()
+void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MovementDirection = EDirection::Right;
+	AttackDirection = EDirection::Right;
 	
 	/* Add input mapping context */
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -55,22 +60,22 @@ void AGriefCharacter::BeginPlay()
 	}
 }
 
-void AGriefCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		/* Movement */
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGriefCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
 		/* Jumping */
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APaperCharacter::Jump);
 
 		/* Attacking */
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGriefCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Attack);
 	}
 }
 
-void AGriefCharacter::Move(const FInputActionValue& Value)
+void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -92,26 +97,71 @@ void AGriefCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void AGriefCharacter::Attack(const FInputActionValue& Value)
+void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
+	if (Attacking) return;
+	
 	Attacking = true;
 	
 	UpdateFlipbook();
+
+	UHitboxComponent* Hitbox = nullptr;
+
+	switch (AttackDirection)
+	{
+		case EDirection::UpRight:
+			Hitbox = HighHitbox;
+			break;
+		case EDirection::UpLeft:
+			Hitbox = HighHitbox;
+			break;
+		case EDirection::Right:
+			Hitbox = MiddleHitbox;
+			break;
+		case EDirection::Left:
+			Hitbox = MiddleHitbox;
+			break;
+		case EDirection::DownRight:
+			Hitbox = LowHitbox;
+			break;
+		case EDirection::DownLeft:
+			Hitbox = LowHitbox;
+			break;
+		default:
+			break;
+	}
+
+	if (Hitbox)
+	{
+		TArray<AActor*> OverlappingEnemies = Hitbox->GetOverlappingEnemies();
+		
+		if (OverlappingEnemies.Num() > 0)
+		{
+			for (uint8 Index = 0; Index < OverlappingEnemies.Num(); Index++)
+			{
+				IEnemyInterface* Enemy = Cast<IEnemyInterface>(OverlappingEnemies[Index]);
+
+				if (Enemy && (Enemy->IsObscured(this) || !Enemy->IsAlive())) continue;
+				
+				Enemy->ApplyDamage(MeleeDamage);
+			}
+		}
+	}
 	
 	float AttackDuration = 1.0f;
 	if (Flipbooks) AttackDuration = Flipbooks->Attacking->GetTotalDuration();
 	
 	FTimerHandle AttackTimerHandle;
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AGriefCharacter::StopAttacking, AttackDuration, false, AttackDuration);
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttacking, AttackDuration, false, AttackDuration);
 }
 
-void AGriefCharacter::SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode)
+void APlayerCharacter::SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode)
 {
 	PlatformerMovementMode = InPlatformerMovementMode;
 	UpdateFlipbook();
 }
 
-void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
+void APlayerCharacter::UpdateDirections(const FVector2D MovementVector)
 {
 	/* Reset Attack Direction */
 	AttackDirection = EDirection::None;
@@ -146,7 +196,7 @@ void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
 	}
 }
 
-void AGriefCharacter::UpdateFlipbook()
+void APlayerCharacter::UpdateFlipbook()
 {
 	if (!Flipbooks) return;
 
@@ -193,7 +243,7 @@ void AGriefCharacter::UpdateFlipbook()
 	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
 }
 
-void AGriefCharacter::StopAttacking()
+void APlayerCharacter::StopAttacking()
 {
 	Attacking = false;
 	

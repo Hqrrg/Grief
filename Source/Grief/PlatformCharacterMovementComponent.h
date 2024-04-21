@@ -38,7 +38,7 @@ private:
 	
 private:
 	UPROPERTY()
-	class AGriefCharacter* GriefCharacter = nullptr;
+	class APlayerCharacter* PlayerCharacter = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* JumpCurve = nullptr;

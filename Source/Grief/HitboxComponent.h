@@ -22,10 +22,18 @@ public:
 protected:
 	virtual void BeginPlay() override;;
 
+
+public:
+	FORCEINLINE TArray<class AActor*> GetOverlappingEnemies() const { return OverlappingEnemies; }
+	
 private:
 	UFUNCTION()
 	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 
 	UFUNCTION()
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+private:
+	UPROPERTY()
+	TArray<class AActor*> OverlappingEnemies;
 };

@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GriefCharacter.h"
+#include "PlayerCharacter.h"
 #include "Components/ActorComponent.h"
+#include "Enums/Direction.h"
 #include "PlatformCameraComponent.generated.h"
 
-
-enum class EDirection : uint8;
 
 USTRUCT(BlueprintType)
 struct FCameraBounds

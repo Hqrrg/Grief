@@ -3,7 +3,7 @@
 
 #include "PlatformCharacterMovementComponent.h"
 
-#include "GriefCharacter.h"
+#include "PlayerCharacter.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -12,8 +12,6 @@
 // Sets default values for this component's properties
 UPlatformCharacterMovementComponent::UPlatformCharacterMovementComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
@@ -22,8 +20,11 @@ UPlatformCharacterMovementComponent::UPlatformCharacterMovementComponent()
 void UPlatformCharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetPlaneConstraintEnabled(true);
+	SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 	
-	GriefCharacter = Cast<AGriefCharacter>(CharacterOwner);
+	PlayerCharacter = Cast<APlayerCharacter>(CharacterOwner);
 
 	if (JumpCurve)
 	{
@@ -57,7 +58,7 @@ bool UPlatformCharacterMovementComponent::DoJump(bool bReplayingMoves)
 				/* Flying is not influenced by gravity */
 				SetMovementMode(MOVE_Flying);
 
-				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Jumping);
+				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Jumping);
 				return true;
 			}
 
@@ -162,7 +163,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 			if (YVelocity < 0.0f)
 			{
 
-				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
+				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
 				
 				FFindFloorResult FindFloorResult;
 				const bool FoundFloor = HasFoundFloor(FindFloorResult, CapsuleLocation, TargetLocation);
@@ -176,7 +177,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 					}
 				
 					SetMovementMode(MOVE_Walking);
-					if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+					if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 
 					Jumping = false;
 					CharacterOwner->ResetJumpState();
@@ -197,7 +198,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 			if (FindFloorResult.IsWalkableFloor() && IsValidLandingSpot(CapsuleLocation, FindFloorResult.HitResult))
 			{
 				SetMovementMode(MOVE_Walking);
-				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 			}
 			else SetFalling();
 
@@ -239,7 +240,7 @@ void UPlatformCharacterMovementComponent::HandleFalling(const float DeltaTime)
 					Falling = false;
 					Velocity = FVector::ZeroVector;
 					SetMovementMode(MOVE_Walking);
-					if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+					if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 				}
 			}
 		
@@ -262,7 +263,7 @@ void UPlatformCharacterMovementComponent::SetFalling()
 		Velocity.Z = 0.0f;
 		
 		SetMovementMode(MOVE_Flying);
-		if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
+		if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
 	}
 	else
 	{
