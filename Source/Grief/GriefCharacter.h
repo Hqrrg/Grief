@@ -76,14 +76,23 @@ class GRIEF_API AGriefCharacter : public APaperCharacter
 	class UInputMappingContext* InputMappingContext = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
+	class UInputAction* MoveAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* JumpAction;
+	class UInputAction* JumpAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* AttackAction;
+	class UInputAction* AttackAction = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	class UHitboxComponent* HighHitbox = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	class UHitboxComponent* MiddleHitbox = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	class UHitboxComponent* LowHitbox = nullptr;
+	
 public:
 	AGriefCharacter(const FObjectInitializer& ObjectInitializer);
 
@@ -121,6 +130,9 @@ private:
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsMoving() const { return Moving; }
+
+	UFUNCTION()
+	void StopAttacking();
 	
 	void UpdateDirections(const FVector2D MovementVector);
 
@@ -130,8 +142,8 @@ private:
 	bool Attacking = false;
 	bool Moving = false;
 
-	UFUNCTION()
-	void StopAttacking();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float MeleeDamage = 10.0f;
 	
 	UPROPERTY()
 	EDirection MovementDirection = EDirection::Right;

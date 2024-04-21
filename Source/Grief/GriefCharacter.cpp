@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "HitboxComponent.h"
 #include "PaperFlipbookComponent.h"
 
 AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
@@ -21,6 +22,16 @@ AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
 
 	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
 	AddOwnedComponent(PlatformCameraComponent);
+	
+	LowHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("LowHitbox"));
+	LowHitbox->SetupAttachment(FlipbookComponent);
+
+	MiddleHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("MiddleHitbox"));
+	MiddleHitbox->SetupAttachment(FlipbookComponent);
+	
+	HighHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("HighHitbox"));
+	HighHitbox->SetupAttachment(FlipbookComponent);
+	
 	JumpMaxCount = 2;
 }
 
@@ -69,9 +80,13 @@ void AGriefCharacter::Move(const FInputActionValue& Value)
 		const FRotator YawRotation = FRotator(0.0f, Rotation.Yaw, 0.0f);
 		
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		if (!Attacking)
+		{
+			AddMovementInput(RightDirection, MovementVector.X);
+			UpdateDirections(MovementVector);
+		}
 		
-		AddMovementInput(RightDirection, MovementVector.X);
-		UpdateDirections(MovementVector);
 		Moving = MovementVector != FVector2D::ZeroVector;
 		UpdateFlipbook();
 	}
@@ -125,7 +140,7 @@ void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
 	}
 
 	/* Don't allow for straight up or down attacks */
-	if (AttackDirection == EDirection::Up || AttackDirection == EDirection::Down)
+	if (AttackDirection == EDirection::None || AttackDirection == EDirection::Up || AttackDirection == EDirection::Down)
 	{
 		AttackDirection = MovementDirection;
 	}
@@ -180,7 +195,7 @@ void AGriefCharacter::UpdateFlipbook()
 
 void AGriefCharacter::StopAttacking()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Hello"));
 	Attacking = false;
+	
 	UpdateFlipbook();
 }
