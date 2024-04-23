@@ -25,7 +25,7 @@ void UHitboxComponent::BeginPlay()
 
 void UHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<IEnemyInterface>(OtherActor))
+	if (Cast<APawn>(OtherActor) && OtherComp->GetClass() != this->GetClass())
 	{
 		OverlappingEnemies.AddUnique(OtherActor);
 	}

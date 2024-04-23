@@ -14,6 +14,11 @@ float IEnemyInterface::GetHealth()
 	return 0.0f;
 }
 
+float IEnemyInterface::GetKnockbackAmount()
+{
+	return 0.0f;
+}
+
 UBehaviorTree* IEnemyInterface::GetBehaviourTree()
 {
 	return nullptr;
@@ -22,6 +27,11 @@ UBehaviorTree* IEnemyInterface::GetBehaviourTree()
 bool IEnemyInterface::IsObscured(const AActor* TargetActor)
 {
 	return false;
+}
+
+bool IEnemyInterface::ShouldKnockback()
+{
+	return GetKnockbackAmount() > 0.0f;
 }
 
 // Add default functionality here for any IEnemyInterface functions that are not pure virtual.

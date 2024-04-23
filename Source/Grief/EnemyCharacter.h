@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PaperCharacter.h"
+#include "GriefCharacter.h"
 #include "Interfaces/EnemyInterface.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class GRIEF_API AEnemyCharacter : public APaperCharacter, public IEnemyInterface
+class GRIEF_API AEnemyCharacter : public AGriefCharacter, public IEnemyInterface
 {
 	GENERATED_BODY()
 
@@ -18,15 +18,24 @@ class GRIEF_API AEnemyCharacter : public APaperCharacter, public IEnemyInterface
 	 * Will do later.
 	 */
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+	class UHitboxComponent* AttackHitbox = nullptr;
+
 public:
 	// Sets default values for this character's properties
-	AEnemyCharacter();
+	AEnemyCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void UpdateMoving();
+	
+	UFUNCTION(BlueprintPure)
+	FVector2D GetMovementVector();
+	
 	UFUNCTION(BlueprintPure)
 	virtual float GetMaxHealth() override;
 	
@@ -39,7 +48,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	virtual bool IsObscured(const AActor* TargetActor) override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Attack(uint8 AttackID) override;
+
 private:
+	UFUNCTION(BlueprintPure)
+	virtual float GetKnockbackAmount() override;
+	
 	UFUNCTION(BlueprintCallable)
 	virtual void SetMaxHealth(const float InMaxHealth) override;
 	
@@ -47,10 +65,13 @@ private:
 	virtual void SetHealth(const float InHealth) override;
 
 	virtual void Killed() override;
-	
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviourTree = nullptr;
+
+	UPROPERTY()
+	float KnockbackAmount = 100.0f;
 	
 	UPROPERTY()
 	float MaxHealth = 100.0f;

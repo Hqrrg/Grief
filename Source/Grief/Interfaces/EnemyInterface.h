@@ -23,12 +23,16 @@ public:
 	virtual class UBehaviorTree* GetBehaviourTree();
 
 	virtual bool IsObscured(const AActor* TargetActor);
+	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) = 0;
 	virtual void Killed() = 0;
-	
+
+	virtual void Attack(uint8 AttackID) = 0;
 	virtual void ApplyDamage(const float Damage) final;
 	virtual bool IsAlive() final;
+	virtual bool ShouldKnockback() final;
 
 private:
+	virtual float GetKnockbackAmount();
 	virtual void SetMaxHealth(const float InMaxHealth) = 0;
 	virtual void SetHealth(const float InHealth) = 0;
 };

@@ -16,23 +16,20 @@
 APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
 {
-	FlipbookComponent = GetSprite();
-	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
-	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
-	AddOwnedComponent(PlatformCameraComponent);
-	
-	LowHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("LowHitbox"));
-	LowHitbox->SetupAttachment(FlipbookComponent);
+	HighHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("HighHitbox"));
+	HighHitbox->SetupAttachment(FlipbookComponent);
 
 	MiddleHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("MiddleHitbox"));
 	MiddleHitbox->SetupAttachment(FlipbookComponent);
 	
-	HighHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("HighHitbox"));
-	HighHitbox->SetupAttachment(FlipbookComponent);
+	LowHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("LowHitbox"));
+	LowHitbox->SetupAttachment(FlipbookComponent);
+	
+	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
+	AddOwnedComponent(PlatformCameraComponent);
 	
 	JumpMaxCount = 2;
 }
@@ -40,9 +37,6 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	MovementDirection = EDirection::Right;
-	AttackDirection = EDirection::Right;
 	
 	/* Add input mapping context */
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -51,12 +45,6 @@ void APlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
-	}
-
-	if (FlipbookDataTable)
-	{
-		static const FString ContextString(TEXT("Grief Character Flipbooks Context"));
-		Flipbooks = FlipbookDataTable->FindRow<FCharacterFlipbooks>(FName("Default"), ContextString, true);
 	}
 }
 
@@ -139,11 +127,13 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 		{
 			for (uint8 Index = 0; Index < OverlappingEnemies.Num(); Index++)
 			{
-				IEnemyInterface* Enemy = Cast<IEnemyInterface>(OverlappingEnemies[Index]);
-
-				if (Enemy && (Enemy->IsObscured(this) || !Enemy->IsAlive())) continue;
+				if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(OverlappingEnemies[Index]))
+				{
+					if (Enemy && (Enemy->IsObscured(this) || !Enemy->IsAlive())) continue;
 				
-				Enemy->ApplyDamage(MeleeDamage);
+					Enemy->ApplyDamage(MeleeDamage);
+					Enemy->Knockback(GetActorLocation(), MeleeKnockbackMultiplier);
+				}
 			}
 		}
 	}
@@ -153,99 +143,4 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 	
 	FTimerHandle AttackTimerHandle;
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttacking, AttackDuration, false, AttackDuration);
-}
-
-void APlayerCharacter::SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode)
-{
-	PlatformerMovementMode = InPlatformerMovementMode;
-	UpdateFlipbook();
-}
-
-void APlayerCharacter::UpdateDirections(const FVector2D MovementVector)
-{
-	/* Reset Attack Direction */
-	AttackDirection = EDirection::None;
-		
-	/* Up */
-	if (MovementVector.Y > 0.0f)
-	{
-		AttackDirection |= EDirection::Up;
-	}
-	/* Down */
-	else if (MovementVector.Y < 0.0f)
-	{
-		AttackDirection |= EDirection::Down;
-	}
-	/* Right */
-	if (MovementVector.X > 0.0f)
-	{
-		AttackDirection |= EDirection::Right;
-		MovementDirection = EDirection::Right;
-	}
-	/* Left */
-	else if (MovementVector.X < 0.0f)
-	{
-		AttackDirection |= EDirection::Left;
-		MovementDirection = EDirection::Left;
-	}
-
-	/* Don't allow for straight up or down attacks */
-	if (AttackDirection == EDirection::None || AttackDirection == EDirection::Up || AttackDirection == EDirection::Down)
-	{
-		AttackDirection = MovementDirection;
-	}
-}
-
-void APlayerCharacter::UpdateFlipbook()
-{
-	if (!Flipbooks) return;
-
-	UPaperFlipbook* Flipbook = Flipbooks->Idling;
-
-	if (IsMoving())
-	{
-		Flipbook = Flipbooks->Walking;
-	}
-	
-	switch (MovementDirection)
-	{
-	case EDirection::Left:
-		FlipbookComponent->SetRelativeRotation(FRotator(0.0f , -90.0f, 0.0f));
-		break;
-		
-	case EDirection::Right:
-		FlipbookComponent->SetRelativeRotation(FRotator(0.0f , 90.0f, 0.0f));
-		break;
-		
-	default:
-		break;
-	}
-
-	switch (PlatformerMovementMode)
-	{
-	case EPlatformerMovementMode::Grounded:
-		break;
-		
-	case EPlatformerMovementMode::Jumping:
-		Flipbook = Flipbooks->Jumping;
-		break;
-		
-	case EPlatformerMovementMode::Falling:
-		Flipbook = Flipbooks->Falling;
-		break;
-	}
-
-	if (IsAttacking())
-	{
-		Flipbook = Flipbooks->Attacking;
-	}
-
-	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
-}
-
-void APlayerCharacter::StopAttacking()
-{
-	Attacking = false;
-	
-	UpdateFlipbook();
 }

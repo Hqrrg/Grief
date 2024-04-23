@@ -3,7 +3,7 @@
 
 #include "PlatformCharacterMovementComponent.h"
 
-#include "PlayerCharacter.h"
+#include "GriefCharacter.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -24,11 +24,16 @@ void UPlatformCharacterMovementComponent::BeginPlay()
 	SetPlaneConstraintEnabled(true);
 	SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 	
-	PlayerCharacter = Cast<APlayerCharacter>(CharacterOwner);
+	GriefCharacter = Cast<AGriefCharacter>(CharacterOwner);
 
 	if (JumpCurve)
 	{
 		JumpCurve->GetTimeRange(JumpCurveMin, JumpCurveMax);
+	}
+
+	if (KnockbackCurve)
+	{
+		KnockbackCurve->GetTimeRange(KnockbackCurveMin, KnockbackCurveMax);
 	}
 }
 
@@ -39,6 +44,7 @@ void UPlatformCharacterMovementComponent::TickComponent(float DeltaTime, ELevelT
 
 	HandleJumping(DeltaTime);
 	HandleFalling(DeltaTime);
+	HandleKnockback(DeltaTime);
 }
 
 bool UPlatformCharacterMovementComponent::DoJump(bool bReplayingMoves)
@@ -50,6 +56,7 @@ bool UPlatformCharacterMovementComponent::DoJump(bool bReplayingMoves)
 		{
 			if (JumpCurve)
 			{
+				ReceivingKnockback = false;
 				Falling = false;
 				Jumping = true;
 				JumpCurveTime = JumpCurveMin;
@@ -58,7 +65,7 @@ bool UPlatformCharacterMovementComponent::DoJump(bool bReplayingMoves)
 				/* Flying is not influenced by gravity */
 				SetMovementMode(MOVE_Flying);
 
-				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Jumping);
+				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Jumping);
 				return true;
 			}
 
@@ -163,7 +170,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 			if (YVelocity < 0.0f)
 			{
 
-				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
+				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
 				
 				FFindFloorResult FindFloorResult;
 				const bool FoundFloor = HasFoundFloor(FindFloorResult, CapsuleLocation, TargetLocation);
@@ -177,7 +184,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 					}
 				
 					SetMovementMode(MOVE_Walking);
-					if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+					if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 
 					Jumping = false;
 					CharacterOwner->ResetJumpState();
@@ -198,7 +205,7 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 			if (FindFloorResult.IsWalkableFloor() && IsValidLandingSpot(CapsuleLocation, FindFloorResult.HitResult))
 			{
 				SetMovementMode(MOVE_Walking);
-				if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 			}
 			else SetFalling();
 
@@ -240,7 +247,7 @@ void UPlatformCharacterMovementComponent::HandleFalling(const float DeltaTime)
 					Falling = false;
 					Velocity = FVector::ZeroVector;
 					SetMovementMode(MOVE_Walking);
-					if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+					if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
 				}
 			}
 		
@@ -253,21 +260,121 @@ void UPlatformCharacterMovementComponent::HandleFalling(const float DeltaTime)
 	}
 }
 
+void UPlatformCharacterMovementComponent::HandleKnockback(const float DeltaTime)
+{
+	if (KnockbackCurve && ReceivingKnockback)
+	{
+		KnockbackCurveTime+=DeltaTime;
+
+		if (KnockbackCurveTime <= KnockbackCurveMax)
+		{
+			const float CurrentKnockbackCurveValue = KnockbackCurve->GetFloatValue(KnockbackCurveTime);
+			const float CurrentKnockbackCurveValueDelta = CurrentKnockbackCurveValue - LastKnockbackCurveValue;
+		
+			LastKnockbackCurveValue = CurrentKnockbackCurveValue;
+
+			Velocity.Z = 0.0f;
+
+			float YVelocity = CurrentKnockbackCurveValueDelta / DeltaTime;
+
+			UCapsuleComponent* CapsuleComponent = CharacterOwner->GetCapsuleComponent();
+			const FVector CapsuleLocation = CapsuleComponent->GetComponentLocation();
+
+			const FVector ActorLocation = GetActorLocation();
+			FVector TargetLocation = CapsuleLocation + KnockbackVector * (CurrentKnockbackCurveValueDelta * KnockbackVelocity);
+
+			if (YVelocity > 0.0f)
+			{
+				FCollisionQueryParams CollisionQueryParams; CollisionQueryParams.AddIgnoredActor(CharacterOwner);
+				FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleComponent->GetScaledCapsuleRadius(), CapsuleComponent->GetScaledCapsuleHalfHeight());
+				
+				FHitResult HitResult;
+				
+				bool IsBlockingHit = GetWorld()->SweepSingleByProfile(
+					HitResult,
+					CapsuleLocation,
+					TargetLocation,
+					CharacterOwner->GetActorRotation().Quaternion(),
+					CapsuleComponent->GetCollisionProfileName(),
+					CapsuleCollisionShape,
+					CollisionQueryParams);
+
+				if (IsBlockingHit)
+				{
+					FFindFloorResult FindFloorResult;
+					FindFloor(CapsuleLocation, FindFloorResult, false);
+			
+					if (!FindFloorResult.IsWalkableFloor() || !IsValidLandingSpot(CapsuleLocation, FindFloorResult.HitResult))
+					{
+						SetFalling();
+					}
+
+					ReceivingKnockback = false;
+
+					Velocity.Z = 0.0f;
+					
+					TargetLocation = ActorLocation;
+				}
+			}
+			
+			FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
+			UKismetSystemLibrary::MoveComponentTo(CapsuleComponent, TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
+		}
+		else
+		{
+			const UCapsuleComponent* CapsuleComponent = CharacterOwner->GetCapsuleComponent();
+			const FVector CapsuleLocation = CapsuleComponent->GetComponentLocation();
+			
+			FFindFloorResult FindFloorResult;
+			FindFloor(CapsuleLocation, FindFloorResult, false);
+			
+			if (FindFloorResult.IsWalkableFloor() && IsValidLandingSpot(CapsuleLocation, FindFloorResult.HitResult))
+			{
+				SetMovementMode(MOVE_Walking);
+				if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Grounded);
+			}
+			else SetFalling();
+
+			ReceivingKnockback = false;
+		}
+	}
+}
+
 void UPlatformCharacterMovementComponent::SetFalling()
 {
 	if (FallCurve)
 	{
+		Jumping = false;
+		ReceivingKnockback = false;
 		Falling = true;
 		FallCurveTime = 0.0f;
 		LastFallCurveValue = 0.0f;
 		Velocity.Z = 0.0f;
 		
 		SetMovementMode(MOVE_Flying);
-		if (PlayerCharacter) PlayerCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
+		if (GriefCharacter) GriefCharacter->SetPlatformerMovementMode(EPlatformerMovementMode::Falling);
 	}
 	else
 	{
 		SetMovementMode(MOVE_Falling);
+	}
+}
+
+void UPlatformCharacterMovementComponent::Knockback(FVector InKnockbackVector, float InKnockbackVelocity)
+{
+	if (KnockbackCurve)
+	{
+		KnockbackVector = InKnockbackVector;
+		KnockbackVelocity = InKnockbackVelocity;
+		
+		Falling = false;
+		Jumping = false;
+		ReceivingKnockback = true;
+		KnockbackCurveTime = KnockbackCurveMin;
+		LastKnockbackCurveValue = KnockbackCurve->GetFloatValue(KnockbackCurveTime);
+				
+		/* Flying is not influenced by gravity */
+		SetMovementMode(MOVE_Flying);
 	}
 }
 
