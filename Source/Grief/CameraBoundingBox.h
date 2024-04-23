@@ -42,7 +42,7 @@ public:
 	
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Options", meta = (AllowPrivateAccess = "true"))
-	uint8 Layer = 0;
+	int32 Layer = 0;
 	
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Options|Bounds", meta = (AllowPrivateAccess = "true"))
 	bool Up = true;

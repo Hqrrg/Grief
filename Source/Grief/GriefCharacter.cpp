@@ -12,6 +12,9 @@ AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	FlipbookComponent = GetSprite();
 	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+
+	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
+	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 }
 
 void AGriefCharacter::BeginPlay()

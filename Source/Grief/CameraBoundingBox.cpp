@@ -6,6 +6,7 @@
 #include "PlayerCharacter.h"
 #include "PlatformCameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 
 
 // Sets default values
@@ -30,19 +31,25 @@ void ACameraBoundingBox::BeginPlay()
 
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor))
 	{
-		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
-		PlatformCameraComponent->AddCameraBoundingBox(this);
+		if (OtherComp == PlayerCharacter->GetCapsuleComponent())
+		{
+			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
+			PlatformCameraComponent->AddCameraBoundingBox(this);
+		}
 	}
 }
 
 void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor))
 	{
-		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
-		PlatformCameraComponent->RemoveCameraBoundingBox(this);
+		if (OtherComp == PlayerCharacter->GetCapsuleComponent())
+		{
+			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
+			PlatformCameraComponent->RemoveCameraBoundingBox(this);
+		}
 	}
 }
 

@@ -5,6 +5,7 @@
 
 #include "HitboxComponent.h"
 #include "PlatformCharacterMovementComponent.h"
+#include "PaperFlipbookComponent.h"
 
 
 // Sets default values
@@ -15,18 +16,21 @@ AEnemyCharacter::AEnemyCharacter(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
 
 	AttackHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("AttackHitbox"));
+	AttackHitbox->SetupAttachment(FlipbookComponent);
+	
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AEnemyCharacter::UpdateMoving()
 {
 	Moving = GetMovementVector().Length() > 0.0f;
+	UpdateFlipbook();
 }
 
 FVector2D AEnemyCharacter::GetMovementVector()
@@ -46,8 +50,8 @@ FVector2D AEnemyCharacter::GetMovementVector()
 		const FVector ForwardVector = GetActorForwardVector();
 		const FVector RightVector = GetActorRightVector();
 
-		const float MovementVectorX = FVector::DotProduct(Input, ForwardVector);
-		const float MovementVectorY = FVector::DotProduct(Input, RightVector);
+		const float MovementVectorX = FVector::DotProduct(Input, RightVector);
+		const float MovementVectorY = FVector::DotProduct(Input, ForwardVector);
 
 		MovementVector = FVector2D(MovementVectorX, MovementVectorY);
 	}

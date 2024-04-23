@@ -81,10 +81,11 @@ protected:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsMoving() const { return Moving; }
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateDirections(const FVector2D MovementVector);
+	
 	UFUNCTION()
 	void StopAttacking();
-	
-	void UpdateDirections(const FVector2D MovementVector);
 
 	void UpdateFlipbook();
 

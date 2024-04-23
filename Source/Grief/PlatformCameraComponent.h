@@ -16,6 +16,7 @@ struct FCameraBounds
 
 	bool UpActive, DownActive, LeftActive, RightActive;
 	float Up, Down, Left, Right;
+	int32 UpLayer, DownLayer, LeftLayer, RightLayer;
 
 	FCameraBounds()
 	{
@@ -23,6 +24,11 @@ struct FCameraBounds
 		DownActive = false;
 		LeftActive = false;
 		RightActive = false;
+
+		UpLayer = -1;
+		DownLayer = -1;
+		LeftLayer = -1;
+		RightLayer = -1;
 		
 		Up = FLT_MIN;
 		Down = FLT_MAX;
@@ -30,7 +36,7 @@ struct FCameraBounds
 		Right = FLT_MIN;
 	}
 
-	void SetBound(EDirection Direction, const float Value)
+	void SetBound(EDirection Direction, const float Value, const int32 LayerID)
 	{	
 		switch (Direction)
 		{
@@ -38,6 +44,7 @@ struct FCameraBounds
 			if (Value == Up) break;
 			
 			Up = Value;
+			UpLayer = LayerID;
 			UpActive = true;
 			break;
 			
@@ -45,6 +52,7 @@ struct FCameraBounds
 			if (Value == Down) break;
 			
 			Down = Value;
+			DownLayer = LayerID;
 			DownActive = true;
 			break;
 			
@@ -52,6 +60,7 @@ struct FCameraBounds
 			if (Value == Left) break;
 			
 			Left = Value;
+			LeftLayer = LayerID;
 			LeftActive = true;
 			break;
 			
@@ -59,6 +68,7 @@ struct FCameraBounds
 			if (Value == Right) break;
 			
 			Right = Value;
+			RightLayer = LayerID;
 			RightActive = true;
 			break;
 			

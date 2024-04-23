@@ -12,10 +12,10 @@ class GRIEF_API APlayerCharacter : public AGriefCharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UPlatformCameraComponent* PlatformCameraComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -30,13 +30,13 @@ class GRIEF_API APlayerCharacter : public AGriefCharacter
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* AttackAction = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
 	class UHitboxComponent* HighHitbox = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
 	class UHitboxComponent* MiddleHitbox = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
 	class UHitboxComponent* LowHitbox = nullptr;
 	
 public:

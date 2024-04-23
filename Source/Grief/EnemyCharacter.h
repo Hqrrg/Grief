@@ -18,7 +18,7 @@ class GRIEF_API AEnemyCharacter : public AGriefCharacter, public IEnemyInterface
 	 * Will do later.
 	 */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UHitboxComponent* AttackHitbox = nullptr;
 
 public:
