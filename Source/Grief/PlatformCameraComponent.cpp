@@ -143,10 +143,10 @@ void UPlatformCameraComponent::SetupCamera()
 
 void UPlatformCameraComponent::UpdateCameraBounds()
 {
-	uint8 UpLayer = 0;
-	uint8 DownLayer = 0;
-	uint8 LeftLayer = 0;
-	uint8 RightLayer = 0;
+	int32 UpLayer = CameraBounds.UpLayer;
+	int32 DownLayer = CameraBounds.DownLayer;
+	int32 LeftLayer = CameraBounds.LeftLayer;
+	int32 RightLayer = CameraBounds.RightLayer;
 
 	float Up = CameraBounds.Up;
 	float Down = CameraBounds.Down;
@@ -162,7 +162,7 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 			const float BoundingBoxLeft = BoundingBox->GetBound(EDirection::Left);
 			const float BoundingBoxRight = BoundingBox->GetBound(EDirection::Right);
 
-			const uint8 BoundingBoxLayer = BoundingBox->GetLayer();
+			const int32 BoundingBoxLayer = BoundingBox->GetLayer();
 			
 			if (BoundingBox->IsBoundActive(EDirection::Up) && (Up < BoundingBoxUp || BoundingBoxLayer > UpLayer))
 			{
@@ -189,9 +189,9 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 			}
 		}
 	}
-	CameraBounds.SetBound(EDirection::Up, Up);
-	CameraBounds.SetBound(EDirection::Down, Down);
-	CameraBounds.SetBound(EDirection::Left, Left);
-	CameraBounds.SetBound(EDirection::Right, Right);
+	CameraBounds.SetBound(EDirection::Up, Up, UpLayer);
+	CameraBounds.SetBound(EDirection::Down, Down, DownLayer);
+	CameraBounds.SetBound(EDirection::Left, Left, LeftLayer);
+	CameraBounds.SetBound(EDirection::Right, Right, RightLayer);
 }
 
