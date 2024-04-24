@@ -13,63 +13,45 @@ USTRUCT(BlueprintType)
 struct FCameraBounds
 {
 	GENERATED_BODY()
-
-	bool UpActive, DownActive, LeftActive, RightActive;
+	
 	float Up, Down, Left, Right;
-	int32 UpLayer, DownLayer, LeftLayer, RightLayer;
+	int32 LayerUp, LayerDown, LayerLeft, LayerRight;
 
 	FCameraBounds()
 	{
-		UpActive = false;
-		DownActive = false;
-		LeftActive = false;
-		RightActive = false;
-
-		UpLayer = -1;
-		DownLayer = -1;
-		LeftLayer = -1;
-		RightLayer = -1;
+		LayerUp = INT_MIN;
+		LayerDown = INT_MIN;
+		LayerLeft = INT_MIN;
+		LayerRight = INT_MIN;
 		
-		Up = FLT_MIN;
-		Down = FLT_MAX;
-		Left = FLT_MAX;
-		Right = FLT_MIN;
+		Up = FLT_MAX;
+		Down = FLT_MIN;
+		Left = FLT_MIN;
+		Right = FLT_MAX;
 	}
 
-	void SetBound(EDirection Direction, const float Value, const int32 LayerID)
+	void SetBound(EDirection Direction, const float Bound, const int32 LayerID)
 	{	
 		switch (Direction)
 		{
 		case EDirection::Up:
-			if (Value == Up) break;
-			
-			Up = Value;
-			UpLayer = LayerID;
-			UpActive = true;
+			Up = Bound;
+			LayerUp = LayerID;
 			break;
 			
 		case EDirection::Down:
-			if (Value == Down) break;
-			
-			Down = Value;
-			DownLayer = LayerID;
-			DownActive = true;
+			Down = Bound;
+			LayerDown = LayerID;
 			break;
 			
 		case EDirection::Left:
-			if (Value == Left) break;
-			
-			Left = Value;
-			LeftLayer = LayerID;
-			LeftActive = true;
+			Left = Bound;
+			LayerLeft = LayerID;
 			break;
 			
 		case EDirection::Right:
-			if (Value == Right) break;
-			
-			Right = Value;
-			RightLayer = LayerID;
-			RightActive = true;
+			Right = Bound;
+			LayerRight = LayerID;
 			break;
 			
 		default:
@@ -125,4 +107,5 @@ private:
 	FCameraBounds CameraBounds;
 
 	void UpdateCameraBounds();
+	void UpdateBound(float &Bound, const float InBound, int32 &Layer, const int32 InLayer);
 };
