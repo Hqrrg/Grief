@@ -86,6 +86,12 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	YTargetBias*=YawMovementBias;
 	ZTargetBias*=PitchMovementBias;
 
+	float XTargetBias = CameraZoom;
+	float XInterpSpeed = 5.0f;
+
+	if (CurrentCameraBoundingBox) XTargetBias+=CurrentCameraBoundingBox->GetOffset();
+
+	float TargetX = ActorLocation.X-XTargetBias;
 	float TargetY = ActorLocation.Y+YTargetBias;
 	float TargetZ = ActorLocation.Z+ZTargetBias;
 
@@ -100,11 +106,12 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		YInterpSpeed = 2.5f;
 		ZInterpSpeed = 5.0f;
 	}
-		
+
+	const float InterpTargetX = FMath::FInterpTo(CameraLocation.X, TargetX, DeltaTime, XInterpSpeed);
 	const float InterpTargetY = FMath::FInterpTo(CameraLocation.Y, TargetY, DeltaTime, YInterpSpeed);
 	const float InterpTargetZ = FMath::FInterpTo(CameraLocation.Z, TargetZ, DeltaTime, ZInterpSpeed);
 
-	const FVector TargetLocation = FVector(ActorLocation.X - DistanceToCharacter, InterpTargetY, InterpTargetZ);
+	const FVector TargetLocation = FVector(InterpTargetX, InterpTargetY, InterpTargetZ);
 	
 	Camera->SetWorldLocation(TargetLocation);
 }
@@ -112,19 +119,21 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UPlatformCameraComponent::AddCameraBoundingBox(ACameraBoundingBox* CameraBoundingBox)
 {
 	CameraBoundingBoxes.AddUnique(CameraBoundingBox);
+	CurrentCameraBoundingBox = CameraBoundingBox;
 	UpdateCameraBounds();
 }
 
 void UPlatformCameraComponent::RemoveCameraBoundingBox(ACameraBoundingBox* CameraBoundingBox)
 {
 	CameraBoundingBoxes.Remove(CameraBoundingBox);
+	if (CurrentCameraBoundingBox == CameraBoundingBox) CurrentCameraBoundingBox = nullptr;
 	UpdateCameraBounds();
 }
 
 void UPlatformCameraComponent::SetupCamera()
 {
 	const FVector ActorLocation = GetOwner()->GetActorLocation();
-	const FVector TargetLocation = FVector(ActorLocation.X - DistanceToCharacter, ActorLocation.Y, ActorLocation.Z);
+	const FVector TargetLocation = FVector(ActorLocation.X - CameraZoom, ActorLocation.Y, ActorLocation.Z);
 	
 	Camera->SetWorldLocation(TargetLocation);
 }
