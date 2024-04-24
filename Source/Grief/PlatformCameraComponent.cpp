@@ -46,6 +46,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	float ZTargetBias = 0.0f;
 	float YInterpSpeed = 5.0f;
 	float ZInterpSpeed = 10.0f;
+	
 
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
 	{
@@ -89,23 +90,10 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	float TargetZ = ActorLocation.Z+ZTargetBias;
 
 	
-	if (CameraBounds.RightActive && TargetY > CameraBounds.Right)
-	{
-		TargetY = CameraBounds.Right;
-	}
-	if (CameraBounds.LeftActive && TargetY < CameraBounds.Left)
-	{
-		TargetY = CameraBounds.Left;
-	}
-
-	if (CameraBounds.UpActive && TargetZ > CameraBounds.Up)
-	{
-		TargetZ = CameraBounds.Up;
-	}
-	if (CameraBounds.DownActive && TargetZ < CameraBounds.Down)
-	{
-		TargetZ = CameraBounds.Down;
-	}
+	if (TargetY > CameraBounds.Right) TargetY = CameraBounds.Right;
+	if (TargetY < CameraBounds.Left) TargetY = CameraBounds.Left;
+	if (TargetZ > CameraBounds.Up) TargetZ = CameraBounds.Up;
+	if (TargetZ < CameraBounds.Down) TargetZ = CameraBounds.Down;
 
 	if (FMath::IsNearlyEqual(GetOwner()->GetVelocity().Length(), 0.0f, 0.5f))
 	{
@@ -143,15 +131,17 @@ void UPlatformCameraComponent::SetupCamera()
 
 void UPlatformCameraComponent::UpdateCameraBounds()
 {
-	int32 UpLayer = CameraBounds.UpLayer;
-	int32 DownLayer = CameraBounds.DownLayer;
-	int32 LeftLayer = CameraBounds.LeftLayer;
-	int32 RightLayer = CameraBounds.RightLayer;
+	if (CameraBoundingBoxes.IsEmpty()) return;
+	
+	int32 LayerUp = INT_MIN;
+	int32 LayerDown = INT_MIN;
+	int32 LayerLeft = INT_MIN;
+	int32 LayerRight = INT_MIN;
 
-	float Up = CameraBounds.Up;
-	float Down = CameraBounds.Down;
-	float Left = CameraBounds.Left;
-	float Right = CameraBounds.Right;
+	float Up = FLT_MAX;
+	float Down = FLT_MIN;
+	float Left = FLT_MIN;
+	float Right = FLT_MAX;
 	
 	for (uint8 Index = 0; Index < CameraBoundingBoxes.Num(); Index++)
 	{
@@ -164,34 +154,30 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 
 			const int32 BoundingBoxLayer = BoundingBox->GetLayer();
 			
-			if (BoundingBox->IsBoundActive(EDirection::Up) && (Up < BoundingBoxUp || BoundingBoxLayer > UpLayer))
-			{
-				Up = BoundingBoxUp;
-				UpLayer = BoundingBoxLayer;
-			}
-			
-			if (BoundingBox->IsBoundActive(EDirection::Down) && (Down > BoundingBoxDown || BoundingBoxLayer > DownLayer))
-			{
-				Down = BoundingBoxDown;
-				DownLayer = BoundingBoxLayer;
-			}
-
-			if (BoundingBox->IsBoundActive(EDirection::Left) && (Left > BoundingBoxLeft || BoundingBoxLayer > LeftLayer))
-			{
-				Left = BoundingBoxLeft;
-				LeftLayer = BoundingBoxLayer;
-			}
-
-			if (BoundingBox->IsBoundActive(EDirection::Right) && (Right < BoundingBoxRight || BoundingBoxLayer > RightLayer))
-			{
-				Right = BoundingBoxRight;
-				RightLayer = BoundingBoxLayer;
-			}
+			if (BoundingBox->IsBoundActive(EDirection::Up)) UpdateBound(Up, BoundingBoxUp, LayerUp, BoundingBoxLayer);
+			if (BoundingBox->IsBoundActive(EDirection::Down)) UpdateBound(Down, BoundingBoxDown, LayerDown, BoundingBoxLayer);
+			if (BoundingBox->IsBoundActive(EDirection::Left)) UpdateBound(Left, BoundingBoxLeft, LayerLeft, BoundingBoxLayer);
+			if (BoundingBox->IsBoundActive(EDirection::Right)) UpdateBound(Right, BoundingBoxRight, LayerRight, BoundingBoxLayer);
 		}
 	}
-	CameraBounds.SetBound(EDirection::Up, Up, UpLayer);
-	CameraBounds.SetBound(EDirection::Down, Down, DownLayer);
-	CameraBounds.SetBound(EDirection::Left, Left, LeftLayer);
-	CameraBounds.SetBound(EDirection::Right, Right, RightLayer);
+	
+	CameraBounds.SetBound(EDirection::Up, Up, LayerUp);
+	CameraBounds.SetBound(EDirection::Down, Down, LayerDown);
+	CameraBounds.SetBound(EDirection::Left, Left, LayerLeft);
+	CameraBounds.SetBound(EDirection::Right, Right, LayerRight);
+}
+
+void UPlatformCameraComponent::UpdateBound(float& Bound, const float InBound, int32& Layer, const int32 InLayer)
+{
+	if (Layer > InLayer) return;
+	
+	if (Layer < InLayer)
+	{
+		Bound = InBound;
+		Layer = InLayer;
+		return;
+	}
+
+	Bound = FMath::Abs(Bound) < FMath::Abs(InBound) ? Bound : InBound;
 }
 
