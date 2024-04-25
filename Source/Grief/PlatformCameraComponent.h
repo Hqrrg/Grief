@@ -65,7 +65,7 @@ class GRIEF_API UPlatformCameraComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera = nullptr;
 
 public:
@@ -91,8 +91,11 @@ private:
 	FORCEINLINE FCameraBounds GetCameraBounds() const { return CameraBounds; }
 
 private:
+	UPROPERTY()
+	ACameraBoundingBox* CurrentCameraBoundingBox = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	float DistanceToCharacter = 500.0f;
+	float CameraZoom = 500.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float YawMovementBias = 50.0f;
