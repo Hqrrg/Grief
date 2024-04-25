@@ -90,6 +90,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	float XInterpSpeed = 5.0f;
 
 	if (CurrentCameraBoundingBox) XTargetBias+=CurrentCameraBoundingBox->GetOffset();
+	if (CurrentCameraBoundingBox) XInterpSpeed = CurrentCameraBoundingBox->GetOffsetInterpSpeed();
 
 	float TargetX = ActorLocation.X-XTargetBias;
 	float TargetY = ActorLocation.Y+YTargetBias;
@@ -126,7 +127,6 @@ void UPlatformCameraComponent::AddCameraBoundingBox(ACameraBoundingBox* CameraBo
 void UPlatformCameraComponent::RemoveCameraBoundingBox(ACameraBoundingBox* CameraBoundingBox)
 {
 	CameraBoundingBoxes.Remove(CameraBoundingBox);
-	if (CurrentCameraBoundingBox == CameraBoundingBox) CurrentCameraBoundingBox = nullptr;
 	UpdateCameraBounds();
 }
 
@@ -140,12 +140,7 @@ void UPlatformCameraComponent::SetupCamera()
 
 void UPlatformCameraComponent::UpdateCameraBounds()
 {
-	
-	if (CameraBoundingBoxes.IsEmpty())
-	{
-		CurrentCameraBoundingBox = nullptr;
-		return;
-	}
+	if (CameraBoundingBoxes.IsEmpty()) return;
 
 	CurrentCameraBoundingBox = CameraBoundingBoxes[CameraBoundingBoxes.Num()-1];
 	

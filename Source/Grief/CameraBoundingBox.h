@@ -40,12 +40,17 @@ public:
 	FORCEINLINE int32 GetLayer() const { return Layer; }
 
 	FORCEINLINE float GetOffset() const { return Offset; }
+
+	FORCEINLINE float GetOffsetInterpSpeed() const { return OffsetInterpSpeed; }
 	
 private:
 	int32 Layer = 0;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Options", meta = (AllowPrivateAccess = "true"))
 	float Offset = 0.0f;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Options", meta = (AllowPrivateAccess = "true"))
+	float OffsetInterpSpeed = 1.0f;
 	
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Options|Bounds", meta = (AllowPrivateAccess = "true"))
 	bool Up = true;
