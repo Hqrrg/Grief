@@ -3,9 +3,7 @@
 
 #include "EnemyCharacter.h"
 
-#include "HitboxComponent.h"
 #include "PlatformCharacterMovementComponent.h"
-#include "PaperFlipbookComponent.h"
 
 
 // Sets default values
@@ -14,10 +12,6 @@ AEnemyCharacter::AEnemyCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	AttackHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("AttackHitbox"));
-	AttackHitbox->SetupAttachment(FlipbookComponent);
-	
 	bUseControllerRotationYaw = false;
 }
 
@@ -59,77 +53,37 @@ FVector2D AEnemyCharacter::GetMovementVector()
 	return MovementVector;
 }
 
-float AEnemyCharacter::GetMaxHealth()
-{
-	return MaxHealth;
-}
-
-float AEnemyCharacter::GetHealth()
-{
-	return Health;
-}
-
 UBehaviorTree* AEnemyCharacter::GetBehaviourTree()
 {
 	return BehaviourTree;
 }
 
-bool AEnemyCharacter::IsObscured(const AActor* TargetActor)
+bool AEnemyCharacter::Attack(uint8 AttackID)
 {
-	bool Obscured = false;
+	if (Attacking || AttackInfoArray.IsEmpty()) return false;
 
-	FHitResult* HitResult = new FHitResult();
-	FCollisionQueryParams CollisionQueryParams;
-	CollisionQueryParams.AddIgnoredActor(this);
+	if (AttackID > AttackInfoArray.Num()-1) return false;
 	
-	const FVector TraceStart = GetActorLocation();
-	const FVector TraceEnd = TargetActor->GetActorLocation();
-
-	const bool IsBlockingHit = GetWorld()->LineTraceSingleByChannel(
-		*HitResult,
-		TraceStart,
-		TraceEnd,
-		ECC_Visibility,
-		CollisionQueryParams);
-
-	if (IsBlockingHit)
-	{
-		Obscured = HitResult->GetActor() != TargetActor;
-	}
-
-	return Obscured;
-}
-
-void AEnemyCharacter::Knockback(const FVector OriginLocation, const float KnockbackMultiplier)
-{
-	if (!ShouldKnockback()) return;
+	const FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
 	
-	const FVector ActorLocation = GetActorLocation();
-	FVector KnockbackDirection = (ActorLocation - OriginLocation).GetSafeNormal();
-	FVector FinalKnockbackDirection = FVector(0.0f, KnockbackDirection.Y < 0.0f ? -1.0f : 1.0f, 0.0f);
+	if (AttackInfo->IsCooldown) return false;
 	
-	const float TotalKnockback = GetKnockbackAmount() * KnockbackMultiplier;
+	Attacking = true;
 	
-	PlatformCharacterMovementComponent->Knockback(FinalKnockbackDirection, TotalKnockback);
-}
+	AttackingFlipbook = AttackInfo->Flipbook;
+	UpdateFlipbook();
 
-void AEnemyCharacter::Attack(uint8 AttackID)
-{
-}
+	float AttackDuration = 1.0f;
+	if (AttackingFlipbook) AttackDuration = AttackingFlipbook->GetTotalDuration();
 
-float AEnemyCharacter::GetKnockbackAmount()
-{
-	return KnockbackAmount;
-}
+	FTimerHandle AttackTimerHandle;
+	FTimerDelegate AttackTimerDelegate;
 
-void AEnemyCharacter::SetMaxHealth(const float InMaxHealth)
-{
-	MaxHealth = InMaxHealth;
-}
+	AttackTimerDelegate.BindUFunction(this, FName("StopAttacking"), AttackID);
+	
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
 
-void AEnemyCharacter::SetHealth(const float InHealth)
-{
-	Health = InHealth;
+	return true;
 }
 
 void AEnemyCharacter::Killed()

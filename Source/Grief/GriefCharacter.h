@@ -7,6 +7,8 @@
 #include "Engine/DataTable.h"
 #include "PaperFlipbook.h"
 #include "Enums/Direction.h"
+#include "Interfaces/CombatantInterface.h"
+#include "Structs\AttackInfo.h"
 #include "GriefCharacter.generated.h"
 
 enum class EDirection : uint8;
@@ -37,13 +39,10 @@ struct FCharacterFlipbooks : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* Walking;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UPaperFlipbook* Attacking;
 };
 
 UCLASS()
-class GRIEF_API AGriefCharacter : public APaperCharacter
+class GRIEF_API AGriefCharacter : public APaperCharacter, public ICombatantInterface
 {
 	GENERATED_BODY()
 
@@ -85,7 +84,10 @@ protected:
 	void UpdateDirections(const FVector2D MovementVector);
 	
 	UFUNCTION()
-	void StopAttacking();
+	virtual void StopAttacking(uint8 AttackID);
+
+	UFUNCTION()
+	void RemoveAttackCooldown(uint8 AttackID);
 
 	void UpdateFlipbook();
 
@@ -97,15 +99,17 @@ protected:
 	UDataTable* FlipbookDataTable = nullptr;
 	
 	FCharacterFlipbooks* Flipbooks;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UDataTable* AttacksDataTable = nullptr;
+	
+	TArray<FAttackInfo> AttackInfoArray;
+
+	UPROPERTY()
+	class UPaperFlipbook* AttackingFlipbook = nullptr;
 	
 	bool Attacking = false;
 	bool Moving = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	float MeleeDamage = 10.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	float MeleeKnockbackMultiplier = 1.0f;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	EDirection MovementDirection = EDirection::Right;
@@ -113,4 +117,37 @@ protected:
 	EDirection AttackDirection;
 	
 	EPlatformerMovementMode PlatformerMovementMode = EPlatformerMovementMode::Grounded;
+
+public:
+	UFUNCTION(BlueprintPure)
+	virtual float GetMaxHealth() override;
+	
+	UFUNCTION(BlueprintPure)
+	virtual float GetHealth() override;
+
+	UFUNCTION(BlueprintPure)
+	virtual bool IsObscured(const AActor* TargetActor) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
+	
+private:
+	UFUNCTION(BlueprintPure)
+	virtual float GetKnockbackAmount() override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void SetMaxHealth(const float InMaxHealth) override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void SetHealth(const float InHealth) override;
+	
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float KnockbackAmount = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float MaxHealth = 100.0f;
+	
+	UPROPERTY()
+	float Health = MaxHealth;
 };

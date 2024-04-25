@@ -140,7 +140,14 @@ void UPlatformCameraComponent::SetupCamera()
 
 void UPlatformCameraComponent::UpdateCameraBounds()
 {
-	if (CameraBoundingBoxes.IsEmpty()) return;
+	
+	if (CameraBoundingBoxes.IsEmpty())
+	{
+		CurrentCameraBoundingBox = nullptr;
+		return;
+	}
+
+	CurrentCameraBoundingBox = CameraBoundingBoxes[CameraBoundingBoxes.Num()-1];
 	
 	int32 LayerUp = INT_MIN;
 	int32 LayerDown = INT_MIN;

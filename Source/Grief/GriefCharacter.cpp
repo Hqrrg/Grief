@@ -20,6 +20,8 @@ AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
 void AGriefCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlatformCharacterMovementComponent = Cast<UPlatformCharacterMovementComponent>(GetMovementComponent());
 	
 	AttackDirection = MovementDirection;
 
@@ -27,6 +29,17 @@ void AGriefCharacter::BeginPlay()
 	{
 		static const FString ContextString(FString::Printf(TEXT("%s Character Flipbooks Context"), *FlipbookKey.ToString()));
 		Flipbooks = FlipbookDataTable->FindRow<FCharacterFlipbooks>(FlipbookKey, ContextString, true);
+	}
+
+	if (AttacksDataTable)
+	{
+		for (FName RowName : AttacksDataTable->GetRowNames())
+		{
+			static const FString ContextString(FString::Printf(TEXT("%s : Attack Info Context"), *RowName.ToString()));
+			FAttackInfo AttackInfo = *AttacksDataTable->FindRow<FAttackInfo>(RowName, ContextString, true);
+			
+			AttackInfoArray.Add(AttackInfo);
+		}
 	}
 }
 
@@ -74,16 +87,107 @@ void AGriefCharacter::UpdateFlipbook()
 
 	if (IsAttacking())
 	{
-		Flipbook = Flipbooks->Attacking;
+		Flipbook = AttackingFlipbook;
 	}
 
 	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
 }
 
-void AGriefCharacter::StopAttacking()
+float AGriefCharacter::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+float AGriefCharacter::GetHealth()
+{
+	return Health;
+}
+
+bool AGriefCharacter::IsObscured(const AActor* TargetActor)
+{
+	bool Obscured = false;
+
+	FHitResult* HitResult = new FHitResult();
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	
+	const FVector TraceStart = GetActorLocation();
+	const FVector TraceEnd = TargetActor->GetActorLocation();
+
+	const bool IsBlockingHit = GetWorld()->LineTraceSingleByChannel(
+		*HitResult,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility,
+		CollisionQueryParams);
+
+	if (IsBlockingHit)
+	{
+		Obscured = HitResult->GetActor() != TargetActor;
+	}
+
+	return Obscured;
+}
+
+void AGriefCharacter::Knockback(const FVector OriginLocation, const float KnockbackMultiplier)
+{
+	if (!ShouldKnockback()) return;
+	
+	const FVector ActorLocation = GetActorLocation();
+	FVector KnockbackDirection = (ActorLocation - OriginLocation).GetSafeNormal();
+	FVector FinalKnockbackDirection = FVector(0.0f, KnockbackDirection.Y < 0.0f ? -1.0f : 1.0f, 0.0f);
+	
+	const float TotalKnockback = GetKnockbackAmount() * KnockbackMultiplier;
+	
+	PlatformCharacterMovementComponent->Knockback(FinalKnockbackDirection, TotalKnockback);
+}
+
+float AGriefCharacter::GetKnockbackAmount()
+{
+	return KnockbackAmount;
+}
+
+void AGriefCharacter::SetMaxHealth(const float InMaxHealth)
+{
+	MaxHealth = InMaxHealth;
+}
+
+void AGriefCharacter::SetHealth(const float InHealth)
+{
+	Health = InHealth;
+}
+
+void AGriefCharacter::StopAttacking(uint8 AttackID)
 {
 	Attacking = false;
 	UpdateFlipbook();
+
+	if (AttackID < AttackInfoArray.Num())
+	{
+		FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
+		float AttackCooldownDuration = AttackInfo->Cooldown;
+		
+		if (AttackCooldownDuration > 0.0f)
+		{
+			AttackInfo->IsCooldown = true;
+			
+			FTimerHandle AttackCooldownHandle;
+			FTimerDelegate AttackCooldownDelegate;
+		
+			AttackCooldownDelegate.BindUFunction(this, FName("RemoveAttackCooldown"), AttackID);
+
+			GetWorldTimerManager().SetTimer(AttackCooldownHandle, AttackCooldownDelegate, AttackCooldownDuration, false, AttackCooldownDuration);
+		}
+	}
+}
+
+void AGriefCharacter::RemoveAttackCooldown(uint8 AttackID)
+{
+	if (AttackID < AttackInfoArray.Num())
+	{
+		FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
+		AttackInfo->IsCooldown = false;
+	}
 }
 
 void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)

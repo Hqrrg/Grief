@@ -5,26 +5,25 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/BoxComponent.h"
-#include "HitboxComponent.generated.h"
+#include "AttackHitboxComponent.generated.h"
 
 
 enum class EDirection : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class GRIEF_API UHitboxComponent : public UBoxComponent
+class GRIEF_API UAttackHitboxComponent : public UBoxComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UHitboxComponent();
+	UAttackHitboxComponent();
 
 protected:
 	virtual void BeginPlay() override;;
 
-
 public:
-	FORCEINLINE TArray<class AActor*> GetOverlappingEnemies() const { return OverlappingEnemies; }
+	FORCEINLINE TArray<AActor*> GetOverlappingCombatants() const { return OverlappingCombatants; }
 	
 private:
 	UFUNCTION()
@@ -35,5 +34,5 @@ private:
 
 private:
 	UPROPERTY()
-	TArray<class AActor*> OverlappingEnemies;
+	TArray<AActor*> OverlappingCombatants;
 };

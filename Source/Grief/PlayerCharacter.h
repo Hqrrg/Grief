@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GriefCharacter.h"
 #include "InputActionValue.h"
+#include "Interfaces/CombatantInterface.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
 class GRIEF_API APlayerCharacter : public AGriefCharacter
 {
 	GENERATED_BODY()
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera = nullptr;
 
@@ -31,13 +32,13 @@ class GRIEF_API APlayerCharacter : public AGriefCharacter
 	class UInputAction* AttackAction = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
-	class UHitboxComponent* HighHitbox = nullptr;
+	class UAttackHitboxComponent* HighAttackHitbox = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
-	class UHitboxComponent* MiddleHitbox = nullptr;
+	class UAttackHitboxComponent* MiddleAttackHitbox = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Hitbox, meta = (AllowPrivateAccess = "true"))
-	class UHitboxComponent* LowHitbox = nullptr;
+	class UAttackHitboxComponent* LowAttackHitbox = nullptr;
 	
 public:
 	APlayerCharacter(const FObjectInitializer& ObjectInitializer);

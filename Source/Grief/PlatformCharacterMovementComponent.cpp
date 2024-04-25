@@ -190,9 +190,11 @@ void UPlatformCharacterMovementComponent::HandleJumping(const float DeltaTime)
 					CharacterOwner->ResetJumpState();
 				}
 			}
+
+			GetOwner()->SetActorLocation(TargetLocation, true);
 			
-			FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
-			UKismetSystemLibrary::MoveComponentTo(Cast<USceneComponent>(CapsuleComponent), TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
+			//FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
+			//UKismetSystemLibrary::MoveComponentTo(Cast<USceneComponent>(CapsuleComponent), TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
 		}
 		else
 		{
@@ -251,10 +253,11 @@ void UPlatformCharacterMovementComponent::HandleFalling(const float DeltaTime)
 				}
 			}
 		
-			FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
-			USceneComponent* CapsuleComponent = Cast<USceneComponent>(CharacterOwner->GetCapsuleComponent());
-		
-			UKismetSystemLibrary::MoveComponentTo(CapsuleComponent, TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
+			//FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
+			//USceneComponent* CapsuleComponent = Cast<USceneComponent>(CharacterOwner->GetCapsuleComponent());
+
+			GetOwner()->SetActorLocation(TargetLocation, true);
+			//UKismetSystemLibrary::MoveComponentTo(CapsuleComponent, TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
 		}
 		else if (MovementMode == MOVE_Falling) SetFalling();
 	}
@@ -316,9 +319,10 @@ void UPlatformCharacterMovementComponent::HandleKnockback(const float DeltaTime)
 					TargetLocation = ActorLocation;
 				}
 			}
-			
-			FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
-			UKismetSystemLibrary::MoveComponentTo(CapsuleComponent, TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
+
+			GetOwner()->SetActorLocation(TargetLocation, true);
+			//FLatentActionInfo LatentActionInfo; LatentActionInfo.CallbackTarget = this;
+			//UKismetSystemLibrary::MoveComponentTo(CapsuleComponent, TargetLocation, CharacterOwner->GetActorRotation(), false, false, 0.0f, true, EMoveComponentAction::Type::Move, LatentActionInfo);
 		}
 		else
 		{

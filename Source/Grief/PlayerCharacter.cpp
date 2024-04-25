@@ -8,7 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HitboxComponent.h"
+#include "AttackHitboxComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Enums/Direction.h"
 #include "Interfaces/EnemyInterface.h"
@@ -19,14 +19,14 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
-	HighHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("HighHitbox"));
-	HighHitbox->SetupAttachment(FlipbookComponent);
+	HighAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("HighAttackHitbox"));
+	HighAttackHitbox->SetupAttachment(FlipbookComponent);
 
-	MiddleHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("MiddleHitbox"));
-	MiddleHitbox->SetupAttachment(FlipbookComponent);
+	MiddleAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("MiddleAttackHitbox"));
+	MiddleAttackHitbox->SetupAttachment(FlipbookComponent);
 	
-	LowHitbox = CreateDefaultSubobject<UHitboxComponent>(TEXT("LowHitbox"));
-	LowHitbox->SetupAttachment(FlipbookComponent);
+	LowAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("LowAttackHitbox"));
+	LowAttackHitbox->SetupAttachment(FlipbookComponent);
 	
 	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
 	AddOwnedComponent(PlatformCameraComponent);
@@ -87,60 +87,78 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 
 void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
-	if (Attacking) return;
-	
-	Attacking = true;
-	
-	UpdateFlipbook();
+	if (Attacking || AttackInfoArray.IsEmpty()) return;
 
-	UHitboxComponent* Hitbox = nullptr;
+	uint8 AttackID = 0;
 
-	switch (AttackDirection)
+	if (AttackID < AttackInfoArray.Num())
 	{
+		const FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
+		
+		if (AttackInfo->IsCooldown) return;
+		
+		Attacking = true;
+
+		AttackingFlipbook = AttackInfo->Flipbook;
+		UpdateFlipbook();
+
+		UAttackHitboxComponent* Hitbox = nullptr;
+
+		switch (AttackDirection)
+		{
 		case EDirection::UpRight:
-			Hitbox = HighHitbox;
+			Hitbox = HighAttackHitbox;
 			break;
 		case EDirection::UpLeft:
-			Hitbox = HighHitbox;
+			Hitbox = HighAttackHitbox;
 			break;
 		case EDirection::Right:
-			Hitbox = MiddleHitbox;
+			Hitbox = MiddleAttackHitbox;
 			break;
 		case EDirection::Left:
-			Hitbox = MiddleHitbox;
+			Hitbox = MiddleAttackHitbox;
 			break;
 		case EDirection::DownRight:
-			Hitbox = LowHitbox;
+			Hitbox = LowAttackHitbox;
 			break;
 		case EDirection::DownLeft:
-			Hitbox = LowHitbox;
+			Hitbox = LowAttackHitbox;
 			break;
 		default:
 			break;
-	}
+		}
 
-	if (Hitbox)
-	{
-		TArray<AActor*> OverlappingEnemies = Hitbox->GetOverlappingEnemies();
-		
-		if (OverlappingEnemies.Num() > 0)
+		if (Hitbox)
 		{
-			for (uint8 Index = 0; Index < OverlappingEnemies.Num(); Index++)
+			TArray<AActor*> OverlappingCombatants = Hitbox->GetOverlappingCombatants();
+		
+			if (OverlappingCombatants.Num() > 0)
 			{
-				if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(OverlappingEnemies[Index]))
+				for (uint8 Index = 0; Index < OverlappingCombatants.Num(); Index++)
 				{
-					if (Enemy && (Enemy->IsObscured(this) || !Enemy->IsAlive())) continue;
-				
-					Enemy->ApplyDamage(MeleeDamage);
-					Enemy->Knockback(GetActorLocation(), MeleeKnockbackMultiplier);
+					AActor* CurrentCombatant = OverlappingCombatants[Index];
+					
+					if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(CurrentCombatant))
+					{
+						ICombatantInterface* Combatant = Cast<ICombatantInterface>(CurrentCombatant);
+						
+						if (Combatant->IsObscured(this) || !Combatant->IsAlive()) continue;
+						
+						Combatant->ApplyDamage(AttackInfo->Damage);
+						Combatant->Knockback(GetActorLocation(), AttackInfo->KnockbackMultiplier);
+					}
 				}
 			}
 		}
+	
+		float AttackDuration = 1.0f;
+		if (AttackingFlipbook) AttackDuration = AttackingFlipbook->GetTotalDuration();
+	
+		FTimerHandle AttackTimerHandle;
+		FTimerDelegate AttackTimerDelegate;
+		
+		AttackTimerDelegate.BindUFunction(this, FName("StopAttacking"), AttackID);
+		
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
 	}
-	
-	float AttackDuration = 1.0f;
-	if (Flipbooks) AttackDuration = Flipbooks->Attacking->GetTotalDuration();
-	
-	FTimerHandle AttackTimerHandle;
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttacking, AttackDuration, false, AttackDuration);
 }
