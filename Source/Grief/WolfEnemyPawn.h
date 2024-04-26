@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyCharacter.h"
-#include "WolfEnemy.generated.h"
+#include "EnemyPawn.h"
+#include "WolfEnemyPawn.generated.h"
 
 UENUM(BlueprintType)
 enum class EWolfAttack : uint8
@@ -14,7 +14,7 @@ enum class EWolfAttack : uint8
 };
 
 UCLASS()
-class GRIEF_API AWolfEnemy : public AEnemyCharacter
+class GRIEF_API AWolfEnemyPawn : public AEnemyPawn
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ class GRIEF_API AWolfEnemy : public AEnemyCharacter
 
 public:
 	// Sets default values for this character's properties
-	AWolfEnemy(const FObjectInitializer& ObjectInitializer);
+	AWolfEnemyPawn();
 
 protected:
 	// Called when the game starts or when spawned

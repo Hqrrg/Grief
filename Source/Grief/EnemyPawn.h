@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GriefCharacter.h"
+#include "BasePawn.h"
 #include "Interfaces/EnemyInterface.h"
-#include "EnemyCharacter.generated.h"
+#include "EnemyPawn.generated.h"
 
 UCLASS()
-class GRIEF_API AEnemyCharacter : public AGriefCharacter, public IEnemyInterface
+class GRIEF_API AEnemyPawn : public ABasePawn, public IEnemyInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AEnemyCharacter(const FObjectInitializer& ObjectInitializer);
+	AEnemyPawn();
 
 protected:
 	// Called when the game starts or when spawned

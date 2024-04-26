@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GriefCharacter.h"
+#include "BasePawn.h"
 #include "InputActionValue.h"
-#include "Interfaces/CombatantInterface.h"
-#include "PlayerCharacter.generated.h"
+#include "PlayerPawn.generated.h"
 
 UCLASS()
-class GRIEF_API APlayerCharacter : public AGriefCharacter
+class GRIEF_API APlayerPawn : public ABasePawn
 {
 	GENERATED_BODY()
 	
@@ -41,7 +40,7 @@ class GRIEF_API APlayerCharacter : public AGriefCharacter
 	class UAttackHitboxComponent* LowAttackHitbox = nullptr;
 	
 public:
-	APlayerCharacter(const FObjectInitializer& ObjectInitializer);
+	APlayerPawn();
 
 protected:
 	// Called when the actor is spawned
@@ -52,6 +51,8 @@ protected:
 
 public:
 	void Move(const FInputActionValue& Value);
+
+	void Jump(const FInputActionValue& Value);
 	
 	void Attack(const FInputActionValue& Value);
 

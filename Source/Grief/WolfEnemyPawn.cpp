@@ -1,44 +1,43 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "WolfEnemy.h"
+#include "WolfEnemyPawn.h"
 
 #include "AttackHitboxComponent.h"
-#include "PlatformCharacterMovementComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "PlayerCharacter.h"
+#include "PaperFlipbook.h"
+#include "PlayerPawn.h"
 
 
 // Sets default values
-AWolfEnemy::AWolfEnemy(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
+AWolfEnemyPawn::AWolfEnemyPawn()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
 	LightAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("LightAttackHitbox"));
-	LightAttackHitbox->SetupAttachment(FlipbookComponent);
+	LightAttackHitbox->SetupAttachment(GetFlipbookComponent());
 }
 
 // Called when the game starts or when spawned
-void AWolfEnemy::BeginPlay()
+void AWolfEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void AWolfEnemy::Tick(float DeltaTime)
+void AWolfEnemyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void AWolfEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AWolfEnemyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-bool AWolfEnemy::Attack(uint8 AttackID)
+bool AWolfEnemyPawn::Attack(uint8 AttackID)
 {
 	const bool ShouldAttack = Super::Attack(AttackID);
 
@@ -64,9 +63,8 @@ bool AWolfEnemy::Attack(uint8 AttackID)
 	return true;
 }
 
-void AWolfEnemy::LightAttack()
+void AWolfEnemyPawn::LightAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Bye"));
 	const FAttackInfo LightAttackInfo = AttackInfoArray[GetAttackID(EWolfAttack::Light)];
 	
 	TArray<AActor*> OverlappingCombatants = LightAttackHitbox->GetOverlappingCombatants();
@@ -75,10 +73,8 @@ void AWolfEnemy::LightAttack()
 	
 	for (int32 Index = 0; Index < LightAttackHitbox->GetOverlappingCombatants().Num(); Index++)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Hi"));
-		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OverlappingCombatants[Index]))
+		if (APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OverlappingCombatants[Index]))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Hello"));
 			PlayerCharacter->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
 		}
 	}

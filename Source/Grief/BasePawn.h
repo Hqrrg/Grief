@@ -3,25 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PaperCharacter.h"
 #include "Engine/DataTable.h"
 #include "PaperFlipbook.h"
+#include "PlatformPawnMovement.h"
 #include "Enums/Direction.h"
 #include "Interfaces/CombatantInterface.h"
 #include "Structs\AttackInfo.h"
-#include "GriefCharacter.generated.h"
+#include "BasePawn.generated.h"
 
 enum class EDirection : uint8;
-/**
- * 
- */
-UENUM(BlueprintType)
-enum class EPlatformerMovementMode : uint8
-{
-	Grounded = 0,
-	Jumping,
-	Falling
-};
 
 USTRUCT(BlueprintType)
 struct FCharacterFlipbooks : public FTableRowBase
@@ -42,23 +32,37 @@ struct FCharacterFlipbooks : public FTableRowBase
 };
 
 UCLASS()
-class GRIEF_API AGriefCharacter : public APaperCharacter, public ICombatantInterface
+class GRIEF_API ABasePawn : public APawn, public ICombatantInterface
 {
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* CollisionComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* ArrowComponent = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
 	class UPaperFlipbookComponent* FlipbookComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	class UPlatformCharacterMovementComponent* PlatformCharacterMovementComponent = nullptr;
+	class UPlatformPawnMovement* MovementComponent = nullptr;
 	
 public:
-	AGriefCharacter(const FObjectInitializer& ObjectInitializer);
+	ABasePawn();
 
 protected:
 	// Called when the actor is spawned
 	virtual void BeginPlay() override;
+
+public:
+	FORCEINLINE class UBoxComponent* GetCollisionComponent() const { return CollisionComponent; }
+
+	FORCEINLINE class  UPlatformPawnMovement* GetPlatformMovementComponent() const { return MovementComponent; }
+	
+protected:
+	FORCEINLINE class UPaperFlipbookComponent* GetFlipbookComponent() const { return FlipbookComponent; }
 	
 public:
 	UFUNCTION(BlueprintPure)
@@ -66,12 +70,6 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE EDirection GetAttackDirection() const { return AttackDirection; }
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE EPlatformerMovementMode GetPlatformerMovementMode() const { return PlatformerMovementMode; }
-
-	UFUNCTION(BlueprintCallable)
-	void SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode);
 	
 protected:
 	UFUNCTION(BlueprintPure)
@@ -89,6 +87,7 @@ protected:
 	UFUNCTION()
 	void RemoveAttackCooldown(uint8 AttackID);
 
+	UFUNCTION()
 	void UpdateFlipbook();
 
 protected:
@@ -115,8 +114,6 @@ protected:
 	EDirection MovementDirection = EDirection::Right;
 	
 	EDirection AttackDirection;
-	
-	EPlatformerMovementMode PlatformerMovementMode = EPlatformerMovementMode::Grounded;
 
 public:
 	UFUNCTION(BlueprintPure)

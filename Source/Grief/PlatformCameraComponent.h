@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerCharacter.h"
+#include "PlayerPawn.h"
 #include "Components/ActorComponent.h"
 #include "Enums/Direction.h"
 #include "PlatformCameraComponent.generated.h"

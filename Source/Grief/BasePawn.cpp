@@ -1,27 +1,44 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GriefCharacter.h"
+#include "BasePawn.h"
 
-#include "PlatformCharacterMovementComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
+#include "PaperFlipbook.h"
 #include "Enums/Direction.h"
 
-AGriefCharacter::AGriefCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
+ABasePawn::ABasePawn()
 {
-	FlipbookComponent = GetSprite();
-	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	CollisionComponent->SetBoxExtent(FVector(35.0f, 35.0f, 90.0f));
+	CollisionComponent->ShapeColor = FColor::White;
+	CollisionComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	CollisionComponent->CanCharacterStepUpOn = ECB_No;
+	CollisionComponent->SetShouldUpdatePhysicsVolume(true);
+	CollisionComponent->SetCanEverAffectNavigation(false);
+	CollisionComponent->bDynamicObstacle = true;
+	SetRootComponent(CollisionComponent);
 
-	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
-	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
+	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	ArrowComponent->ArrowColor = FColor::Cyan;
+	ArrowComponent->SetupAttachment(CollisionComponent);
+	
+	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
+	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	FlipbookComponent->SetupAttachment(CollisionComponent);
+
+	MovementComponent = CreateDefaultSubobject<UPlatformPawnMovement>("MovementComponent");
+	MovementComponent->SetUpdatedComponent(CollisionComponent);
+	AddOwnedComponent(MovementComponent);
 }
 
-void AGriefCharacter::BeginPlay()
+void ABasePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlatformCharacterMovementComponent = Cast<UPlatformCharacterMovementComponent>(GetMovementComponent());
+	GetPlatformMovementComponent()->MovementModeUpdated.AddDynamic(this, &ABasePawn::UpdateFlipbook);
 	
 	AttackDirection = MovementDirection;
 
@@ -43,13 +60,7 @@ void AGriefCharacter::BeginPlay()
 	}
 }
 
-void AGriefCharacter::SetPlatformerMovementMode(const EPlatformerMovementMode InPlatformerMovementMode)
-{
-	PlatformerMovementMode = InPlatformerMovementMode;
-	UpdateFlipbook();
-}
-
-void AGriefCharacter::UpdateFlipbook()
+void ABasePawn::UpdateFlipbook()
 {
 	if (!Flipbooks) return;
 
@@ -71,16 +82,16 @@ void AGriefCharacter::UpdateFlipbook()
 		break;
 	}
 
-	switch (PlatformerMovementMode)
+	switch (GetPlatformMovementComponent()->GetMovementMode())
 	{
-	case EPlatformerMovementMode::Grounded:
+	case EPlatformMovementMode::Walking:
 		break;
 		
-	case EPlatformerMovementMode::Jumping:
+	case EPlatformMovementMode::Jumping:
 		Flipbook = Flipbooks->Jumping;
 		break;
 		
-	case EPlatformerMovementMode::Falling:
+	case EPlatformMovementMode::Falling:
 		Flipbook = Flipbooks->Falling;
 		break;
 	}
@@ -93,17 +104,17 @@ void AGriefCharacter::UpdateFlipbook()
 	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
 }
 
-float AGriefCharacter::GetMaxHealth()
+float ABasePawn::GetMaxHealth()
 {
 	return MaxHealth;
 }
 
-float AGriefCharacter::GetHealth()
+float ABasePawn::GetHealth()
 {
 	return Health;
 }
 
-bool AGriefCharacter::IsObscured(const AActor* TargetActor)
+bool ABasePawn::IsObscured(const AActor* TargetActor)
 {
 	bool Obscured = false;
 
@@ -129,7 +140,7 @@ bool AGriefCharacter::IsObscured(const AActor* TargetActor)
 	return Obscured;
 }
 
-void AGriefCharacter::Knockback(const FVector OriginLocation, const float KnockbackMultiplier)
+void ABasePawn::Knockback(const FVector OriginLocation, const float KnockbackMultiplier)
 {
 	if (!ShouldKnockback()) return;
 	
@@ -139,25 +150,25 @@ void AGriefCharacter::Knockback(const FVector OriginLocation, const float Knockb
 	
 	const float TotalKnockback = GetKnockbackAmount() * KnockbackMultiplier;
 	
-	PlatformCharacterMovementComponent->Knockback(FinalKnockbackDirection, TotalKnockback);
+	GetPlatformMovementComponent()->Knockback(FinalKnockbackDirection, TotalKnockback);
 }
 
-float AGriefCharacter::GetKnockbackAmount()
+float ABasePawn::GetKnockbackAmount()
 {
 	return KnockbackAmount;
 }
 
-void AGriefCharacter::SetMaxHealth(const float InMaxHealth)
+void ABasePawn::SetMaxHealth(const float InMaxHealth)
 {
 	MaxHealth = InMaxHealth;
 }
 
-void AGriefCharacter::SetHealth(const float InHealth)
+void ABasePawn::SetHealth(const float InHealth)
 {
 	Health = InHealth;
 }
 
-void AGriefCharacter::StopAttacking(uint8 AttackID)
+void ABasePawn::StopAttacking(uint8 AttackID)
 {
 	Attacking = false;
 	UpdateFlipbook();
@@ -181,7 +192,7 @@ void AGriefCharacter::StopAttacking(uint8 AttackID)
 	}
 }
 
-void AGriefCharacter::RemoveAttackCooldown(uint8 AttackID)
+void ABasePawn::RemoveAttackCooldown(uint8 AttackID)
 {
 	if (AttackID < AttackInfoArray.Num())
 	{
@@ -190,7 +201,7 @@ void AGriefCharacter::RemoveAttackCooldown(uint8 AttackID)
 	}
 }
 
-void AGriefCharacter::UpdateDirections(const FVector2D MovementVector)
+void ABasePawn::UpdateDirections(const FVector2D MovementVector)
 {
 	/* Reset Attack Direction */
 	AttackDirection = EDirection::None;

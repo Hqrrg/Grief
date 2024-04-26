@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PlayerCharacter.h"
+#include "PlayerPawn.h"
 
 #include "PlatformCameraComponent.h"
-#include "PlatformCharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -13,28 +12,25 @@
 #include "Enums/Direction.h"
 #include "Interfaces/EnemyInterface.h"
 
-APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlatformCharacterMovementComponent>(CharacterMovementComponentName))
+APlayerPawn::APlayerPawn()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
 	HighAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("HighAttackHitbox"));
-	HighAttackHitbox->SetupAttachment(FlipbookComponent);
+	HighAttackHitbox->SetupAttachment(GetFlipbookComponent());
 
 	MiddleAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("MiddleAttackHitbox"));
-	MiddleAttackHitbox->SetupAttachment(FlipbookComponent);
+	MiddleAttackHitbox->SetupAttachment(GetFlipbookComponent());
 	
 	LowAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("LowAttackHitbox"));
-	LowAttackHitbox->SetupAttachment(FlipbookComponent);
+	LowAttackHitbox->SetupAttachment(GetFlipbookComponent());
 	
 	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
 	AddOwnedComponent(PlatformCameraComponent);
-	
-	JumpMaxCount = 2;
 }
 
-void APlayerCharacter::BeginPlay()
+void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -48,22 +44,22 @@ void APlayerCharacter::BeginPlay()
 	}
 }
 
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		/* Movement */
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerPawn::Move);
 
 		/* Jumping */
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APaperCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerPawn::Jump);
 
 		/* Attacking */
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayerPawn::Attack);
 	}
 }
 
-void APlayerCharacter::Move(const FInputActionValue& Value)
+void APlayerPawn::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -85,7 +81,21 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::Attack(const FInputActionValue& Value)
+void APlayerPawn::Jump(const FInputActionValue& Value)
+{
+	bool JumpKeyPressed = Value.Get<bool>();
+
+	if (JumpKeyPressed)
+	{
+		GetPlatformMovementComponent()->Jump();
+	}
+	else
+	{
+		GetPlatformMovementComponent()->StopJumping();
+	}
+}
+
+void APlayerPawn::Attack(const FInputActionValue& Value)
 {
 	if (Attacking || AttackInfoArray.IsEmpty()) return;
 

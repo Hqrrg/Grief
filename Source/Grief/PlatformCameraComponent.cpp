@@ -4,7 +4,7 @@
 #include "PlatformCameraComponent.h"
 
 #include "CameraBoundingBox.h"
-#include "PlayerCharacter.h"
+#include "PlayerPawn.h"
 #include "Camera/CameraComponent.h"
 
 
@@ -48,7 +48,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	float ZInterpSpeed = 10.0f;
 	
 
-	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+	if (APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(GetOwner()))
 	{
 		EDirection MovementDirection = PlayerCharacter->GetMovementDirection();
 		
@@ -66,15 +66,15 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			break;
 		}
 
-		EPlatformerMovementMode PlatformerMovementMode = PlayerCharacter->GetPlatformerMovementMode();
+		EPlatformMovementMode PlatformerMovementMode = PlayerCharacter->GetPlatformMovementComponent()->GetMovementMode();
 
 		switch (PlatformerMovementMode)
 		{
-		case EPlatformerMovementMode::Jumping:
+		case EPlatformMovementMode::Jumping:
 			ZTargetBias = -1.0f;
 			break;
 			
-		case EPlatformerMovementMode::Falling:
+		case EPlatformMovementMode::Falling:
 			ZTargetBias = 1.0f;
 			break;
 			

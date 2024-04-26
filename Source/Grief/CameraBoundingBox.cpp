@@ -3,7 +3,7 @@
 
 #include "CameraBoundingBox.h"
 
-#include "PlayerCharacter.h"
+#include "PlayerPawn.h"
 #include "PlatformCameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,9 +31,9 @@ void ACameraBoundingBox::BeginPlay()
 
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (const APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OtherActor))
 	{
-		if (OtherComp == PlayerCharacter->GetCapsuleComponent())
+		if (OtherComp == PlayerCharacter->GetCollisionComponent())
 		{
 			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
 			PlatformCameraComponent->AddCameraBoundingBox(this);
@@ -43,9 +43,9 @@ void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (const APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OtherActor))
 	{
-		if (OtherComp == PlayerCharacter->GetCapsuleComponent())
+		if (OtherComp == PlayerCharacter->GetCollisionComponent())
 		{
 			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
 			PlatformCameraComponent->RemoveCameraBoundingBox(this);
