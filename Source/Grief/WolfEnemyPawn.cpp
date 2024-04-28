@@ -5,7 +5,6 @@
 
 #include "AttackHitboxComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "PaperFlipbook.h"
 #include "PlayerPawn.h"
 
 
@@ -29,12 +28,6 @@ void AWolfEnemyPawn::BeginPlay()
 void AWolfEnemyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AWolfEnemyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 bool AWolfEnemyPawn::Attack(uint8 AttackID)

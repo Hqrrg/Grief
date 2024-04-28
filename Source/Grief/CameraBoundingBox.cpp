@@ -13,7 +13,7 @@
 ACameraBoundingBox::ACameraBoundingBox()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	
 	BoundingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoundingBox"));
 	SetRootComponent(BoundingBox);
 	
@@ -31,11 +31,11 @@ void ACameraBoundingBox::BeginPlay()
 
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OtherActor))
+	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(OtherActor))
 	{
-		if (OtherComp == PlayerCharacter->GetCollisionComponent())
+		if (OtherComp == PlayerPawn->GetCollisionComponent())
 		{
-			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
+			UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
 			PlatformCameraComponent->AddCameraBoundingBox(this);
 		}
 	}
@@ -43,11 +43,11 @@ void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OtherActor))
+	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(OtherActor))
 	{
-		if (OtherComp == PlayerCharacter->GetCollisionComponent())
+		if (OtherComp == PlayerPawn->GetCollisionComponent())
 		{
-			UPlatformCameraComponent* PlatformCameraComponent = PlayerCharacter->GetPlatformCameraComponent();
+			UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
 			PlatformCameraComponent->RemoveCameraBoundingBox(this);
 		}
 	}

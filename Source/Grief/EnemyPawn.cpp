@@ -4,6 +4,9 @@
 #include "EnemyPawn.h"
 
 #include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
+#include "PlayerSensingComponent.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -11,6 +14,13 @@ AEnemyPawn::AEnemyPawn()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	PlayerSensing = CreateDefaultSubobject<UPlayerSensingComponent>(TEXT("PlayerSensingComponent"));
+	AddOwnedComponent(PlayerSensing);
+	
+	FlipbookComponent->SetRelativeLocation(FVector(-1.0f, 0.0f, 0.0f));
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	
 	bUseControllerRotationYaw = false;
 }
 

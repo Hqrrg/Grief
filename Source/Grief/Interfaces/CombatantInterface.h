@@ -21,6 +21,8 @@ class GRIEF_API ICombatantInterface
 	GENERATED_BODY()
 
 public:
+	virtual class UBoxComponent* GetCollisionComponent() = 0;
+	
 	virtual float GetMaxHealth();
 	virtual float GetHealth();
 	

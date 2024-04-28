@@ -30,7 +30,7 @@ void UAttackHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedCompone
 	
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(OtherActor))
 	{
-		if (OtherComp->GetClass() != this->GetClass())
+		if (OtherComp == Combatant->GetCollisionComponent())
 		{
 			OverlappingCombatants.AddUnique(OtherActor);
 		}

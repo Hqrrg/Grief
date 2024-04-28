@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "BasePawn.h"
 #include "InputActionValue.h"
+#include "Interfaces/PlatformPlayer.h"
 #include "PlayerPawn.generated.h"
 
 UCLASS()
-class GRIEF_API APlayerPawn : public ABasePawn
+class GRIEF_API APlayerPawn : public ABasePawn, public IPlatformPlayer
 {
 	GENERATED_BODY()
 	

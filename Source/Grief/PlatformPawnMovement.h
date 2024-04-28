@@ -11,7 +11,8 @@ enum class EPlatformMovementMode : uint8
 {
 	Walking = 0,
 	Jumping,
-	Falling
+	Falling,
+	Flying
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMovementModeUpdated);
@@ -41,6 +42,7 @@ public:
 	void StopJumping();
 	void SetFalling();
 	void Knockback(FVector InKnockbackVector, float InKnockbackVelocity);
+	void SetFlying();
 
 public:
 	// Getter (MovementMode)
@@ -59,6 +61,8 @@ public:
 	FORCEINLINE bool IsReceivingKnockback() const { return ReceivingKnockback; }
 
 	bool IsGrounded();
+
+	bool IsFlying() const override;
 
 	FHitResult* FindGround(float InDistance);
 
@@ -99,6 +103,7 @@ private:
 	bool Jumping = false;
 	bool Falling = false;
 	bool ReceivingKnockback = false;
+	bool Flying = false;
 	
 	float CurrentJumpCurveTime = 0.0f;
 	float PreviousJumpCurveValue = 0.0f;

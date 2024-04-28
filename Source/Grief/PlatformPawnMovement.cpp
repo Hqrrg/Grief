@@ -3,6 +3,7 @@
 
 #include "PlatformPawnMovement.h"
 
+#include "BasePawn.h"
 #include "Components/BoxComponent.h"
 
 
@@ -16,7 +17,12 @@ void UPlatformPawnMovement::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	CollisionComponent = Cast<UBoxComponent>(UpdatedComponent);
+	ABasePawn* BasePawn = Cast<ABasePawn>(PawnOwner);
+	
+	if (BasePawn)
+	{
+		CollisionComponent = BasePawn->GetCollisionComponent();
+	}
 }
 
 void UPlatformPawnMovement::BeginPlay()
@@ -43,7 +49,7 @@ void UPlatformPawnMovement::TickComponent(float DeltaTime, ELevelTick TickType, 
 	HandleFalling(DeltaTime);
 	HandleKnockback(DeltaTime);
 	
-	if (!IsGrounded() && !IsJumping() && !IsReceivingKnockback() && !IsFalling()) SetFalling();
+	if (!IsGrounded() && !IsJumping() && !IsReceivingKnockback() && !IsFalling() && !IsFlying()) SetFalling();
 }
 
 void UPlatformPawnMovement::Jump()
@@ -78,7 +84,7 @@ void UPlatformPawnMovement::StopJumping()
 
 void UPlatformPawnMovement::SetFalling()
 {
-	if (FallCurve)
+	if (FallCurve && !IsFlying())
 	{
 		CurrentFallCurveTime = 0.0f;
 		PreviousFallCurveValue = FallCurve->GetFloatValue(CurrentFallCurveTime);
@@ -107,6 +113,14 @@ void UPlatformPawnMovement::Knockback(FVector InKnockbackVector, float InKnockba
 	}
 }
 
+void UPlatformPawnMovement::SetFlying()
+{
+	Jumping = false;
+	Falling = false;
+	Flying = true;
+	SetMovementMode(EPlatformMovementMode::Flying);
+}
+
 void UPlatformPawnMovement::SetMovementMode(const EPlatformMovementMode InMovementMode)
 {
 	MovementMode = InMovementMode;
@@ -122,6 +136,11 @@ bool UPlatformPawnMovement::IsGrounded()
 {
 	FHitResult* Ground = FindGround(2.0f);
 	return Ground ? true : false;
+}
+
+bool UPlatformPawnMovement::IsFlying() const
+{
+	return Flying;
 }
 
 FHitResult* UPlatformPawnMovement::FindGround(float InDistance)
@@ -153,7 +172,7 @@ FHitResult* UPlatformPawnMovement::FindGround(float InDistance)
 bool UPlatformPawnMovement::CanJump()
 {
 	return JumpCurve && (!bConstrainToPlane || FMath::Abs(PlaneConstraintNormal.Z) != 1.0f) &&
-		(!IsFalling() || CurrentJumpCount < MaxJumpsAllowed) && !ReceivingKnockback; 
+		(!IsFalling() || CurrentJumpCount < MaxJumpsAllowed) && !ReceivingKnockback && !IsFlying(); 
 }
 
 void UPlatformPawnMovement::Landed()
@@ -228,6 +247,7 @@ void UPlatformPawnMovement::HandleJumping(float DeltaTime)
 			}
 			
 			PawnOwner->SetActorLocation(TargetLocation, true);
+			PawnOwner->UpdateOverlaps(true);
 		}
 		else
 		{
@@ -263,6 +283,7 @@ void UPlatformPawnMovement::HandleFalling(float DeltaTime)
 		}
 
 		PawnOwner->SetActorLocation(TargetLocation, true);
+		PawnOwner->UpdateOverlaps(true);
 	}
 }
 
@@ -302,23 +323,29 @@ void UPlatformPawnMovement::HandleKnockback(float DeltaTime)
 
 				if (IsBlocking)
 				{
-					FHitResult* Ground = FindGround(2.0f);
-
-					if (Ground)
+					if (!IsFlying())
 					{
-						if (Ground->Distance < ActorLocation.Z-2.0f)
+						FHitResult* Ground = FindGround(2.0f);
+
+						if (Ground)
 						{
-							TargetLocation = FVector(TargetLocation.X, TargetLocation.Y, Ground->Location.Z);
-							Landed();
+							if (Ground->Distance < ActorLocation.Z-2.0f)
+							{
+								TargetLocation = FVector(TargetLocation.X, TargetLocation.Y, Ground->Location.Z);
+								Landed();
+							}
 						}
 					}
 				}
 			}
 
 			PawnOwner->SetActorLocation(TargetLocation, true);
+			PawnOwner->UpdateOverlaps(true);
 		}
 		else
 		{
+			if (IsFlying()) ReceivingKnockback = false;
+			
 			if (IsGrounded()) Landed();
 			else SetFalling();
 		}

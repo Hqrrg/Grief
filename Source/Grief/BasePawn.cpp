@@ -6,7 +6,6 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
-#include "PaperFlipbook.h"
 #include "Enums/Direction.h"
 
 ABasePawn::ABasePawn()
@@ -58,6 +57,11 @@ void ABasePawn::BeginPlay()
 			AttackInfoArray.Add(AttackInfo);
 		}
 	}
+}
+
+UBoxComponent* ABasePawn::GetCollisionComponent()
+{
+	return CollisionComponent;
 }
 
 void ABasePawn::UpdateFlipbook()

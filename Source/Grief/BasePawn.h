@@ -57,7 +57,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	FORCEINLINE class UBoxComponent* GetCollisionComponent() const { return CollisionComponent; }
+	virtual class UBoxComponent* GetCollisionComponent() override;
 
 	FORCEINLINE class  UPlatformPawnMovement* GetPlatformMovementComponent() const { return MovementComponent; }
 	

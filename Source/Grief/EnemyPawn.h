@@ -12,6 +12,9 @@ class GRIEF_API AEnemyPawn : public ABasePawn, public IEnemyInterface
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+	class UPlayerSensingComponent* PlayerSensing = nullptr;
+
 public:
 	// Sets default values for this character's properties
 	AEnemyPawn();
@@ -30,6 +33,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	virtual class UBehaviorTree* GetBehaviourTree() override;
 
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE class AAIPatrolRoute* GetPatrolRoute() const { return PatrolRoute; }
+
 	UFUNCTION(BlueprintCallable)
 	virtual bool Attack(uint8 AttackID) override;
 
@@ -39,4 +45,7 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviourTree = nullptr;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+	class AAIPatrolRoute* PatrolRoute = nullptr;
 };
