@@ -98,11 +98,18 @@ void ABasePawn::UpdateFlipbook()
 	case EPlatformMovementMode::Falling:
 		Flipbook = Flipbooks->Falling;
 		break;
+	case EPlatformMovementMode::Flying:
+		break;
 	}
 
 	if (IsAttacking())
 	{
 		Flipbook = AttackingFlipbook;
+	}
+
+	if (IsDying())
+	{
+		Flipbook = Flipbooks->Dying;
 	}
 
 	if (FlipbookComponent->GetFlipbook() != Flipbook) FlipbookComponent->SetFlipbook(Flipbook);
@@ -157,14 +164,32 @@ void ABasePawn::Knockback(const FVector OriginLocation, const float KnockbackMul
 	GetPlatformMovementComponent()->Knockback(FinalKnockbackDirection, TotalKnockback);
 }
 
+bool ABasePawn::Killed()
+{
+	if (!IsDying())
+	{
+		Dying = true;
+
+		UPaperFlipbook* DyingFlipbook = Flipbooks->Dying;
+		
+		float DyingDuration = 1.0f;
+		if (DyingFlipbook) DyingDuration = DyingFlipbook->GetTotalDuration();
+
+		FTimerHandle DyingTimerHandle;
+		FTimerDelegate DyingTimerDelegate;
+
+		DyingTimerDelegate.BindUFunction(this, FName("Killed"));
+	
+		GetWorldTimerManager().SetTimer(DyingTimerHandle, DyingTimerDelegate, DyingDuration, false, DyingDuration);
+		return false;
+	}
+
+	return true;
+}
+
 float ABasePawn::GetKnockbackAmount()
 {
 	return KnockbackAmount;
-}
-
-void ABasePawn::SetMaxHealth(const float InMaxHealth)
-{
-	MaxHealth = InMaxHealth;
 }
 
 void ABasePawn::SetHealth(const float InHealth)

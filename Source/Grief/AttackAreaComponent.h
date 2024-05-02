@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/BoxComponent.h"
-#include "AttackHitboxComponent.generated.h"
+#include "Components/SphereComponent.h"
+#include "AttackAreaComponent.generated.h"
 
 
 enum class EDirection : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class GRIEF_API UAttackHitboxComponent : public UBoxComponent
+class GRIEF_API UAttackAreaComponent : public USphereComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UAttackHitboxComponent();
+	UAttackAreaComponent();
 
 protected:
 	virtual void BeginPlay() override;;

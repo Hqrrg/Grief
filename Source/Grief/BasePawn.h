@@ -29,6 +29,9 @@ struct FCharacterFlipbooks : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* Walking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbook* Dying;
 };
 
 UCLASS()
@@ -43,7 +46,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UArrowComponent* ArrowComponent = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
 	class UPaperFlipbookComponent* FlipbookComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -78,6 +81,9 @@ protected:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsMoving() const { return Moving; }
 
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsDying() const { return Dying; }
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateDirections(const FVector2D MovementVector);
 	
@@ -106,7 +112,8 @@ protected:
 
 	UPROPERTY()
 	class UPaperFlipbook* AttackingFlipbook = nullptr;
-	
+
+	bool Dying = false;
 	bool Attacking = false;
 	bool Moving = false;
 
@@ -127,23 +134,22 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
+
+	UFUNCTION()
+	virtual bool Killed() override;
 	
-private:
+protected:
 	UFUNCTION(BlueprintPure)
 	virtual float GetKnockbackAmount() override;
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void SetMaxHealth(const float InMaxHealth) override;
-	
-	UFUNCTION(BlueprintCallable)
+
 	virtual void SetHealth(const float InHealth) override;
 	
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float KnockbackAmount = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	float MaxHealth = 100.0f;
+	float MaxHealth = 6.0f;
 	
 	UPROPERTY()
 	float Health = MaxHealth;

@@ -19,9 +19,11 @@ AEnemyPawn::AEnemyPawn()
 	AddOwnedComponent(PlayerSensing);
 	
 	FlipbookComponent->SetRelativeLocation(FVector(-1.0f, 0.0f, 0.0f));
-	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	CollisionComponent->SetCollisionProfileName(FName("Enemy"));
 	
 	bUseControllerRotationYaw = false;
+
+	MaxHealth = 2.0f;
 }
 
 // Called when the game starts or when spawned
@@ -77,8 +79,49 @@ bool AEnemyPawn::Attack(uint8 AttackID)
 	return true;
 }
 
-void AEnemyPawn::Killed()
+ICombatantInterface* AEnemyPawn::GetCombatant()
 {
-	Destroy();
+	return this;
+}
+
+bool AEnemyPawn::DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd)
+{
+	if (!GetWorldTimerManager().IsTimerActive(TimerHandle))
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle, Callback, 0.01f, true);
+		return false;
+	}
+	
+	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
+	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
+
+	if (PlaybackCurrent >= PlaybackMax)
+	{
+		if (GetWorldTimerManager().IsTimerActive(TimerHandle)) GetWorldTimerManager().ClearTimer(TimerHandle);
+		return false;
+	}
+	
+	float Framerate = GetFlipbookComponent()->GetFlipbookFramerate();
+
+	PlaybackBegin = BeginFrame / Framerate;
+	PlaybackEnd = EndFrame / Framerate;
+
+	if (PlaybackCurrent < PlaybackBegin || PlaybackCurrent > PlaybackEnd) return false;
+
+	return true;
+}
+
+bool AEnemyPawn::Killed()
+{
+	bool IsAnimationFinished = Super::Killed();
+
+	if (IsAnimationFinished)
+	{
+		// Add timer to fade out before destroy
+		Destroy();
+		return true;
+	}
+	
+	return false;
 }
 

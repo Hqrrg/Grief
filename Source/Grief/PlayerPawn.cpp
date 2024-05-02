@@ -28,6 +28,8 @@ APlayerPawn::APlayerPawn()
 	
 	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
 	AddOwnedComponent(PlatformCameraComponent);
+
+	MaxHealth = 6.0f;
 }
 
 void APlayerPawn::BeginPlay()
@@ -57,6 +59,18 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		/* Attacking */
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayerPawn::Attack);
 	}
+}
+
+bool APlayerPawn::Killed()
+{
+	bool IsAnimationFinished = Super::Killed();
+
+	if (IsAnimationFinished)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Killed"));
+	}
+	
+	return IsAnimationFinished;
 }
 
 void APlayerPawn::Move(const FInputActionValue& Value)
@@ -140,7 +154,7 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 
 		if (Hitbox)
 		{
-			TArray<AActor*> OverlappingCombatants = Hitbox->GetOverlappingCombatants();
+			TArray<AActor*> OverlappingCombatants = Hitbox->GetContainedActors();
 		
 			if (OverlappingCombatants.Num() > 0)
 			{
@@ -150,7 +164,7 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 					
 					if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(CurrentCombatant))
 					{
-						ICombatantInterface* Combatant = Cast<ICombatantInterface>(CurrentCombatant);
+						ICombatantInterface* Combatant = Enemy->GetCombatant();
 						
 						if (Combatant->IsObscured(this) || !Combatant->IsAlive()) continue;
 						
@@ -171,4 +185,9 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 		
 		GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
 	}
+}
+
+ICombatantInterface* APlayerPawn::GetCombatant()
+{
+	return this;
 }

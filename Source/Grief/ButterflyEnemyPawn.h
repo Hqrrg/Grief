@@ -34,4 +34,7 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float MovementPathRadius = 100.0f;
+
+	float Speed = 3.0f;
+	float Alpha = 0.0f;
 };

@@ -60,15 +60,18 @@ void AWolfEnemyPawn::LightAttack()
 {
 	const FAttackInfo LightAttackInfo = AttackInfoArray[GetAttackID(EWolfAttack::Light)];
 	
-	TArray<AActor*> OverlappingCombatants = LightAttackHitbox->GetOverlappingCombatants();
+	TArray<AActor*> OverlappingPawns = LightAttackHitbox->GetContainedActors();
 
-	if (OverlappingCombatants.IsEmpty()) return;
+	if (OverlappingPawns.IsEmpty()) return;
 	
-	for (int32 Index = 0; Index < LightAttackHitbox->GetOverlappingCombatants().Num(); Index++)
+	for (int32 Index = 0; Index < LightAttackHitbox->GetContainedActors().Num(); Index++)
 	{
-		if (APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(OverlappingCombatants[Index]))
+		if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(OverlappingPawns[Index]))
 		{
-			PlayerCharacter->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
+			ICombatantInterface* Combatant = Player->GetCombatant();
+			
+			Combatant->ApplyDamage(LightAttackInfo.Damage);
+			Combatant->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
 		}
 	}
 }

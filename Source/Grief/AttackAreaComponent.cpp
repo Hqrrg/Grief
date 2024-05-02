@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AttackHitboxComponent.h"
+#include "AttackAreaComponent.h"
 
+#include "Components/BoxComponent.h"
 #include "Interfaces/CombatantInterface.h"
 
 
 // Sets default values for this component's properties
-UAttackHitboxComponent::UAttackHitboxComponent()
+UAttackAreaComponent::UAttackAreaComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	
@@ -15,15 +16,15 @@ UAttackHitboxComponent::UAttackHitboxComponent()
 }
 
 // Called when the game starts
-void UAttackHitboxComponent::BeginPlay()
+void UAttackAreaComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnComponentBeginOverlap.AddDynamic(this, &UAttackHitboxComponent::BeginOverlap);
-	OnComponentEndOverlap.AddDynamic(this, &UAttackHitboxComponent::EndOverlap);
+	OnComponentBeginOverlap.AddDynamic(this, &UAttackAreaComponent::BeginOverlap);
+	OnComponentEndOverlap.AddDynamic(this, &UAttackAreaComponent::EndOverlap);
 }
 
-void UAttackHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void UAttackAreaComponent::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor == GetOwner()) return;
 	
@@ -38,7 +39,7 @@ void UAttackHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 }
 
-void UAttackHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void UAttackAreaComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(OtherActor))
 	{

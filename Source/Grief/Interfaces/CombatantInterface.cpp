@@ -29,8 +29,9 @@ bool ICombatantInterface::ShouldKnockback()
 	return GetKnockbackAmount() > 0.0f;
 }
 
-void ICombatantInterface::Killed()
+bool ICombatantInterface::Killed()
 {
+	return false;
 }
 
 void ICombatantInterface::ApplyDamage(float Damage)

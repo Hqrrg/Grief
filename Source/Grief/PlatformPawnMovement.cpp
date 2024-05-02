@@ -88,8 +88,7 @@ void UPlatformPawnMovement::SetFalling()
 	{
 		CurrentFallCurveTime = 0.0f;
 		PreviousFallCurveValue = FallCurve->GetFloatValue(CurrentFallCurveTime);
-
-		ReceivingKnockback = false;
+		
 		Jumping = false;
 		Falling = true;
 		SetMovementMode(EPlatformMovementMode::Falling);
@@ -102,14 +101,10 @@ void UPlatformPawnMovement::Knockback(FVector InKnockbackVector, float InKnockba
 	{
 		KnockbackVector = InKnockbackVector;
 		KnockbackVelocity = InKnockbackVelocity;
-
-		Falling = false;
-		Jumping = false;
+		
 		ReceivingKnockback = true;
 		CurrentKnockbackCurveTime = MinKnockbackCurveTime;
 		PreviousKnockbackCurveValue = KnockbackCurve->GetFloatValue(CurrentKnockbackCurveTime);
-
-		SetMovementMode(EPlatformMovementMode::Walking);
 	}
 }
 
@@ -172,7 +167,7 @@ FHitResult* UPlatformPawnMovement::FindGround(float InDistance)
 bool UPlatformPawnMovement::CanJump()
 {
 	return JumpCurve && (!bConstrainToPlane || FMath::Abs(PlaneConstraintNormal.Z) != 1.0f) &&
-		(!IsFalling() || CurrentJumpCount < MaxJumpsAllowed) && !ReceivingKnockback && !IsFlying(); 
+		(!IsFalling() || CurrentJumpCount < MaxJumpsAllowed) && !IsFlying(); 
 }
 
 void UPlatformPawnMovement::Landed()
@@ -344,7 +339,7 @@ void UPlatformPawnMovement::HandleKnockback(float DeltaTime)
 		}
 		else
 		{
-			if (IsFlying()) ReceivingKnockback = false;
+			ReceivingKnockback = false;
 			
 			if (IsGrounded()) Landed();
 			else SetFalling();

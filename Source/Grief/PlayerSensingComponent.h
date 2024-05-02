@@ -43,6 +43,8 @@ public:
 
 	FORCEINLINE float GetSearchRadius() const { return SearchRadius; }
 
+	FORCEINLINE bool IsEnabled() const { return Enabled; }
+
 	void BroadcastPlayerSensed(ESensingRange SensingRange);
 
 	void BroadcastPlayerEscaped();
@@ -58,6 +60,9 @@ private:
 	FPlayerEscaped OnPlayerEscaped;
 
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Detection, meta = (AllowPrivateAccess = "true"))
+	bool Enabled = true;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Detection, meta = (ClampMin = "32", AllowPrivateAccess))
 	float DetectionRadius = 1024.0f;
 

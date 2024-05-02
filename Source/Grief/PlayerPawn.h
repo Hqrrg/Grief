@@ -49,6 +49,8 @@ protected:
 
 	// Setup input bindings
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
+	virtual bool Killed() override;
 
 public:
 	void Move(const FInputActionValue& Value);
@@ -56,6 +58,9 @@ public:
 	void Jump(const FInputActionValue& Value);
 	
 	void Attack(const FInputActionValue& Value);
+
+public:
+	virtual ICombatantInterface* GetCombatant() override;
 
 public:
 	UFUNCTION(BlueprintPure)

@@ -22,6 +22,8 @@ void UPlayerSensingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!Enabled) return;
+	
 	PlayerController = GetOwner()->GetWorld()->GetFirstPlayerController();
 	PlayerPawn = Cast<APlayerPawn>(PlayerController->GetPawn());
 	
@@ -37,51 +39,54 @@ void UPlayerSensingComponent::StartTimer(float Interval)
 
 void UPlayerSensingComponent::Update()
 {
-	FVector SensingPawnLocation = GetOwner()->GetActorLocation();
-	FVector PawnLocation = PlayerPawn->GetActorLocation();
-	FVector SensingToPawn = SensingPawnLocation - PawnLocation;
-
-	float DistanceToPawn = SensingToPawn.Length();
-
-	if (DistanceToPawn > GetSearchRadius())
+	if (PlayerPawn)
 	{
-		if (bPlayerSensed)
-		{
-			bPlayerSensed = false;
-			TimerInterval = 0.5f;
-			StartTimer(TimerInterval);
-		}
-		
-		if (bPlayerDetected)
-		{
-			bPlayerDetected = false;
-			BroadcastPlayerEscaped();
-		}
-		return;
-	}
+		FVector SensingPawnLocation = GetOwner()->GetActorLocation();
+		FVector PawnLocation = PlayerPawn->GetActorLocation();
+		FVector SensingToPawn = SensingPawnLocation - PawnLocation;
 
-	if (DistanceToPawn > GetDetectionRadius())
-	{
-		if (!bPlayerSensed)
+		float DistanceToPawn = SensingToPawn.Length();
+
+		if (DistanceToPawn > GetSearchRadius())
 		{
-			bPlayerSensed = true;
-			TimerInterval = 0.1f;
-			StartTimer(TimerInterval);
-			BroadcastPlayerSensed(ESensingRange::Search);
+			if (bPlayerSensed)
+			{
+				bPlayerSensed = false;
+				TimerInterval = 0.5f;
+				StartTimer(TimerInterval);
+			}
+		
+			if (bPlayerDetected)
+			{
+				bPlayerDetected = false;
+				BroadcastPlayerEscaped();
+			}
+			return;
 		}
 
-		if (bPlayerDetected && LastSensingRange == ESensingRange::Detection)
+		if (DistanceToPawn > GetDetectionRadius())
 		{
-			BroadcastPlayerSensed(ESensingRange::Search);
-		}
+			if (!bPlayerSensed)
+			{
+				bPlayerSensed = true;
+				TimerInterval = 0.1f;
+				StartTimer(TimerInterval);
+				BroadcastPlayerSensed(ESensingRange::Search);
+			}
+
+			if (bPlayerDetected && LastSensingRange == ESensingRange::Detection)
+			{
+				BroadcastPlayerSensed(ESensingRange::Search);
+			}
 		
-		return;
+			return;
+		}
+	
+		if (bPlayerDetected) return;
+	
+		bPlayerDetected = true;
+		BroadcastPlayerSensed(ESensingRange::Detection);
 	}
-	
-	if (bPlayerDetected) return;
-	
-	bPlayerDetected = true;
-	BroadcastPlayerSensed(ESensingRange::Detection);
 }
 
 void UPlayerSensingComponent::BroadcastPlayerSensed(ESensingRange SensingRange)

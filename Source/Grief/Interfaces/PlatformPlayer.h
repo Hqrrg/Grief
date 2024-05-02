@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CombatantInterface.h"
 #include "UObject/Interface.h"
 #include "PlatformPlayer.generated.h"
 
@@ -22,4 +23,5 @@ class GRIEF_API IPlatformPlayer
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual ICombatantInterface* GetCombatant() = 0;
 };

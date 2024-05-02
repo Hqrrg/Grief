@@ -71,9 +71,6 @@ void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
 	MovementPath->SetTangentsAtSplinePoint(5, -YTangent, -IntersectionYTangent, ESplineCoordinateSpace::Local);
 }
 
-float Speed = 3.0f;
-float Alpha = 0.0f;
-
 // Called every frame
 void AButterflyEnemyPawn::Tick(float DeltaTime)
 {

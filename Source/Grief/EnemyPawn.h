@@ -39,8 +39,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool Attack(uint8 AttackID) override;
 
-private:
-	virtual void Killed() override;
+	virtual ICombatantInterface* GetCombatant() override;
+
+protected:
+	bool DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float &PlaybackEnd);
+
+protected:
+	virtual bool Killed() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))

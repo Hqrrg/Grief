@@ -10,10 +10,12 @@ void FGriefComponentVisualizer::DrawVisualization(const UActorComponent* Compone
 
 	if (const UPlayerSensingComponent* PlayerSensingComponent = Cast<UPlayerSensingComponent>(Component))
 	{
+		if (!PlayerSensingComponent->IsEnabled()) return;
+		
 		DrawWireSphere(
 			PDI,
 			PlayerSensingComponent->GetOwner()->GetActorLocation(),
-			FColor::Orange,
+			FColor::Purple,
 			PlayerSensingComponent->GetDetectionRadius(),
 			24,
 			0,
@@ -25,7 +27,7 @@ void FGriefComponentVisualizer::DrawVisualization(const UActorComponent* Compone
 			DrawWireSphere(
 		PDI,
 		PlayerSensingComponent->GetOwner()->GetActorLocation(),
-		FColor::Yellow,
+		FColor::Magenta,
 		PlayerSensingComponent->GetSearchRadius(),
 		24,
 		0,

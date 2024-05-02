@@ -28,7 +28,7 @@ public:
 	
 	virtual bool IsObscured(const AActor* TargetActor);
 	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) = 0;
-	virtual void Killed();
+	virtual bool Killed();
 
 	virtual void ApplyDamage(const float Damage) final;
 	virtual bool IsAlive() final;
@@ -36,6 +36,5 @@ public:
 
 private:
 	virtual float GetKnockbackAmount();
-	virtual void SetMaxHealth(const float InMaxHealth) = 0;
 	virtual void SetHealth(const float InHealth) = 0;
 };
