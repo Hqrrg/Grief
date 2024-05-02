@@ -6,6 +6,7 @@
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "PlayerSensingComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
 
 
@@ -15,8 +16,11 @@ AEnemyPawn::AEnemyPawn()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	PlayerSensing = CreateDefaultSubobject<UPlayerSensingComponent>(TEXT("PlayerSensingComponent"));
+	PlayerSensing = CreateDefaultSubobject<UPlayerSensingComponent>(TEXT("PlayerSensing"));
 	AddOwnedComponent(PlayerSensing);
+
+	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
+	AddOwnedComponent(BlackboardComponent);
 	
 	FlipbookComponent->SetRelativeLocation(FVector(-1.0f, 0.0f, 0.0f));
 	CollisionComponent->SetCollisionProfileName(FName("Enemy"));

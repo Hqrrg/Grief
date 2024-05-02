@@ -19,7 +19,8 @@ class GRIEF_API IEnemyInterface
 
 public:
 	virtual class UBehaviorTree* GetBehaviourTree();
+	
 	virtual bool Attack(uint8 AttackID) = 0;
 
-	virtual ICombatantInterface* GetCombatant() = 0;
+	virtual class ICombatantInterface* GetCombatant() = 0;
 };
