@@ -15,9 +15,6 @@ class GRIEF_API AEnemyPawn : public ABasePawn, public IEnemyInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UPlayerSensingComponent* PlayerSensing = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
-	class UBlackboardComponent* BlackboardComponent = nullptr;
-
 public:
 	// Sets default values for this character's properties
 	AEnemyPawn();
