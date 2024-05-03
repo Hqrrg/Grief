@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "SimpleProjectileMovement.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileHit, AActor*, HitActor);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GRIEF_API USimpleProjectileMovement : public UActorComponent
@@ -20,20 +21,38 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 public:
 	UFUNCTION(BlueprintCallable)
-	void UpdateDestination(FVector InDestination);
+	void SetMovementVector(FVector InMovementVector);
+
+	UPROPERTY(BlueprintAssignable)
+	FProjectileHit OnProjectileHit;
+
+private:
+	void HandleMovement(float DeltaTime);
+	bool CheckCollided(FHitResult& HitResult, FVector TraceEnd);
+	void HandleProjectileHit(AActor* HitActor);
+	void ResetMovement();
 	
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))
+	float Speed = 2400.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* MovementCurve = nullptr;
 	
 private:
-	FVector Destination = FVector::ZeroVector;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))
-	float Speed = 100.0f;
-
 	UPROPERTY()
 	USceneComponent* UpdatedComponent = nullptr;
+
+	UPROPERTY()
+	UShapeComponent* CollisionComponent = nullptr;
+	
+	FVector MovementVector = FVector::ZeroVector;
+
+	FHitResult CollisionHitResult;
+
+	bool ShouldMove = true;
 };

@@ -3,13 +3,14 @@
 
 #include "SimpleProjectileMovement.h"
 
+#include "Components/ShapeComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values for this component's properties
 USimpleProjectileMovement::USimpleProjectileMovement()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 
@@ -17,31 +18,86 @@ USimpleProjectileMovement::USimpleProjectileMovement()
 void USimpleProjectileMovement::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	UpdatedComponent = GetOwner()->GetRootComponent();
+	CollisionComponent = Cast<UShapeComponent>(UpdatedComponent);
+
+	if (!CollisionComponent) UninitializeComponent();
 }
 
-void USimpleProjectileMovement::UpdateDestination(FVector InDestination)
+void USimpleProjectileMovement::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Destination = InDestination;
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
-	FVector Distance = CurrentLocation - Destination;
+	HandleMovement(DeltaTime);
+}
 
-	FVector MovementVector = (Destination - CurrentLocation).GetSafeNormal();
-	FVector OvershootDestination = CurrentLocation + MovementVector * FVector(0.0f, Distance.Y, Distance.Z).Length() * 2.0f;
-	FVector OvershootDistance = CurrentLocation - OvershootDestination;
-	float EstimatedDuration = FVector(0.0f, OvershootDistance.Y, OvershootDistance.Z).Length() / Speed;
+void USimpleProjectileMovement::HandleMovement(float DeltaTime)
+{
+	if (!ShouldMove) return;
+	if (MovementVector == FVector::ZeroVector) return;
+
+	// Manipulate Movement Vector
+	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
+	FVector TargetLocation = CurrentLocation + MovementVector * Speed * DeltaTime;
+	FRotator TargetRotation = FRotationMatrix::MakeFromX(TargetLocation - CurrentLocation).Rotator();
+	
+	if (CheckCollided(CollisionHitResult, TargetLocation))
+	{
+		TargetLocation = CollisionHitResult.Location;
+		HandleProjectileHit(CollisionHitResult.GetActor());
+	};
 	
 	FLatentActionInfo LatentInfo; LatentInfo.CallbackTarget = this;
-	
+
 	UKismetSystemLibrary::MoveComponentTo(
 		UpdatedComponent,
-		OvershootDestination,
-		UpdatedComponent->GetRelativeRotation(),
+		TargetLocation,
+		TargetRotation,
 		false, false,
-		EstimatedDuration,
+		DeltaTime,
 		false,
 		EMoveComponentAction::Move,
 		LatentInfo);
+}
+
+bool USimpleProjectileMovement::CheckCollided(FHitResult& HitResult, FVector TraceEnd)
+{
+	FCollisionQueryParams QueryParams; QueryParams.AddIgnoredActor(GetOwner());
+	FCollisionShape CollisionShape = CollisionComponent->GetCollisionShape();
+	FName ProfileName = CollisionComponent->GetCollisionProfileName();
+
+	FVector TraceStart = CollisionComponent->GetComponentLocation();
+	FQuat Quaternion = CollisionComponent->GetComponentQuat();
+	
+	bool IsBlocked = GetWorld()->SweepSingleByProfile(
+		HitResult,
+		TraceStart,
+		TraceEnd,
+		Quaternion,
+		ProfileName,
+		CollisionShape,
+		QueryParams);
+
+	if (IsBlocked) return true;
+	
+	return false;
+}
+
+void USimpleProjectileMovement::HandleProjectileHit(AActor* HitActor)
+{
+	OnProjectileHit.Broadcast(HitActor);
+	ShouldMove = false;
+}
+
+void USimpleProjectileMovement::SetMovementVector(FVector InMovementVector)
+{
+	float X = FMath::Clamp(InMovementVector.X, -1.0f, 1.0f);
+	float Y = FMath::Clamp(InMovementVector.Y, -1.0f, 1.0f);
+	float Z = FMath::Clamp(InMovementVector.Z, -1.0f, 1.0f);
+
+	MovementVector = FVector(X, Y, Z);
+
+	ShouldMove = true;
 }
 

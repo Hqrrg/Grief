@@ -6,6 +6,8 @@
 #include "AttackHitboxComponent.h"
 #include "CollisionDebugDrawingPublic.h"
 #include "PaperFlipbookComponent.h"
+#include "ProjectileManager.h"
+#include "SimpleProjectile.h"
 #include "Components/BoxComponent.h"
 #include "Interfaces/PlatformPlayer.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,6 +65,8 @@ bool ADenialBossPawn::Attack(uint8 AttackID)
 
 void ADenialBossPawn::Attack_LaserBarrage()
 {
+	if (!LaserProjectileManager) return;
+	
 	float PlaybackBegin, PlaybackEnd;
 
 	FAttackInfo LaserBarrageAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::LaserBarrage)];
@@ -100,7 +104,7 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	{
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 		
-		HyperbeamOrigin = FlipbookComponent->GetSocketLocation(FName("HyperbeamSocket"));
+		HyperbeamOrigin = FlipbookComponent->GetSocketLocation(HyperbeamOriginSocketName);
 		HyperbeamTarget = PlayerPawn->GetActorLocation();
 		HyperbeamStart = FMath::Abs(((HyperbeamOrigin + HyperbeamTarget) / 2).Length()) >= 500.0f
 			? (HyperbeamOrigin + HyperbeamTarget) / 2
@@ -180,12 +184,17 @@ void ADenialBossPawn::Attack_Slam()
 
 void ADenialBossPawn::FireLaser()
 {
+	FAttackInfo LaserBarrageAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::LaserBarrage)];
+	
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	
-	FVector LaserOrigin = FlipbookComponent->GetSocketLocation(FName("LaserSocket"));
+	FVector LaserOrigin = FlipbookComponent->GetSocketLocation(LaserOriginSocketName);
 	FVector LaserTarget = PlayerPawn->GetActorLocation();
 
-	
+	ASimpleProjectile* Laser = LaserProjectileManager->GetProjectile();
+	Laser->SetAttackValues(LaserBarrageAttackInfo.Damage, LaserBarrageAttackInfo.KnockbackMultiplier);
+	Laser->SetActorLocation(LaserOrigin);
+	Laser->FireAt(LaserTarget);
 }
 
 bool ADenialBossPawn::Killed()

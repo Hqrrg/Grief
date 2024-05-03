@@ -37,6 +37,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE uint8 GetAttackID(EDenialBossAttack InDenialBossAttack) const { return static_cast<uint8>(InDenialBossAttack); }
 
+
+private:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Combat|Projectiles", meta = (AllowPrivateAccess = "true"))
+	class AProjectileManager* LaserProjectileManager = nullptr;
+	
 private:
 	UFUNCTION()
 	void Attack_LaserBarrage();
@@ -56,6 +61,12 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float LaserBarrageFireRate = 0.01f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Laser Origin", meta = (AllowPrivateAccess = "true"))
+	FName LaserOriginSocketName = FName("LaserOrigin");
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Hyperbeam Origin", meta = (AllowPrivateAccess = "true"))
+	FName HyperbeamOriginSocketName = FName("HyperbeamOrigin");
 	
 private:
 	FTimerHandle LaserBarrageTimerHandle;

@@ -11,6 +11,7 @@
 #include "Interfaces/PlatformPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "ProjectileManager.h"
 
 
 // Sets default values
@@ -99,6 +100,8 @@ bool AAngerBossPawn::Attack(uint8 AttackID)
 
 void AAngerBossPawn::Attack_Fireball()
 {
+	if (!FireballProjectileManager) return;
+	
 	float PlaybackBegin, PlaybackEnd;
 
 	FAttackInfo FireballAttackInfo = AttackInfoArray[GetAttackID(EAngerBossAttack::Fireball)];
@@ -115,9 +118,15 @@ void AAngerBossPawn::Attack_Fireball()
 	if (CanFireball)
 	{
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+		FVector OriginLocation = GetFlipbookComponent()->GetSocketLocation(FireballOriginSocketName);
 		FVector TargetLocation = PlayerPawn->GetActorLocation();
+
+		ASimpleProjectile* Fireball = FireballProjectileManager->GetProjectile();
+		Fireball->SetAttackValues(FireballAttackInfo.Damage, FireballAttackInfo.KnockbackMultiplier);
+		Fireball->SetActorLocation(OriginLocation);
+		Fireball->FireAt(TargetLocation);
 		
-		// Launch Fireball Projectile @ TargetLocation
 		CanFireball = false;
 	}
 	
