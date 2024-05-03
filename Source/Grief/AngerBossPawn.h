@@ -56,11 +56,18 @@ public:
 	FORCEINLINE uint8 GetAttackID(EAngerBossAttack InAngerBossAttack) const { return static_cast<uint8>(InAngerBossAttack); }
 
 private:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Combat|Projectiles", meta = (AllowPrivateAccess = "true"))
+	class AProjectileManager* FireballProjectileManager = nullptr;
+	
+private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Beam", meta = (AllowPrivateAccess = "true"))
 	float BeamRailRadius = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Beam", meta = (AllowPrivateAccess = "true"))
 	int32 BeamCount = 4;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Fireball Origin", meta = (AllowPrivateAccess = "true"))
+	FName FireballOriginSocketName = FName("FireballOrigin");
 	
 private:
 	FTimerHandle FireballAttackTimerHandle;
