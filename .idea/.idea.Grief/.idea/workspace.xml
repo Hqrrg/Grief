@@ -9,9 +9,28 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Wolf/BP_Butterfly.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Wolf/BP_Butterfly.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Anger/BP_Anger.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Anger/DT_AngerAttackInfo.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Anger.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Denial.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Fireball.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/DT_DenialAttackInfo.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/FB_DenialAttack.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_0.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_Wolf.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_Wolf.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BTT_Chase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BTT_Chase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Wolf/BP_Wolf.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

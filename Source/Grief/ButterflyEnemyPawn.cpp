@@ -13,18 +13,19 @@ AButterflyEnemyPawn::AButterflyEnemyPawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	PathCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("PathCollisionComponent"));
-	PathCollisionComponent->ShapeColor = FColor::Green;
-	SetRootComponent(PathCollisionComponent);
+	PathCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("PathCollision"));
+	PathCollision->SetCollisionProfileName(FName("Enemy"));
+	PathCollision->ShapeColor = FColor::Green;
+	SetRootComponent(PathCollision);
 	
 	MovementPath = CreateDefaultSubobject<USplineComponent>(TEXT("MovementPath"));
 	MovementPath->SetClosedLoop(true);
-	MovementPath->SetupAttachment(PathCollisionComponent);
-
+	MovementPath->SetupAttachment(PathCollision);
+	
 	CollisionComponent->SetBoxExtent(FVector(35.0f, 35.0f, 35.0f));
 	CollisionComponent->SetupAttachment(MovementPath);
 
-	GetPlatformMovementComponent()->SetUpdatedComponent(PathCollisionComponent);
+	GetPlatformMovementComponent()->SetUpdatedComponent(PathCollision);
 	GetPlatformMovementComponent()->SetFlying();
 }
 
@@ -32,43 +33,63 @@ AButterflyEnemyPawn::AButterflyEnemyPawn()
 void AButterflyEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	const FVector Offset = FVector(0.0f, MovementPathRadius * 1.5, 0.0f);
-	
-	PathCollisionComponent->SetBoxExtent(FVector(35.0f, MovementPathRadius, MovementPathRadius) + Offset + FVector(0.0f, 50.0f, 50.0f));
-	
 	MovementPath->ClearSplinePoints();
-
+	
 	const FVector PointLocationZ = FVector(0.0f, 0.0f, MovementPathRadius);
 	const FVector PointLocationY = FVector(0.0f, MovementPathRadius, 0.0f);
 	
-	MovementPath->AddSplineLocalPoint(-PointLocationZ - Offset);
-	MovementPath->AddSplineLocalPoint(-PointLocationY - Offset);
-	MovementPath->AddSplineLocalPoint(PointLocationZ - Offset);
-	MovementPath->AddSplineLocalPoint(-PointLocationZ + Offset);
-	MovementPath->AddSplineLocalPoint(PointLocationY + Offset);
-	MovementPath->AddSplineLocalPoint(PointLocationZ + Offset);
-
 	float TangentFactor = 4 * (sqrt(2) - 1) / 3 + 1;
-
-	FVector ZTangent = FVector(0.0f, 0.0f, MovementPathRadius * TangentFactor);
-	FVector YTangent = FVector(0.0f, MovementPathRadius * TangentFactor, 0.0f);
-
-	FVector IntersectionYTangent = FVector(0.0f, MovementPathRadius * (TangentFactor*2), 0.0f);
-
-	MovementPath->SetTangentAtSplinePoint(1, ZTangent, ESplineCoordinateSpace::Local);
-	MovementPath->SetTangentAtSplinePoint(4, ZTangent, ESplineCoordinateSpace::Local);
 	
-	MovementPath->SetTangentsAtSplinePoint(0, -IntersectionYTangent, -YTangent, ESplineCoordinateSpace::Local);
-	MovementPath->SetTangentsAtSplinePoint(2, YTangent, IntersectionYTangent, ESplineCoordinateSpace::Local);
-	MovementPath->SetTangentsAtSplinePoint(3, IntersectionYTangent, YTangent, ESplineCoordinateSpace::Local);
-	MovementPath->SetTangentsAtSplinePoint(5, -YTangent, -IntersectionYTangent, ESplineCoordinateSpace::Local);
+	FVector YTangent = FVector(0.0f, MovementPathRadius * TangentFactor, 0.0f);
+	FVector ZTangent = FVector(0.0f, 0.0f, MovementPathRadius * TangentFactor);
+	
+	switch (ButterflyPathType)
+	{
+	case EButterflyPathType::Circle:
+
+		PathCollision->SetBoxExtent(FVector(CollisionComponent->GetScaledBoxExtent().X, MovementPathRadius, MovementPathRadius));
+		
+		MovementPath->AddSplineLocalPoint(PointLocationY);
+		MovementPath->AddSplineLocalPoint(PointLocationZ);
+		MovementPath->AddSplineLocalPoint(-PointLocationY);
+		MovementPath->AddSplineLocalPoint(-PointLocationZ);
+
+		MovementPath->SetTangentAtSplinePoint(0, ZTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentAtSplinePoint(1, -YTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentAtSplinePoint(2, -ZTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentAtSplinePoint(3, YTangent, ESplineCoordinateSpace::Local);
+		break;
+		
+	case EButterflyPathType::Figure8:
+		
+		const FVector Offset = FVector(0.0f, MovementPathRadius * 1.5, 0.0f);
+		
+		PathCollision->SetBoxExtent(FVector(CollisionComponent->GetScaledBoxExtent().X, MovementPathRadius + Offset.Y, MovementPathRadius));
+		
+		MovementPath->AddSplineLocalPoint(-PointLocationZ - Offset);
+		MovementPath->AddSplineLocalPoint(-PointLocationY - Offset);
+		MovementPath->AddSplineLocalPoint(PointLocationZ - Offset);
+		MovementPath->AddSplineLocalPoint(-PointLocationZ + Offset);
+		MovementPath->AddSplineLocalPoint(PointLocationY + Offset);
+		MovementPath->AddSplineLocalPoint(PointLocationZ + Offset);
+
+		FVector IntersectionYTangent = FVector(0.0f, MovementPathRadius * (TangentFactor*2), 0.0f);
+
+		MovementPath->SetTangentAtSplinePoint(1, ZTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentAtSplinePoint(4, ZTangent, ESplineCoordinateSpace::Local);
+	
+		MovementPath->SetTangentsAtSplinePoint(0, -IntersectionYTangent, -YTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentsAtSplinePoint(2, YTangent, IntersectionYTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentsAtSplinePoint(3, IntersectionYTangent, YTangent, ESplineCoordinateSpace::Local);
+		MovementPath->SetTangentsAtSplinePoint(5, -YTangent, -IntersectionYTangent, ESplineCoordinateSpace::Local);
+		break;
+	}
 }
 
 // Called every frame
@@ -83,8 +104,6 @@ void AButterflyEnemyPawn::Tick(float DeltaTime)
 	float DistanceAlongSpline = FMath::Lerp(0, MovementPath->GetSplineLength(), Alpha);
 	FVector TargetLocation = MovementPath->GetLocationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
 
-	FHitResult* SweepResult = new FHitResult();
-
 	GetCollisionComponent()->SetWorldLocation(TargetLocation);
-	GetCollisionComponent()->UpdateOverlaps(nullptr, true, nullptr);
+	GetCollisionComponent()->UpdateOverlaps(nullptr, true);
 }
