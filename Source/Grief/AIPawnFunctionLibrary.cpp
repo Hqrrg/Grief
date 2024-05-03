@@ -76,12 +76,12 @@ void FAIPawnMoveToLocation::UpdateOperation(FLatentResponse& Response)
 		Pawn->AddMovementInput(PitchDirection, 1.0f);
 	}
 
-	if (Pawn->GetVelocity().Length() == 0)
+	/*if (Pawn->GetVelocity().Length() == 0)
 	{
 		Output = EAIPawnMoveToLocationOutput::Failure;
 		Response.FinishAndTriggerIf(true, LatentActionInfo.ExecutionFunction, LatentActionInfo.Linkage, LatentActionInfo.CallbackTarget);
 		return;
-	}
+	}*/
 	
 	Output = EAIPawnMoveToLocationOutput::Out;
 	Response.TriggerLink(LatentActionInfo.ExecutionFunction, LatentActionInfo.Linkage, LatentActionInfo.CallbackTarget);
