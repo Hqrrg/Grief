@@ -9,8 +9,7 @@
 UENUM(BlueprintType)
 enum class EWolfAttack : uint8
 {
-	Light = 0,
-	Heavy = 1
+	Light
 };
 
 UCLASS()

@@ -26,7 +26,7 @@ bool ICombatantInterface::IsObscured(const AActor* TargetActor)
 
 bool ICombatantInterface::ShouldKnockback()
 {
-	return GetKnockbackAmount() > 0.0f;
+	return GetKnockbackAmount() > 0.0f && !IsInvincible();
 }
 
 bool ICombatantInterface::Killed()
@@ -34,9 +34,14 @@ bool ICombatantInterface::Killed()
 	return false;
 }
 
+bool ICombatantInterface::IsInvincible()
+{
+	return false;
+}
+
 void ICombatantInterface::ApplyDamage(float Damage)
 {
-	if (!IsAlive()) return;
+	if (!IsAlive() || IsInvincible()) return;
 	
 	const float Health = GetHealth();
 	const float MaxHealth = GetMaxHealth();

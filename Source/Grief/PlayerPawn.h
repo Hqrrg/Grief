@@ -62,7 +62,19 @@ public:
 public:
 	virtual ICombatantInterface* GetCombatant() override;
 
+	virtual bool IsInvincible() override;
+
+	virtual void ApplyDamage(const float Damage) override;
+
 public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UPlatformCameraComponent* GetPlatformCameraComponent() const { return PlatformCameraComponent; }
+
+private:
+	UFUNCTION()
+	void RemoveInvincibility();
+
+private:
+	bool Invincible = false;
+	float InvincibilityDuration = 1.0f;
 };

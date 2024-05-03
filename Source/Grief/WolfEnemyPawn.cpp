@@ -37,16 +37,11 @@ bool AWolfEnemyPawn::Attack(uint8 AttackID)
 	if (!ShouldAttack) return false;
 	
 	constexpr uint8 LightAttackID = static_cast<uint8>(EWolfAttack::Light);
-	constexpr uint8 HeavyAttackID = static_cast<uint8>(EWolfAttack::Heavy);
 	
 	switch (AttackID)
 	{
 		case LightAttackID:
 			LightAttack();
-			break;
-		
-		case HeavyAttackID:
-			//HeavyAttack();
 			break;
 		
 		default:

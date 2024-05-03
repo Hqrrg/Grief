@@ -170,7 +170,10 @@ bool ABasePawn::Killed()
 	{
 		Dying = true;
 
-		UPaperFlipbook* DyingFlipbook = Flipbooks->Dying;
+		
+		UPaperFlipbook* DyingFlipbook = nullptr;
+
+		if (Flipbooks) DyingFlipbook = Flipbooks->Dying;
 		
 		float DyingDuration = 1.0f;
 		if (DyingFlipbook) DyingDuration = DyingFlipbook->GetTotalDuration();

@@ -191,3 +191,26 @@ ICombatantInterface* APlayerPawn::GetCombatant()
 {
 	return this;
 }
+
+bool APlayerPawn::IsInvincible()
+{
+	return Invincible;
+}
+
+void APlayerPawn::ApplyDamage(const float Damage)
+{
+	Super::ApplyDamage(Damage);
+
+	if (!IsInvincible())
+	{
+		Invincible = true;
+
+		FTimerHandle InvincibilityTimerHandle;
+		GetWorldTimerManager().SetTimer(InvincibilityTimerHandle, this, &APlayerPawn::RemoveInvincibility, InvincibilityDuration, false, InvincibilityDuration);
+	}
+}
+
+void APlayerPawn::RemoveInvincibility()
+{
+	Invincible = false;
+}

@@ -30,7 +30,9 @@ public:
 	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) = 0;
 	virtual bool Killed();
 
-	virtual void ApplyDamage(const float Damage) final;
+	virtual bool IsInvincible();
+	virtual void ApplyDamage(const float Damage);
+	
 	virtual bool IsAlive() final;
 	virtual bool ShouldKnockback() final;
 

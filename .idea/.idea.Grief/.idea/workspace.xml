@@ -9,28 +9,19 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Anger/BP_Anger.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Anger/DT_AngerAttackInfo.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Anger.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Denial.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/BP_Fireball.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/DT_DenialAttackInfo.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/FB_DenialAttack.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_0.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_1.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_2.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_3.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_4.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_5.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Denial/Flipbooks/Sprites/T_DenialSpritesheet_Sprite_6.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_Wolf.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_Wolf.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/BP_Butterfly.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/BP_Butterfly.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/DT_WolfAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/DT_WolfAttackInfo.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BTT_Chase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BTT_Chase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Wolf/BP_Wolf.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/Interfaces/CombatantInterface.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/Interfaces/CombatantInterface.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/Interfaces/CombatantInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/Interfaces/CombatantInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/PlayerPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlayerPawn.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,6 +189,7 @@
       <updated>1714695343361</updated>
       <workItem from="1714695344889" duration="3785000" />
       <workItem from="1714726963288" duration="685000" />
+      <workItem from="1714764613491" duration="4127000" />
     </task>
     <servers />
   </component>
