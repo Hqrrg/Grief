@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AngerBossPawn.h"
 #include "BossPawn.h"
 #include "DenialBossPawn.generated.h"
 
@@ -31,7 +32,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual bool Attack(uint8 AttackID) override;
+	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
 
 public:
 	UFUNCTION(BlueprintPure)
@@ -67,6 +68,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Hyperbeam Origin", meta = (AllowPrivateAccess = "true"))
 	FName HyperbeamOriginSocketName = FName("HyperbeamOrigin");
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AAngerBossPawn> AngerBossClass;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class AMovementBoundingBox* AngerMovementBoundingBox = nullptr;
 	
 private:
 	FTimerHandle LaserBarrageTimerHandle;

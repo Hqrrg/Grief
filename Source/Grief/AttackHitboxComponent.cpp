@@ -29,12 +29,8 @@ void UAttackHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedCompone
 	
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(OtherActor))
 	{
-		FName HitboxCollisionName = Combatant->GetCollisionComponent()->GetCollisionProfileName();
-		
-		if (OtherComp->GetCollisionProfileName() == HitboxCollisionName)
-		{
-			ContainedActors.AddUnique(OtherActor);
-		}
+		if (OtherComp != Combatant->GetCollisionComponent()) return;
+		ContainedActors.AddUnique(OtherActor);
 	}
 }
 
@@ -42,12 +38,8 @@ void UAttackHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(OtherActor))
 	{
-		FName HitboxCollisionName = Combatant->GetCollisionComponent()->GetCollisionProfileName();
-		
-		if (OtherComp->GetCollisionProfileName() == HitboxCollisionName)
-		{
-			ContainedActors.Remove(OtherActor);
-		}
+		if (OtherComp != Combatant->GetCollisionComponent()) return;
+		ContainedActors.Remove(OtherActor);
 	}
 }
 

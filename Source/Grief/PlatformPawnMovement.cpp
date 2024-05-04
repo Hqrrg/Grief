@@ -320,16 +320,17 @@ void UPlatformPawnMovement::HandleKnockback(float DeltaTime)
 				{
 					if (!IsFlying())
 					{
-						FHitResult* Ground = FindGround(2.0f);
+						TargetLocation = ActorLocation;
+					}
+				}
+				
+				FHitResult* Ground = FindGround(2.0f);
 
-						if (Ground)
-						{
-							if (Ground->Distance < ActorLocation.Z-2.0f)
-							{
-								TargetLocation = FVector(TargetLocation.X, TargetLocation.Y, Ground->Location.Z);
-								Landed();
-							}
-						}
+				if (Ground)
+				{
+					if (Ground->Distance < ActorLocation.Z-2.0f)
+					{
+						TargetLocation = ActorLocation + FVector(KnockbackVector.X, KnockbackVector.Y, 0.0f) * (CurrentKnockbackCurveValueDelta * KnockbackVelocity);
 					}
 				}
 			}

@@ -37,6 +37,8 @@ void ABasePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetHealth(MaxHealth);
+
 	GetPlatformMovementComponent()->MovementModeUpdated.AddDynamic(this, &ABasePawn::UpdateFlipbook);
 	
 	AttackDirection = MovementDirection;
@@ -157,11 +159,16 @@ void ABasePawn::Knockback(const FVector OriginLocation, const float KnockbackMul
 	
 	const FVector ActorLocation = GetActorLocation();
 	FVector KnockbackDirection = (ActorLocation - OriginLocation).GetSafeNormal();
-	FVector FinalKnockbackDirection = FVector(0.0f, KnockbackDirection.Y < 0.0f ? -1.0f : 1.0f, 0.0f);
-	
+	FVector FinalKnockbackDirection = FVector(0.0f, KnockbackDirection.Y < 0.0f ? -1.0f : 1.0f, KnockbackDirection.Z < 0.0f ? -1.0f : 1.0f);
 	const float TotalKnockback = GetKnockbackAmount() * KnockbackMultiplier;
 	
 	GetPlatformMovementComponent()->Knockback(FinalKnockbackDirection, TotalKnockback);
+}
+
+void ABasePawn::ApplyDamage(const float Damage)
+{
+	ICombatantInterface::ApplyDamage(Damage);
+	UpdateFlipbook();
 }
 
 bool ABasePawn::Killed()
@@ -169,7 +176,6 @@ bool ABasePawn::Killed()
 	if (!IsDying())
 	{
 		Dying = true;
-
 		
 		UPaperFlipbook* DyingFlipbook = nullptr;
 
@@ -231,6 +237,11 @@ void ABasePawn::RemoveAttackCooldown(uint8 AttackID)
 		FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
 		AttackInfo->IsCooldown = false;
 	}
+}
+
+bool ABasePawn::IsAttackCoolingDown(uint8 AttackID)
+{
+	return AttackInfoArray[AttackID].IsCooldown;
 }
 
 void ABasePawn::UpdateDirections(const FVector2D MovementVector)

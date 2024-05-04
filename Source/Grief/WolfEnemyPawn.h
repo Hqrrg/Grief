@@ -33,7 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	virtual bool Attack(uint8 AttackID) override;
+	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
 
 private:
 	UFUNCTION(BlueprintPure)

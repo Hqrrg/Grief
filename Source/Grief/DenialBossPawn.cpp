@@ -3,12 +3,12 @@
 
 #include "DenialBossPawn.h"
 
+#include "AngerBossPawn.h"
 #include "AttackHitboxComponent.h"
 #include "CollisionDebugDrawingPublic.h"
 #include "PaperFlipbookComponent.h"
 #include "ProjectileManager.h"
 #include "SimpleProjectile.h"
-#include "Components/BoxComponent.h"
 #include "Interfaces/PlatformPlayer.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -32,9 +32,9 @@ void ADenialBossPawn::BeginPlay()
 	SlamTimerDelegate.BindUFunction(this, FName("Attack_Slam"));
 }
 
-bool ADenialBossPawn::Attack(uint8 AttackID)
+bool ADenialBossPawn::Attack(uint8 AttackID, bool StopMovement)
 {
-	const bool ShouldAttack = Super::Attack(AttackID);
+	const bool ShouldAttack = Super::Attack(AttackID, StopMovement);
 
 	if (!ShouldAttack) return false;
 
@@ -66,6 +66,14 @@ bool ADenialBossPawn::Attack(uint8 AttackID)
 void ADenialBossPawn::Attack_LaserBarrage()
 {
 	if (!LaserProjectileManager) return;
+
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	FVector PlayerLocation = PlayerPawn->GetActorLocation();
+	FVector ActorLocation = GetActorLocation();
+	FVector Direction = (PlayerLocation - ActorLocation).GetSafeNormal();
+	FVector2D MovementVector = FVector2D(Direction.Y, 0.0f);
+	UpdateDirections(MovementVector);
+	UpdateFlipbook();
 	
 	float PlaybackBegin, PlaybackEnd;
 
@@ -97,21 +105,21 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
 
 	if (PlaybackCurrent >= PlaybackMax) HyperbeamFiring = false;
-
-	if (!DoAttack(HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo.BeginFrame, HyperbeamAttackInfo.EndFrame,PlaybackBegin, PlaybackEnd)) return;
 	
 	if (!HyperbeamFiring)
 	{
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-		
 		HyperbeamOrigin = FlipbookComponent->GetSocketLocation(HyperbeamOriginSocketName);
 		HyperbeamTarget = PlayerPawn->GetActorLocation();
 		HyperbeamStart = FMath::Abs(((HyperbeamOrigin + HyperbeamTarget) / 2).Length()) >= 500.0f
 			? (HyperbeamOrigin + HyperbeamTarget) / 2
 			: GetActorLocation() + (HyperbeamTarget - HyperbeamOrigin).GetSafeNormal() * 500.0f;
-		HyperbeamFiring = true;
 	}
 
+	if (!DoAttack(HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo.BeginFrame, HyperbeamAttackInfo.EndFrame,PlaybackBegin, PlaybackEnd)) return;
+
+	if (!HyperbeamFiring) HyperbeamFiring = true;
+	
 	float Alpha = FMath::GetMappedRangeValueClamped(FVector2D(PlaybackBegin, PlaybackEnd), FVector2D(0.0f, 1.0f), PlaybackCurrent);
 	float TargetLocY = FMath::Lerp(HyperbeamStart.Y, HyperbeamTarget.Y, Alpha);
 	float TargetLocZ = FMath::Lerp(0.0f, 300.0f, Alpha);
@@ -144,9 +152,9 @@ void ADenialBossPawn::Attack_Hyperbeam()
 		if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(SweepResult->GetActor()))
 		{
 			ICombatantInterface* Combatant = Player->GetCombatant();
-			
-			Combatant->ApplyDamage(HyperbeamAttackInfo.Damage);
+
 			Combatant->Knockback(SweepResult->ImpactPoint, HyperbeamAttackInfo.KnockbackMultiplier);
+			Combatant->ApplyDamage(HyperbeamAttackInfo.Damage);
 		}
 	}
 }
@@ -173,9 +181,9 @@ void ADenialBossPawn::Attack_Slam()
 			if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(ContainedActors[Index]))
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
-				
-				Combatant->ApplyDamage(SlamAttackInfo.Damage);
+
 				Combatant->Knockback(GetActorLocation(), SlamAttackInfo.KnockbackMultiplier);
+				Combatant->ApplyDamage(SlamAttackInfo.Damage);
 			}
 		}
 		Slammed = true;
@@ -203,7 +211,24 @@ bool ADenialBossPawn::Killed()
 
 	if (Destroyed)
 	{
-		// Spawn Anger
+		UWorld* World = GetWorld();
+
+		if (!World) return false;
+		if (!AngerBossClass) return false;
+		
+		FTransform SpawnTransform = GetActorTransform();
+		AAngerBossPawn* AngerBoss = World->SpawnActorDeferred<AAngerBossPawn>(AngerBossClass->GetAuthoritativeClass(), SpawnTransform);
+
+		if (AngerBoss)
+		{
+			AngerBoss->FinishSpawning(SpawnTransform);
+			
+			if (AngerMovementBoundingBox)
+			{
+				AngerBoss->SetMovementBoundingBox(AngerMovementBoundingBox);
+			}
+		}
+		
 		return true;
 	}
 	return false;

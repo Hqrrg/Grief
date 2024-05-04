@@ -30,9 +30,9 @@ void AWolfEnemyPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AWolfEnemyPawn::Attack(uint8 AttackID)
+bool AWolfEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 {
-	const bool ShouldAttack = Super::Attack(AttackID);
+	const bool ShouldAttack = Super::Attack(AttackID, StopMovement);
 
 	if (!ShouldAttack) return false;
 	
@@ -64,9 +64,9 @@ void AWolfEnemyPawn::LightAttack()
 		if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(OverlappingPawns[Index]))
 		{
 			ICombatantInterface* Combatant = Player->GetCombatant();
-			
-			Combatant->ApplyDamage(LightAttackInfo.Damage);
+
 			Combatant->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
+			Combatant->ApplyDamage(LightAttackInfo.Damage);
 		}
 	}
 }

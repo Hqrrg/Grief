@@ -93,6 +93,9 @@ protected:
 	UFUNCTION()
 	void RemoveAttackCooldown(uint8 AttackID);
 
+	UFUNCTION(BlueprintPure)
+	virtual bool IsAttackCoolingDown(uint8 AttackID) override;
+
 	UFUNCTION()
 	void UpdateFlipbook();
 
@@ -135,6 +138,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
 
+	virtual void ApplyDamage(const float Damage) override;
+	
 	UFUNCTION()
 	virtual bool Killed() override;
 	

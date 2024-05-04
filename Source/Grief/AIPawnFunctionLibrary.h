@@ -30,7 +30,7 @@ class GRIEF_API UAIPawnFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "Controller", Latent, LatentInfo = "LatentInfo", ExpandEnumAsExecs = "InputPins, OutputPins"), Category = "AI")
 	static void AIPawnMoveToLocation(AAIController* InController, FLatentActionInfo LatentInfo, EAIPawnMoveToLocationInput InputPins, EAIPawnMoveToLocationOutput& OutputPins,
-		FVector InLocation, float InAcceptanceRadius = -1, bool CanFly = false);
+		FVector InLocation, float InAcceptanceRadius = -1, float InTimeout = -1, bool CanFly = false);
 };
 
 class FAIPawnMoveToLocation : public FPendingLatentAction
@@ -44,10 +44,13 @@ public:
 
 	bool bCanFly;
 
+	float Timeout;
+
 	APawn* Pawn;
 	
 public:
 	bool bFirstCall = true;
+	float ElapsedTime = 0.0f;
 
 public:
 	FLatentActionInfo LatentActionInfo;
@@ -55,17 +58,19 @@ public:
 	EAIPawnMoveToLocationOutput& Output;
 
 public:
-	FAIPawnMoveToLocation(FLatentActionInfo& LatentInfo, EAIPawnMoveToLocationOutput& OutputPins, AAIController* InController, FVector InLocation, float InAcceptanceRadius, bool CanFly)
+	FAIPawnMoveToLocation(FLatentActionInfo& LatentInfo, EAIPawnMoveToLocationOutput& OutputPins, AAIController* InController, FVector InLocation, float InAcceptanceRadius, float InTimeout,  bool CanFly)
 		: TargetLocation(InLocation)
-		, AcceptanceRadius(InAcceptanceRadius)
-		, Controller(InController)
-		, bCanFly(CanFly)
-		, Pawn(InController->GetPawn())
-		, LatentActionInfo(LatentInfo)
-		, Output(OutputPins)
+		  , AcceptanceRadius(InAcceptanceRadius)
+		  , Controller(InController)
+		  , bCanFly(CanFly)
+		  , Timeout(InTimeout)
+	      , Pawn(InController->GetPawn())
+		  , LatentActionInfo(LatentInfo)
+		  , Output(OutputPins)
 	{
 		Output = EAIPawnMoveToLocationOutput::Out;
 		bFirstCall = true;
+		ElapsedTime = 0.0f;
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;

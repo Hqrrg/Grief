@@ -4,10 +4,10 @@
 #include "EnemyPawn.h"
 
 #include "EnemyAIController.h"
+#include "MovementBoundingBox.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "PlayerSensingComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
 
 
@@ -50,12 +50,22 @@ FVector2D AEnemyPawn::GetMovementVector()
 	return MovementVector;
 }
 
+void AEnemyPawn::StopAttacking(uint8 AttackID)
+{
+	Super::StopAttacking(AttackID);
+
+	if (Controller)
+	{
+		Controller->SetIgnoreMoveInput(false);
+	}
+}
+
 UBehaviorTree* AEnemyPawn::GetBehaviourTree()
 {
 	return BehaviourTree;
 }
 
-bool AEnemyPawn::Attack(uint8 AttackID)
+bool AEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 {
 	if (Attacking || AttackInfoArray.IsEmpty()) return false;
 
@@ -66,6 +76,11 @@ bool AEnemyPawn::Attack(uint8 AttackID)
 	if (AttackInfo->IsCooldown) return false;
 	
 	Attacking = true;
+
+	if (Controller)
+	{
+		Controller->SetIgnoreMoveInput(StopMovement);
+	}
 	
 	AttackingFlipbook = AttackInfo->Flipbook;
 	UpdateFlipbook();
@@ -79,13 +94,53 @@ bool AEnemyPawn::Attack(uint8 AttackID)
 	AttackTimerDelegate.BindUFunction(this, FName("StopAttacking"), AttackID);
 	
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
-
 	return true;
 }
 
 ICombatantInterface* AEnemyPawn::GetCombatant()
 {
 	return this;
+}
+
+void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	if (!MovementBoundingBox)
+	{
+		Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+		return;
+	}
+
+	FVector FinalWorldDirection = FVector::ZeroVector;
+
+	for (int32 C = 0; C < 3; C++)
+	{
+		
+		FVector Temp = FVector::ZeroVector; Temp.Component(C) = WorldDirection.Component(C);
+		float Direction = Temp.Component(C) > 0.0f ? 1.0f : -1.0f;
+		FVector TempTargetLocation = GetActorLocation() + GetCollisionComponent()->GetScaledBoxExtent().Component(C)*Direction + Temp * ScaleValue;
+		
+		if (!MovementBoundingBox->IsLocationWithinArea(TempTargetLocation)) continue;
+
+		FinalWorldDirection.Component(C) = WorldDirection.Component(C);
+	}
+
+	FVector ActorLocation = GetActorLocation();
+	
+	if (!MovementBoundingBox->IsLocationWithinArea(ActorLocation))
+	{
+		FVector Direction = MovementBoundingBox->GetActorLocation() - ActorLocation;
+		float DirectionY = Direction.Y > 0.0f ? 1.0f : -1.0f;
+		float DirectionZ = Direction.Z > 0.0f ? 1.0f : -1.0f;
+
+		FinalWorldDirection = FVector(0.0f, DirectionY, DirectionZ);
+		
+		if (WorldDirection.Z > 0.0f)
+		{
+			FinalWorldDirection = FVector(0.0f, DirectionY, DirectionZ);
+		}
+	}
+	
+	Super::AddMovementInput(FinalWorldDirection, ScaleValue, bForce);
 }
 
 bool AEnemyPawn::DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd)

@@ -34,6 +34,11 @@ bool ICombatantInterface::Killed()
 	return false;
 }
 
+bool ICombatantInterface::IsAttackCoolingDown(uint8 AttackID)
+{
+	return false;
+}
+
 bool ICombatantInterface::IsInvincible()
 {
 	return false;

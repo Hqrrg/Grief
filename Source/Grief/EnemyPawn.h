@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	FVector2D GetMovementVector();
 
+	virtual void StopAttacking(uint8 AttackID) override;
+
 	UFUNCTION(BlueprintPure)
 	virtual class UBehaviorTree* GetBehaviourTree() override;
 
@@ -37,9 +39,13 @@ public:
 	FORCEINLINE class AAIPatrolRoute* GetPatrolRoute() const { return PatrolRoute; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool Attack(uint8 AttackID) override;
+	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
+
+	FORCEINLINE void SetMovementBoundingBox(class AMovementBoundingBox* InMovementBoundingBox) { MovementBoundingBox = InMovementBoundingBox; } 
 
 	virtual ICombatantInterface* GetCombatant() override;
+
+	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce) override;
 
 protected:
 	bool DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float &PlaybackEnd);
@@ -53,4 +59,7 @@ private:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class AAIPatrolRoute* PatrolRoute = nullptr;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	class AMovementBoundingBox* MovementBoundingBox = nullptr;
 };

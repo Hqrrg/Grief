@@ -67,9 +67,9 @@ void AAngerBossPawn::OnConstruction(const FTransform& Transform)
 	BeamRail->SetTangentAtSplinePoint(3, YTangent, ESplineCoordinateSpace::Local);
 }
 
-bool AAngerBossPawn::Attack(uint8 AttackID)
+bool AAngerBossPawn::Attack(uint8 AttackID, bool StopMovement)
 {
-	const bool ShouldAttack = Super::Attack(AttackID);
+	const bool ShouldAttack = Super::Attack(AttackID, StopMovement);
 
 	if (!ShouldAttack) return false;
 
@@ -137,12 +137,20 @@ void AAngerBossPawn::Attack_Beam()
 	float PlaybackBegin, PlaybackEnd;
 
 	FAttackInfo BeamAttackInfo = AttackInfoArray[GetAttackID(EAngerBossAttack::Beam)];
+
+	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
+	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
+
+	if (PlaybackCurrent >= PlaybackMax)
+	{
+		BeamRail->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	}
 	
 	if (!DoAttack(BeamAttackTimerHandle,BeamAttackTimerDelegate,
 		BeamAttackInfo.BeginFrame, BeamAttackInfo.EndFrame,
 		PlaybackBegin, PlaybackEnd)) return;
 
-	BeamRail->AddWorldRotation(FRotator(0.0f, 0.0f, 1.0f), true);
+	BeamRail->AddRelativeRotation(FRotator(0.0f, 0.0f, BeamRotationSpeed), true);
 	
 	float SplineLength = BeamRail->GetSplineLength();
 

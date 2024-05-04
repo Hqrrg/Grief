@@ -39,7 +39,7 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:
-	virtual bool Attack(uint8 AttackID) override;
+	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
 
 private:
 	UFUNCTION()
@@ -65,6 +65,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Beam", meta = (AllowPrivateAccess = "true"))
 	int32 BeamCount = 4;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Beam", meta = (AllowPrivateAccess = "true"))
+	float BeamRotationSpeed = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Fireball Origin", meta = (AllowPrivateAccess = "true"))
 	FName FireballOriginSocketName = FName("FireballOrigin");
