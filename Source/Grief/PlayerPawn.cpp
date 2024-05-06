@@ -113,18 +113,13 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 {
 	if (Attacking || AttackInfoArray.IsEmpty()) return;
 
-	uint8 AttackID = 0;
+	constexpr uint8 AttackID = static_cast<uint8>(EPlayerAttack::Default);
 
 	if (AttackID < AttackInfoArray.Num())
 	{
 		const FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
 		
 		if (AttackInfo->IsCooldown) return;
-		
-		Attacking = true;
-
-		AttackingFlipbook = AttackInfo->Flipbook;
-		UpdateFlipbook();
 
 		UAttackHitboxComponent* Hitbox = nullptr;
 
@@ -152,28 +147,12 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 			break;
 		}
 
-		if (Hitbox)
-		{
-			TArray<AActor*> OverlappingCombatants = Hitbox->GetContainedActors();
-		
-			if (OverlappingCombatants.Num() > 0)
-			{
-				for (uint8 Index = 0; Index < OverlappingCombatants.Num(); Index++)
-				{
-					AActor* CurrentCombatant = OverlappingCombatants[Index];
-					
-					if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(CurrentCombatant))
-					{
-						ICombatantInterface* Combatant = Enemy->GetCombatant();
-						
-						if (Combatant->IsObscured(this) || !Combatant->IsAlive()) continue;
-						
-						Combatant->ApplyDamage(AttackInfo->Damage);
-						Combatant->Knockback(GetActorLocation(), AttackInfo->KnockbackMultiplier);
-					}
-				}
-			}
-		}
+		if (!Hitbox) return;
+
+		Attacking = true;
+
+		AttackingFlipbook = AttackInfo->Flipbook;
+		UpdateFlipbook();
 	
 		float AttackDuration = 1.0f;
 		if (AttackingFlipbook) AttackDuration = AttackingFlipbook->GetTotalDuration();
@@ -182,8 +161,62 @@ void APlayerPawn::Attack(const FInputActionValue& Value)
 		FTimerDelegate AttackTimerDelegate;
 		
 		AttackTimerDelegate.BindUFunction(this, FName("StopAttacking"), AttackID);
-		
 		GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
+
+		DefaultAttackTimerDelegate.BindUFunction(this, FName("DefaultAttack"), Hitbox);
+		DefaultAttack(Hitbox);
+
+		OnBeginAttack(AttackID);
+	}
+}
+
+void APlayerPawn::DefaultAttack(UAttackHitboxComponent* Hitbox)
+{
+	float PlaybackBegin, PlaybackEnd;
+
+	const uint8 AttackID = GetAttackID(EPlayerAttack::Default);
+	const FAttackInfo* DefaultAttackInfo = &AttackInfoArray[AttackID];
+
+	if (!DoAttack(AttackID, DefaultAttackTimerHandle,DefaultAttackTimerDelegate, DefaultAttackInfo->BeginFrame, DefaultAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
+
+	if (DefaultAttackTriggered) return;
+	
+	TArray<AActor*> ContainedActors = Hitbox->GetContainedActors();
+	
+	if (ContainedActors.Num() > 0)
+	{
+		for (uint8 Index = 0; Index < ContainedActors.Num(); Index++)
+		{
+			AActor* CurrentCombatant = ContainedActors[Index];
+				
+			if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(CurrentCombatant))
+			{
+				ICombatantInterface* Combatant = Enemy->GetCombatant();
+					
+				if (Combatant->IsObscured(this) || !Combatant->IsAlive()) continue;
+
+				Combatant->Knockback(GetActorLocation(), DefaultAttackInfo->KnockbackMultiplier);
+				Combatant->ApplyDamage(DefaultAttackInfo->Damage);
+			}
+		}
+	}
+	
+	DefaultAttackTriggered = true;
+	OnAttack(GetAttackID(EPlayerAttack::Default));
+}
+
+void APlayerPawn::OnAttackFinished(uint8 AttackID)
+{
+	constexpr uint8 DefaultAttackID = static_cast<uint8>(EPlayerAttack::Default);
+
+	switch (AttackID)
+	{
+	case DefaultAttackID:
+		DefaultAttackTriggered = false;
+		break;
+		
+	default:
+		break;
 	}
 }
 

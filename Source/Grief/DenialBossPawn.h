@@ -56,6 +56,8 @@ private:
 	UFUNCTION()
 	void FireLaser();
 
+	virtual void OnAttackFinished(uint8 AttackID) override;
+
 private:
 	virtual bool Killed() override;
 

@@ -71,3 +71,17 @@ void AWolfEnemyPawn::LightAttack()
 	}
 }
 
+void AWolfEnemyPawn::OnAttackFinished(uint8 AttackID)
+{
+	constexpr uint8 LightAttackID = static_cast<uint8>(EWolfAttack::Light);
+	
+	switch (AttackID)
+	{
+	case LightAttackID:
+		break;
+		
+	default:
+		break;
+	}
+}
+

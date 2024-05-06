@@ -51,6 +51,8 @@ private:
 	UFUNCTION()
 	void Attack_Outburst();
 
+	virtual void OnAttackFinished(uint8 AttackID) override;
+
 public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE uint8 GetAttackID(EAngerBossAttack InAngerBossAttack) const { return static_cast<uint8>(InAngerBossAttack); }
@@ -83,4 +85,5 @@ private:
 
 	bool CanOutburst = true;
 	bool CanFireball = true;
+	bool BeamTriggered = false;
 };

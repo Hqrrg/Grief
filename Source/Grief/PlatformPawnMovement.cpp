@@ -69,6 +69,8 @@ void UPlatformPawnMovement::Jump()
 		Jumping = true;
 		CurrentJumpCount++;
 		SetMovementMode(EPlatformMovementMode::Jumping);
+
+		BroadcastJumped();
 	}
 }
 

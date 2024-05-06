@@ -44,11 +44,11 @@ void FAIPawnMoveToLocation::UpdateOperation(FLatentResponse& Response)
 	
 	FVector PawnLocation = Pawn->GetActorLocation();
 	FVector DirectionVector = TargetLocation - PawnLocation;
+	FVector DirectionVector2D = DirectionVector.GetSafeNormal();
 	float DistanceToTarget = DirectionVector.Length();
 	
 	if (Timeout != -1.0f && ElapsedTime >= Timeout)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString::Printf(TEXT("Failure")));
 		Output = EAIPawnMoveToLocationOutput::Failure;
 		Response.FinishAndTriggerIf(true, LatentActionInfo.ExecutionFunction, LatentActionInfo.Linkage, LatentActionInfo.CallbackTarget);
 		return;
@@ -66,14 +66,8 @@ void FAIPawnMoveToLocation::UpdateOperation(FLatentResponse& Response)
 		return;
 	}
 	
-	float DirectionY = DirectionVector.Y;
-	float DirectionZ = DirectionVector.Z;
-
-	if (DirectionY <= -0.5f) DirectionY = -1.0f;
-	else if (DirectionY >= 0.5f) DirectionY = 1.0f;
-
-	if (DirectionZ <= -0.5f) DirectionZ = -1.0f;
-	else if (DirectionZ >= 0.5f) DirectionZ = 1.0f;
+	float DirectionY = DirectionVector2D.Y;
+	float DirectionZ = DirectionVector2D.Z;
 
 	const FVector YawDirection = FVector(0.0f, DirectionY, 0.0f);
 	const FVector PitchDirection = FVector(0.0f, 0.0f, DirectionZ);

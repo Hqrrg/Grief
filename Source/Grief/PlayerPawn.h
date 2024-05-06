@@ -8,6 +8,12 @@
 #include "Interfaces/PlatformPlayer.h"
 #include "PlayerPawn.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerAttack : uint8
+{
+	Default = 0
+};
+
 UCLASS()
 class GRIEF_API APlayerPawn : public ABasePawn, public IPlatformPlayer
 {
@@ -59,6 +65,15 @@ public:
 	
 	void Attack(const FInputActionValue& Value);
 
+private:
+	FORCEINLINE uint8 GetAttackID(EPlayerAttack InPlayerAttack) const { return static_cast<uint8>(InPlayerAttack); }
+	
+private:
+	UFUNCTION()
+	void DefaultAttack(class UAttackHitboxComponent* Hitbox);
+
+	virtual void OnAttackFinished(uint8 AttackID) override;
+
 public:
 	virtual ICombatantInterface* GetCombatant() override;
 
@@ -77,4 +92,9 @@ private:
 private:
 	bool Invincible = false;
 	float InvincibilityDuration = 1.0f;
+
+	FTimerHandle DefaultAttackTimerHandle;
+	FTimerDelegate DefaultAttackTimerDelegate;
+
+	bool DefaultAttackTriggered = false;
 };

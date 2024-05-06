@@ -29,6 +29,9 @@ struct FCharacterFlipbooks : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* Walking;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<float> FootstepFrames;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* Dying;
@@ -60,12 +63,28 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce = false) override;
+
+public:
 	virtual class UBoxComponent* GetCollisionComponent() override;
 
 	FORCEINLINE class  UPlatformPawnMovement* GetPlatformMovementComponent() const { return MovementComponent; }
 	
 protected:
 	FORCEINLINE class UPaperFlipbookComponent* GetFlipbookComponent() const { return FlipbookComponent; }
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBeginAttack(uint8 AttackID);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAttack(uint8 AttackID);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFinishAttack(uint8 AttackID);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnTakeDamage(float NewHealth);
 	
 public:
 	UFUNCTION(BlueprintPure)
@@ -95,6 +114,8 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	virtual bool IsAttackCoolingDown(uint8 AttackID) override;
+
+	bool DoAttack(uint8 AttackID, FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd);
 
 	UFUNCTION()
 	void UpdateFlipbook();
@@ -158,4 +179,13 @@ protected:
 	
 	UPROPERTY()
 	float Health = MaxHealth;
+
+private:
+	uint8 LastFootstepFrame = -1;
+
+private:
+	UFUNCTION()
+	void CancelAttack(FTimerHandle& AttackTimerHandle, uint8 AttackID);
+
+	virtual void OnAttackFinished(uint8 AttackID);
 };

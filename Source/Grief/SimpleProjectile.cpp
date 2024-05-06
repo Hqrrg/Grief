@@ -47,6 +47,8 @@ void ASimpleProjectile::BeginPlay()
 
 void ASimpleProjectile::ResetProjectile()
 {
+	GetWorldTimerManager().ClearTimer(LifetimeTimerHandle);
+	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 
@@ -60,17 +62,15 @@ void ASimpleProjectile::ProjectileHit(AActor* HitActor)
 {
 	Hit = true;
 	UpdateFlipbook();
-
+	
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(HitActor))
 	{
 		Combatant->Knockback(GetActorLocation(), KnockbackMultiplier);
 		Combatant->ApplyDamage(Damage);
 	}
-
-	SetActorHiddenInGame(true);
-	SetActorEnableCollision(false);
-
-	if (ProjectileManager) ProjectileManager->RetrieveProjectile(this);
+	
+	const float CollidedPlaybackLength = FlipbookComponent->GetFlipbookLength();
+	GetWorldTimerManager().SetTimer(CollidedTimerHandle, this, &ASimpleProjectile::Retrieve, CollidedPlaybackLength, false, CollidedPlaybackLength);
 }
 
 void ASimpleProjectile::FireAt(const AActor* TargetActor)
@@ -85,6 +85,8 @@ void ASimpleProjectile::FireAt(const AActor* TargetActor)
 
 	Moving = true;
 	UpdateFlipbook();
+
+	GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &ASimpleProjectile::Retrieve, Lifetime, 0.0f, Lifetime);
 }
 
 void ASimpleProjectile::FireAt(const FVector& TargetLocation)
@@ -98,6 +100,18 @@ void ASimpleProjectile::FireAt(const FVector& TargetLocation)
 
 	Moving = true;
 	UpdateFlipbook();
+
+	GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &ASimpleProjectile::Retrieve, Lifetime, 0.0f, Lifetime);
+}
+
+void ASimpleProjectile::Retrieve()
+{
+	GetWorldTimerManager().ClearTimer(LifetimeTimerHandle);
+	
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+
+	if (ProjectileManager) ProjectileManager->RetrieveProjectile(this);
 }
 
 void ASimpleProjectile::UpdateFlipbook()

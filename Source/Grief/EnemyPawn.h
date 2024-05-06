@@ -48,9 +48,6 @@ public:
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce) override;
 
 protected:
-	bool DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float &PlaybackEnd);
-
-protected:
 	virtual bool Killed() override;
 
 private:

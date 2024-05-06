@@ -52,6 +52,9 @@ public:
 	void FireAt(const AActor* TargetActor);
 	void FireAt(const FVector& TargetLocation);
 
+private:
+	void Retrieve();
+
 public:
 	FORCEINLINE void SetProjectileManager(class AProjectileManager* InProjectileManager) { ProjectileManager = InProjectileManager; }
 	
@@ -69,7 +72,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
 	UDataTable* FlipbookDataTable = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Manager", meta = (AllowPrivateAccess = "true"))
+	float Lifetime = 5.0f;
 
+	FTimerHandle LifetimeTimerHandle;
+	FTimerHandle CollidedTimerHandle;
+	
 	UPROPERTY()
 	class AProjectileManager* ProjectileManager = nullptr;
 

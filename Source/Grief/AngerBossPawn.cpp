@@ -27,6 +27,7 @@ AAngerBossPawn::AAngerBossPawn()
 	BeamRail->SetupAttachment(CollisionComponent);
 
 	OutburstNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("OutburstNiagara"));
+	OutburstNiagara->SetAutoActivate(false);
 	OutburstNiagara->SetupAttachment(FlipbookComponent);
 
 	GetPlatformMovementComponent()->SetFlying();
@@ -36,6 +37,8 @@ AAngerBossPawn::AAngerBossPawn()
 void AAngerBossPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	OutburstNiagara->SetVariableFloat(FName("Size"), OutburstAttackArea->GetScaledSphereRadius() * 2);
 
 	FireballAttackTimerDelegate.BindUFunction(this, FName("Attack_Fireball"));
 	BeamAttackTimerDelegate.BindUFunction(this, FName("Attack_Beam"));
@@ -74,7 +77,7 @@ bool AAngerBossPawn::Attack(uint8 AttackID, bool StopMovement)
 	if (!ShouldAttack) return false;
 
 	constexpr uint8 FireballAttackID = static_cast<uint8>(EAngerBossAttack::Fireball);
-	constexpr uint8 BeamAttackID = static_cast<uint8>(EAngerBossAttack::Beam);
+	constexpr uint8 BeamAttackID =  static_cast<uint8>(EAngerBossAttack::Beam);
 	constexpr uint8 OutburstAttackID = static_cast<uint8>(EAngerBossAttack::Outburst);
 	
 	switch (AttackID)
@@ -104,17 +107,11 @@ void AAngerBossPawn::Attack_Fireball()
 	
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo FireballAttackInfo = AttackInfoArray[GetAttackID(EAngerBossAttack::Fireball)];
+	const uint8 AttackID = GetAttackID(EAngerBossAttack::Fireball);
+	const FAttackInfo* FireballAttackInfo = &AttackInfoArray[AttackID];
 
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax) CanFireball = true;
-
-	if (!DoAttack(FireballAttackTimerHandle,FireballAttackTimerDelegate,
-		FireballAttackInfo.BeginFrame, FireballAttackInfo.EndFrame,
-		PlaybackBegin, PlaybackEnd)) return;
-
+	if (!DoAttack(AttackID, FireballAttackTimerHandle,FireballAttackTimerDelegate, FireballAttackInfo->BeginFrame, FireballAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
+	
 	if (CanFireball)
 	{
 		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -123,11 +120,13 @@ void AAngerBossPawn::Attack_Fireball()
 		FVector TargetLocation = PlayerPawn->GetActorLocation();
 
 		ASimpleProjectile* Fireball = FireballProjectileManager->GetProjectile();
-		Fireball->SetAttackValues(FireballAttackInfo.Damage, FireballAttackInfo.KnockbackMultiplier);
+		Fireball->SetAttackValues(FireballAttackInfo->Damage, FireballAttackInfo->KnockbackMultiplier);
 		Fireball->SetActorLocation(OriginLocation);
 		Fireball->FireAt(TargetLocation);
 		
 		CanFireball = false;
+
+		OnAttack(GetAttackID(EAngerBossAttack::Fireball));
 	}
 	
 }
@@ -136,20 +135,18 @@ void AAngerBossPawn::Attack_Beam()
 {
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo BeamAttackInfo = AttackInfoArray[GetAttackID(EAngerBossAttack::Beam)];
+	const uint8 AttackID = GetAttackID(EAngerBossAttack::Beam);
+	const FAttackInfo* BeamAttackInfo = &AttackInfoArray[AttackID];
+	
+	if (!DoAttack(AttackID, BeamAttackTimerHandle,BeamAttackTimerDelegate, BeamAttackInfo->BeginFrame, BeamAttackInfo->EndFrame, PlaybackBegin, PlaybackEnd)) return;
 
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax)
+	if (!BeamTriggered)
 	{
-		BeamRail->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		BeamTriggered = true;
+		
+		OnAttack(GetAttackID(EAngerBossAttack::Beam));
 	}
 	
-	if (!DoAttack(BeamAttackTimerHandle,BeamAttackTimerDelegate,
-		BeamAttackInfo.BeginFrame, BeamAttackInfo.EndFrame,
-		PlaybackBegin, PlaybackEnd)) return;
-
 	BeamRail->AddRelativeRotation(FRotator(0.0f, 0.0f, BeamRotationSpeed), true);
 	
 	float SplineLength = BeamRail->GetSplineLength();
@@ -180,6 +177,17 @@ void AAngerBossPawn::Attack_Beam()
 		Results.Add(*SweepResult);
 		
 		DrawBoxSweeps(GetWorld(), Origin, TraceEnd, CollisionShape.GetExtent(), GetActorRotation().Quaternion(), Results, 0.01f);
+
+		if (IsBlocking)
+		{
+			if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(SweepResult->GetActor()))
+			{
+				ICombatantInterface* Combatant = Player->GetCombatant();
+
+				Combatant->Knockback(SweepResult->Location, BeamAttackInfo->KnockbackMultiplier);
+				Combatant->ApplyDamage(BeamAttackInfo->Damage);
+			}
+		}
 	}
 }
 
@@ -187,19 +195,18 @@ void AAngerBossPawn::Attack_Outburst()
 {
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo OutburstAttackInfo = AttackInfoArray[GetAttackID(EAngerBossAttack::Outburst)];
+	const uint8 AttackID = GetAttackID(EAngerBossAttack::Outburst);
+	const FAttackInfo* OutburstAttackInfo = &AttackInfoArray[AttackID];
 
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax) CanOutburst = true;
-
-	if (!DoAttack(OutburstAttackTimerHandle,OutburstAttackTimerDelegate,
-		OutburstAttackInfo.BeginFrame, OutburstAttackInfo.EndFrame,
-		PlaybackBegin, PlaybackEnd)) return;
+	if (!DoAttack(AttackID, OutburstAttackTimerHandle,OutburstAttackTimerDelegate, OutburstAttackInfo->BeginFrame, OutburstAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
 
 	if (CanOutburst)
 	{
+		const float OutburstDuration = PlaybackEnd - PlaybackBegin;
+		OutburstNiagara->SetVariableFloat(FName("Duration"), OutburstDuration);
+		
+		OutburstNiagara->Activate(true);
+		
 		TArray<AActor*> ContainedActors = OutburstAttackArea->GetContainedActors();
 
 		for (int32 Index = 0; Index < ContainedActors.Num(); Index++)
@@ -208,11 +215,39 @@ void AAngerBossPawn::Attack_Outburst()
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
-				Combatant->Knockback(GetActorLocation(), OutburstAttackInfo.KnockbackMultiplier);
-				Combatant->ApplyDamage(OutburstAttackInfo.Damage);
+				Combatant->Knockback(GetActorLocation(), OutburstAttackInfo->KnockbackMultiplier);
+				Combatant->ApplyDamage(OutburstAttackInfo->Damage);
 			}
 		}
 		CanOutburst = false;
+
+		OnAttack(GetAttackID(EAngerBossAttack::Outburst));
+	}
+}
+
+void AAngerBossPawn::OnAttackFinished(uint8 AttackID)
+{
+	constexpr uint8 FireballAttackID = static_cast<uint8>(EAngerBossAttack::Fireball);
+	constexpr uint8 BeamAttackID = static_cast<uint8>(EAngerBossAttack::Beam);
+	constexpr uint8 OutburstAttackID = static_cast<uint8>(EAngerBossAttack::Outburst);
+	
+	switch (AttackID)
+	{
+	case FireballAttackID:
+		CanFireball = true;
+		break;
+		
+	case BeamAttackID:
+		BeamRail->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		BeamTriggered = false;
+		break;
+		
+	case OutburstAttackID:
+		CanOutburst = true;
+		break;
+		
+	default:
+		break;
 	}
 }
 

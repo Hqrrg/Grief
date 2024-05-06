@@ -61,6 +61,26 @@ void ABasePawn::BeginPlay()
 	}
 }
 
+void ABasePawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+
+	if (MovementComponent->GetMovementMode() == EPlatformMovementMode::Walking)
+	{
+		if (Flipbooks && !IsAttacking() && IsMoving())
+		{
+			TArray<float>* FootstepFrames = &Flipbooks->FootstepFrames;
+			uint8 CurrentWalkingFrame = GetFlipbookComponent()->GetPlaybackPositionInFrames();
+
+			if (LastFootstepFrame != CurrentWalkingFrame && FootstepFrames->Contains(CurrentWalkingFrame))
+			{
+				LastFootstepFrame = CurrentWalkingFrame;
+				MovementComponent->BroadcastFootstep();
+			}
+		}
+	}
+}
+
 UBoxComponent* ABasePawn::GetCollisionComponent()
 {
 	return CollisionComponent;
@@ -169,6 +189,8 @@ void ABasePawn::ApplyDamage(const float Damage)
 {
 	ICombatantInterface::ApplyDamage(Damage);
 	UpdateFlipbook();
+
+	OnTakeDamage(Health);
 }
 
 bool ABasePawn::Killed()
@@ -206,6 +228,16 @@ void ABasePawn::SetHealth(const float InHealth)
 	Health = InHealth;
 }
 
+void ABasePawn::CancelAttack(FTimerHandle& AttackTimerHandle, uint8 AttackID)
+{
+	if (GetWorldTimerManager().IsTimerActive(AttackTimerHandle)) GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+	OnAttackFinished(AttackID);
+}
+
+void ABasePawn::OnAttackFinished(uint8 AttackID)
+{
+}
+
 void ABasePawn::StopAttacking(uint8 AttackID)
 {
 	Attacking = false;
@@ -227,6 +259,8 @@ void ABasePawn::StopAttacking(uint8 AttackID)
 
 			GetWorldTimerManager().SetTimer(AttackCooldownHandle, AttackCooldownDelegate, AttackCooldownDuration, false, AttackCooldownDuration);
 		}
+
+		OnFinishAttack(AttackID);
 	}
 }
 
@@ -241,7 +275,40 @@ void ABasePawn::RemoveAttackCooldown(uint8 AttackID)
 
 bool ABasePawn::IsAttackCoolingDown(uint8 AttackID)
 {
-	return AttackInfoArray[AttackID].IsCooldown;
+	if (AttackID < AttackInfoArray.Num())
+	{
+		const FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
+		return AttackInfo->IsCooldown;
+	}
+	return false;
+}
+
+bool ABasePawn::DoAttack(uint8 AttackID, FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd)
+{
+	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
+	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
+	
+	if (!GetWorldTimerManager().IsTimerActive(TimerHandle))
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle, Callback, 0.01f, true);
+
+		FTimerHandle CancelAttackTimerHandle;
+		FTimerDelegate CancelAttackTimerDelegate;
+		float RemainingDuration = PlaybackMax - PlaybackCurrent;
+		
+		CancelAttackTimerDelegate.BindUFunction(this, FName("CancelAttack"), TimerHandle, AttackID);
+		GetWorldTimerManager().SetTimer(CancelAttackTimerHandle, CancelAttackTimerDelegate, RemainingDuration, false, RemainingDuration);
+		return false;
+	}
+	
+	float Framerate = GetFlipbookComponent()->GetFlipbookFramerate();
+
+	PlaybackBegin = BeginFrame / Framerate;
+	PlaybackEnd = EndFrame / Framerate;
+
+	if (PlaybackCurrent < PlaybackBegin || PlaybackCurrent > PlaybackEnd) return false;
+
+	return true;
 }
 
 void ABasePawn::UpdateDirections(const FVector2D MovementVector)

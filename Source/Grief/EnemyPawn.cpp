@@ -94,6 +94,8 @@ bool AEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 	AttackTimerDelegate.BindUFunction(this, FName("StopAttacking"), AttackID);
 	
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
+
+	OnBeginAttack(AttackID);
 	return true;
 }
 
@@ -117,7 +119,7 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 		
 		FVector Temp = FVector::ZeroVector; Temp.Component(C) = WorldDirection.Component(C);
 		float Direction = Temp.Component(C) > 0.0f ? 1.0f : -1.0f;
-		FVector TempTargetLocation = GetActorLocation() + GetCollisionComponent()->GetScaledBoxExtent().Component(C)*Direction + Temp * ScaleValue;
+		FVector TempTargetLocation = GetActorLocation() + (GetCollisionComponent()->GetScaledBoxExtent().Component(C)+10.0f)*Direction + Temp * ScaleValue;
 		
 		if (!MovementBoundingBox->IsLocationWithinArea(TempTargetLocation)) continue;
 
@@ -125,49 +127,28 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 	}
 
 	FVector ActorLocation = GetActorLocation();
-	
-	if (!MovementBoundingBox->IsLocationWithinArea(ActorLocation))
-	{
-		FVector Direction = MovementBoundingBox->GetActorLocation() - ActorLocation;
-		float DirectionY = Direction.Y > 0.0f ? 1.0f : -1.0f;
-		float DirectionZ = Direction.Z > 0.0f ? 1.0f : -1.0f;
+	FVector CollisionBoxExtent = GetCollisionComponent()->GetScaledBoxExtent();
+	FVector Direction = MovementBoundingBox->GetActorLocation() - ActorLocation;
+	float DirectionY = Direction.Y > 0.0f ? 1.0f : -1.0f;
+	float DirectionZ = Direction.Z > 0.0f ? 1.0f : -1.0f;
 
-		FinalWorldDirection = FVector(0.0f, DirectionY, DirectionZ);
+	FVector TargetLocation = FVector(ActorLocation.X, ActorLocation.Y-CollisionBoxExtent.Y*DirectionY, ActorLocation.Z-CollisionBoxExtent.Z*DirectionZ);
+	
+	if (!MovementBoundingBox->IsLocationWithinArea(TargetLocation))
+	{
+		FVector DirectionNormalized = Direction.GetSafeNormal();
+		float MovementDirectionY = DirectionNormalized.Y;
+		float MovementDirectionZ = DirectionNormalized.Z;
 		
-		if (WorldDirection.Z > 0.0f)
+		FinalWorldDirection = FVector(0.0f, MovementDirectionY, 0.0f);
+		
+		if (MovementComponent->GetMovementMode() == EPlatformMovementMode::Flying)
 		{
-			FinalWorldDirection = FVector(0.0f, DirectionY, DirectionZ);
+			FinalWorldDirection = FVector(0.0f, MovementDirectionY, MovementDirectionZ);
 		}
 	}
 	
 	Super::AddMovementInput(FinalWorldDirection, ScaleValue, bForce);
-}
-
-bool AEnemyPawn::DoAttack(FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd)
-{
-	if (!GetWorldTimerManager().IsTimerActive(TimerHandle))
-	{
-		GetWorldTimerManager().SetTimer(TimerHandle, Callback, 0.01f, true);
-		return false;
-	}
-	
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax)
-	{
-		if (GetWorldTimerManager().IsTimerActive(TimerHandle)) GetWorldTimerManager().ClearTimer(TimerHandle);
-		return false;
-	}
-	
-	float Framerate = GetFlipbookComponent()->GetFlipbookFramerate();
-
-	PlaybackBegin = BeginFrame / Framerate;
-	PlaybackEnd = EndFrame / Framerate;
-
-	if (PlaybackCurrent < PlaybackBegin || PlaybackCurrent > PlaybackEnd) return false;
-
-	return true;
 }
 
 bool AEnemyPawn::Killed()

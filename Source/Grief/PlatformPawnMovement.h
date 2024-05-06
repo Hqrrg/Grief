@@ -16,6 +16,8 @@ enum class EPlatformMovementMode : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMovementModeUpdated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumped);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFootstep);
 
 UCLASS(ClassGroup=(Movement), meta=(BlueprintSpawnableComponent))
 class GRIEF_API UPlatformPawnMovement : public UFloatingPawnMovement
@@ -37,6 +39,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FJumped OnJumped;
+
+	UPROPERTY(BlueprintAssignable)
+	FFootstep OnFootstep;
+	
 public:
 	void Jump();
 	void StopJumping();
@@ -65,6 +74,9 @@ public:
 	bool IsFlying() const override;
 
 	FHitResult* FindGround(float InDistance);
+
+	FORCEINLINE void BroadcastJumped() { OnJumped.Broadcast(); }
+	FORCEINLINE void BroadcastFootstep() { OnFootstep.Broadcast(); }
 
 private:
 	bool CanJump();

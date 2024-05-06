@@ -77,21 +77,16 @@ void ADenialBossPawn::Attack_LaserBarrage()
 	
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo LaserBarrageAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::LaserBarrage)];
+	const uint8 AttackID = GetAttackID(EDenialBossAttack::LaserBarrage);
+	const FAttackInfo* LaserBarrageAttackInfo = &AttackInfoArray[AttackID];
 
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax)
-	{
-		if (GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle)) GetWorldTimerManager().ClearTimer(FireLaserTimerHandle);
-	}
-
-	if (!DoAttack(LaserBarrageTimerHandle,LaserBarrageTimerDelegate, LaserBarrageAttackInfo.BeginFrame, LaserBarrageAttackInfo.EndFrame,PlaybackBegin, PlaybackEnd)) return;
+	if (!DoAttack(AttackID, LaserBarrageTimerHandle,LaserBarrageTimerDelegate, LaserBarrageAttackInfo->BeginFrame, LaserBarrageAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
 
 	if (!GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle))
 	{
 		GetWorldTimerManager().SetTimer(FireLaserTimerHandle, this, &ADenialBossPawn::FireLaser, LaserBarrageFireRate, true);
+
+		OnAttack(AttackID);
 	}
 }
 
@@ -99,12 +94,10 @@ void ADenialBossPawn::Attack_Hyperbeam()
 {
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo HyperbeamAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::Hyperbeam)];
+	const uint8 AttackID = GetAttackID(EDenialBossAttack::Hyperbeam);
+	const FAttackInfo* HyperbeamAttackInfo = &AttackInfoArray[AttackID];
 
 	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax) HyperbeamFiring = false;
 	
 	if (!HyperbeamFiring)
 	{
@@ -116,9 +109,14 @@ void ADenialBossPawn::Attack_Hyperbeam()
 			: GetActorLocation() + (HyperbeamTarget - HyperbeamOrigin).GetSafeNormal() * 500.0f;
 	}
 
-	if (!DoAttack(HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo.BeginFrame, HyperbeamAttackInfo.EndFrame,PlaybackBegin, PlaybackEnd)) return;
+	if (!DoAttack(AttackID, HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo->BeginFrame, HyperbeamAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
 
-	if (!HyperbeamFiring) HyperbeamFiring = true;
+	if (!HyperbeamFiring)
+	{
+		HyperbeamFiring = true;
+		
+		OnAttack(AttackID);
+	}
 	
 	float Alpha = FMath::GetMappedRangeValueClamped(FVector2D(PlaybackBegin, PlaybackEnd), FVector2D(0.0f, 1.0f), PlaybackCurrent);
 	float TargetLocY = FMath::Lerp(HyperbeamStart.Y, HyperbeamTarget.Y, Alpha);
@@ -153,8 +151,8 @@ void ADenialBossPawn::Attack_Hyperbeam()
 		{
 			ICombatantInterface* Combatant = Player->GetCombatant();
 
-			Combatant->Knockback(SweepResult->ImpactPoint, HyperbeamAttackInfo.KnockbackMultiplier);
-			Combatant->ApplyDamage(HyperbeamAttackInfo.Damage);
+			Combatant->Knockback(SweepResult->ImpactPoint, HyperbeamAttackInfo->KnockbackMultiplier);
+			Combatant->ApplyDamage(HyperbeamAttackInfo->Damage);
 		}
 	}
 }
@@ -163,14 +161,10 @@ void ADenialBossPawn::Attack_Slam()
 {
 	float PlaybackBegin, PlaybackEnd;
 
-	FAttackInfo SlamAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::Slam)];
-
-	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
-	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-
-	if (PlaybackCurrent >= PlaybackMax) Slammed = false;
+	const uint8 AttackID = GetAttackID(EDenialBossAttack::Slam);
+	const FAttackInfo* SlamAttackInfo = &AttackInfoArray[AttackID];
 	
-	if (!DoAttack(SlamTimerHandle,SlamTimerDelegate, SlamAttackInfo.BeginFrame, SlamAttackInfo.EndFrame,PlaybackBegin,PlaybackEnd)) return;
+	if (!DoAttack(AttackID, SlamTimerHandle,SlamTimerDelegate, SlamAttackInfo->BeginFrame, SlamAttackInfo->EndFrame,PlaybackBegin,PlaybackEnd)) return;
 
 	if (!Slammed)
 	{
@@ -182,17 +176,19 @@ void ADenialBossPawn::Attack_Slam()
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
-				Combatant->Knockback(GetActorLocation(), SlamAttackInfo.KnockbackMultiplier);
-				Combatant->ApplyDamage(SlamAttackInfo.Damage);
+				Combatant->Knockback(GetActorLocation(), SlamAttackInfo->KnockbackMultiplier);
+				Combatant->ApplyDamage(SlamAttackInfo->Damage);
 			}
 		}
 		Slammed = true;
+
+		OnAttack(AttackID);
 	}
 }
 
 void ADenialBossPawn::FireLaser()
 {
-	FAttackInfo LaserBarrageAttackInfo = AttackInfoArray[GetAttackID(EDenialBossAttack::LaserBarrage)];
+	const FAttackInfo* LaserBarrageAttackInfo = &AttackInfoArray[GetAttackID(EDenialBossAttack::LaserBarrage)];
 	
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	
@@ -200,9 +196,34 @@ void ADenialBossPawn::FireLaser()
 	FVector LaserTarget = PlayerPawn->GetActorLocation();
 
 	ASimpleProjectile* Laser = LaserProjectileManager->GetProjectile();
-	Laser->SetAttackValues(LaserBarrageAttackInfo.Damage, LaserBarrageAttackInfo.KnockbackMultiplier);
+	Laser->SetAttackValues(LaserBarrageAttackInfo->Damage, LaserBarrageAttackInfo->KnockbackMultiplier);
 	Laser->SetActorLocation(LaserOrigin);
 	Laser->FireAt(LaserTarget);
+}
+
+void ADenialBossPawn::OnAttackFinished(uint8 AttackID)
+{
+	constexpr uint8 LaserBarrageAttackID = static_cast<uint8>(EDenialBossAttack::LaserBarrage);
+	constexpr uint8 HyperbeamAttackID = static_cast<uint8>(EDenialBossAttack::Hyperbeam);
+	constexpr uint8 SlamAttackID = static_cast<uint8>(EDenialBossAttack::Slam);
+
+	switch (AttackID)
+	{
+	case LaserBarrageAttackID:
+		if (GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle)) GetWorldTimerManager().ClearTimer(FireLaserTimerHandle);
+		break;
+		
+	case HyperbeamAttackID:
+		HyperbeamFiring = false;
+		break;
+		
+	case SlamAttackID:
+		Slammed = false;
+		break;
+		
+	default:
+		break;
+	}
 }
 
 bool ADenialBossPawn::Killed()

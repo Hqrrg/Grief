@@ -36,8 +36,12 @@ public:
 	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
 
 private:
+	void LightAttack();
+
+	virtual void OnAttackFinished(uint8 AttackID) override;
+	
+private:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE uint8 GetAttackID(EWolfAttack InWolfAttack) const { return static_cast<uint8>(InWolfAttack); }
-
-	void LightAttack();
+	
 };
