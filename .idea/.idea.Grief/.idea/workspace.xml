@@ -9,37 +9,13 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BB_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BB_Anger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Fireball.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Fireball.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BTS_AngerChase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BTS_AngerChase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BTT_AngerAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BTT_AngerAttack.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BTT_ShootFireball.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BT_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BT_Anger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Denial.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Laser.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Laser.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_Flipbooks.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_Flipbooks.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_PlayerAttackInfo.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/Flipbooks/PF_Walking.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/Flipbooks/PF_Walking.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/BP_Fireball.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/BP_Fireball.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/DT_Projectiles.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/DT_Projectiles.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemyPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemyPawn.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/AttackHitboxComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AttackHitboxComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlayerPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlayerPawn.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +24,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock://C:/Users/Harry/Unreal Projects/Grief/Source/Grief/SimpleProjectile.cpp" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -63,7 +42,7 @@
     "C++ Project.Grief.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "enemies",
+    "git-widget-placeholder": "bosses",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -210,6 +189,7 @@
       <workItem from="1714764613491" duration="4127000" />
       <workItem from="1714813173191" duration="27329000" />
       <workItem from="1714927191332" duration="18624000" />
+      <workItem from="1714995982975" duration="3663000" />
     </task>
     <servers />
   </component>

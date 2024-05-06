@@ -3,6 +3,7 @@
 
 #include "AttackHitboxComponent.h"
 
+#include "SimpleProjectile.h"
 #include "Interfaces/CombatantInterface.h"
 
 
@@ -32,6 +33,11 @@ void UAttackHitboxComponent::BeginOverlap(UPrimitiveComponent* OverlappedCompone
 		if (OtherComp != Combatant->GetCollisionComponent()) return;
 		ContainedActors.AddUnique(OtherActor);
 	}
+
+	if (ASimpleProjectile* Projectile = Cast<ASimpleProjectile>(OtherActor))
+	{
+		ContainedActors.AddUnique(Projectile);
+	}
 }
 
 void UAttackHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -40,6 +46,11 @@ void UAttackHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		if (OtherComp != Combatant->GetCollisionComponent()) return;
 		ContainedActors.Remove(OtherActor);
+	}
+
+	if (ASimpleProjectile* Projectile = Cast<ASimpleProjectile>(OtherActor))
+	{
+		ContainedActors.Remove(Projectile);
 	}
 }
 

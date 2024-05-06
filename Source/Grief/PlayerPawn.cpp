@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "AttackHitboxComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "SimpleProjectile.h"
 #include "Enums/Direction.h"
 #include "Interfaces/EnemyInterface.h"
 
@@ -187,9 +188,9 @@ void APlayerPawn::DefaultAttack(UAttackHitboxComponent* Hitbox)
 	{
 		for (uint8 Index = 0; Index < ContainedActors.Num(); Index++)
 		{
-			AActor* CurrentCombatant = ContainedActors[Index];
+			AActor* ContainedActor = ContainedActors[Index];
 				
-			if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(CurrentCombatant))
+			if (IEnemyInterface* Enemy = Cast<IEnemyInterface>(ContainedActor))
 			{
 				ICombatantInterface* Combatant = Enemy->GetCombatant();
 					
@@ -197,6 +198,16 @@ void APlayerPawn::DefaultAttack(UAttackHitboxComponent* Hitbox)
 
 				Combatant->Knockback(GetActorLocation(), DefaultAttackInfo->KnockbackMultiplier);
 				Combatant->ApplyDamage(DefaultAttackInfo->Damage);
+			}
+
+			// Projectile deflection
+			if (ASimpleProjectile* Projectile = Cast<ASimpleProjectile>(ContainedActor))
+			{
+				if (Projectile->IsDeflectable())
+				{
+					FVector Direction = (Projectile->GetActorLocation() - GetActorLocation()).GetSafeNormal() * 1000.0f; Direction.X = 0.0f;
+					Projectile->FireAt(Direction);
+				}
 			}
 		}
 	}

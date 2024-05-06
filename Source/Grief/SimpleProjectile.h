@@ -14,7 +14,7 @@ struct FProjectileFlipbooks : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	class UPaperFlipbook* Moving = nullptr;
+	class UPaperFlipbook* Default = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	class UPaperFlipbook* Hit = nullptr;
@@ -43,6 +43,16 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void Fired();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Collided(bool HitTarget);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Retrieved(bool LifetimeElapsed);
+
+public:
 	void ResetProjectile();
 	
 public:
@@ -54,6 +64,9 @@ public:
 
 private:
 	void Retrieve();
+
+public:
+	FORCEINLINE bool IsDeflectable() const { return Deflectable && !Hit; }
 
 public:
 	FORCEINLINE void SetProjectileManager(class AProjectileManager* InProjectileManager) { ProjectileManager = InProjectileManager; }
@@ -85,7 +98,10 @@ private:
 	float Damage = 0.0f;
 	float KnockbackMultiplier = 0.0f;
 	
-	bool Moving = false;
+	bool Active = true;
 	bool Hit = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Projectile, meta = (AllowPrivateAccess = "true"))
+	bool Deflectable = true;
 	
 };

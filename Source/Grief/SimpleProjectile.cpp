@@ -16,7 +16,6 @@ ASimpleProjectile::ASimpleProjectile()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	CollisionComponent->SetCollisionProfileName(FName("Projectile"));
 	CollisionComponent->SetHiddenInGame(false);
 	SetRootComponent(CollisionComponent);
@@ -51,8 +50,7 @@ void ASimpleProjectile::ResetProjectile()
 	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
-
-	Moving = false;
+	
 	Hit = false;
 
 	UpdateFlipbook();
@@ -60,17 +58,24 @@ void ASimpleProjectile::ResetProjectile()
 
 void ASimpleProjectile::ProjectileHit(AActor* HitActor)
 {
+	if (!Active) return;
+	
 	Hit = true;
 	UpdateFlipbook();
+
+	bool HitTarget = false;
 	
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(HitActor))
 	{
 		Combatant->Knockback(GetActorLocation(), KnockbackMultiplier);
 		Combatant->ApplyDamage(Damage);
+		HitTarget = true;
 	}
 	
 	const float CollidedPlaybackLength = FlipbookComponent->GetFlipbookLength();
 	GetWorldTimerManager().SetTimer(CollidedTimerHandle, this, &ASimpleProjectile::Retrieve, CollidedPlaybackLength, false, CollidedPlaybackLength);
+
+	Collided(HitTarget);
 }
 
 void ASimpleProjectile::FireAt(const AActor* TargetActor)
@@ -83,10 +88,12 @@ void ASimpleProjectile::FireAt(const AActor* TargetActor)
 	
 	ProjectileMovement->SetMovementVector(Direction);
 
-	Moving = true;
+	Active = true;
 	UpdateFlipbook();
 
 	GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &ASimpleProjectile::Retrieve, Lifetime, 0.0f, Lifetime);
+
+	Fired();
 }
 
 void ASimpleProjectile::FireAt(const FVector& TargetLocation)
@@ -98,20 +105,31 @@ void ASimpleProjectile::FireAt(const FVector& TargetLocation)
 	
 	ProjectileMovement->SetMovementVector(Direction);
 
-	Moving = true;
+	Active = true;
 	UpdateFlipbook();
 
-	GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &ASimpleProjectile::Retrieve, Lifetime, 0.0f, Lifetime);
+	GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &ASimpleProjectile::Retrieve, Lifetime, false, Lifetime);
+
+	Fired();
 }
 
 void ASimpleProjectile::Retrieve()
 {
+	Active = false;
+	Hit = false;
+	
+	bool LifetimeElapsed = false;
+
+	if (GetWorldTimerManager().GetTimerRemaining(LifetimeTimerHandle) <= 0.0f) LifetimeElapsed = true;
+	
 	GetWorldTimerManager().ClearTimer(LifetimeTimerHandle);
 	
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 
 	if (ProjectileManager) ProjectileManager->RetrieveProjectile(this);
+
+	Retrieved(LifetimeElapsed);
 }
 
 void ASimpleProjectile::UpdateFlipbook()
@@ -120,9 +138,9 @@ void ASimpleProjectile::UpdateFlipbook()
 	
 	UPaperFlipbook* Flipbook = nullptr;
 	
-	if (Moving)
+	if (Active)
 	{
-		Flipbook = Flipbooks->Moving;
+		Flipbook = Flipbooks->Default;
 	}
 	if (Hit)
 	{
