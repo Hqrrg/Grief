@@ -18,6 +18,7 @@ enum class EPlatformMovementMode : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMovementModeUpdated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumped);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFootstep);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLanded);
 
 UCLASS(ClassGroup=(Movement), meta=(BlueprintSpawnableComponent))
 class GRIEF_API UPlatformPawnMovement : public UFloatingPawnMovement
@@ -45,6 +46,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FFootstep OnFootstep;
+
+	UPROPERTY(BlueprintAssignable)
+	FLanded OnLanded;
 	
 public:
 	void Jump();
@@ -78,6 +82,10 @@ public:
 	FORCEINLINE void BroadcastJumped() { OnJumped.Broadcast(); }
 	FORCEINLINE void BroadcastFootstep() { OnFootstep.Broadcast(); }
 
+
+public:
+	void ResetComponent();
+	
 private:
 	bool CanJump();
 	void Landed();

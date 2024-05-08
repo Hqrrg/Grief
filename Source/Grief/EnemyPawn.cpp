@@ -4,6 +4,7 @@
 #include "EnemyPawn.h"
 
 #include "EnemyAIController.h"
+#include "EnemySpawnParamaters.h"
 #include "MovementBoundingBox.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
@@ -34,6 +35,12 @@ AEnemyPawn::AEnemyPawn()
 void AEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (SpawnParamaters)
+	{
+		PatrolRoute = SpawnParamaters->PatrolRoute;
+		MovementBoundingBox = SpawnParamaters->MovementBoundingBox;
+	}
 }
 
 void AEnemyPawn::UpdateMoving()
@@ -149,6 +156,13 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 	}
 	
 	Super::AddMovementInput(FinalWorldDirection, ScaleValue, bForce);
+}
+
+void AEnemyPawn::ResetPlatformActor()
+{
+	Super::ResetPlatformActor();
+	
+	Destroy();
 }
 
 bool AEnemyPawn::Killed()

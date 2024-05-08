@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/BoxComponent.h"
+#include "Interfaces\PlatformActorInterface.h"
 #include "AttackHitboxComponent.generated.h"
 
 
 enum class EDirection : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class GRIEF_API UAttackHitboxComponent : public UBoxComponent
+class GRIEF_API UAttackHitboxComponent : public UBoxComponent, public IPlatformActorInterface
 {
 	GENERATED_BODY()
 
@@ -35,4 +36,7 @@ private:
 private:
 	UPROPERTY()
 	TArray<AActor*> ContainedActors;
+
+public:
+	virtual void ResetPlatformActor() override;
 };

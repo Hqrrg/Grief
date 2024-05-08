@@ -44,4 +44,9 @@ void UAttackAreaComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
+void UAttackAreaComponent::ResetPlatformActor()
+{
+	ContainedActors.Empty();
+}
+
 

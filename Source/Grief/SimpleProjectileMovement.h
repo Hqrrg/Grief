@@ -34,7 +34,6 @@ private:
 	void HandleMovement(float DeltaTime);
 	bool CheckCollided(FHitResult& HitResult, FVector TraceEnd);
 	void HandleProjectileHit(AActor* HitActor);
-	void ResetMovement();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))

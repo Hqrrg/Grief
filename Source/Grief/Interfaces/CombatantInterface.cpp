@@ -44,7 +44,7 @@ bool ICombatantInterface::IsInvincible()
 	return false;
 }
 
-void ICombatantInterface::ApplyDamage(float Damage)
+void ICombatantInterface::Damage(float Damage)
 {
 	if (!IsAlive() || IsInvincible()) return;
 	
