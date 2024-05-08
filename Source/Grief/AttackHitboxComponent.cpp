@@ -54,4 +54,9 @@ void UAttackHitboxComponent::EndOverlap(UPrimitiveComponent* OverlappedComponent
 	}
 }
 
+void UAttackHitboxComponent::ResetPlatformActor()
+{
+	ContainedActors.Empty();
+}
+
 

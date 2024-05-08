@@ -29,14 +29,26 @@ void ACameraBoundingBox::BeginPlay()
 	BoundingBox->OnComponentEndOverlap.AddDynamic(this, &ACameraBoundingBox::EndOverlap);
 }
 
+void ACameraBoundingBox::AddCameraBoundingBox(APlayerPawn* PlayerPawn)
+{
+	UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
+	PlatformCameraComponent->AddCameraBoundingBox(this);
+}
+
+void ACameraBoundingBox::RemoveCameraBoundingBox(APlayerPawn* PlayerPawn)
+{
+	UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
+	PlatformCameraComponent->RemoveCameraBoundingBox(this);
+}
+
+
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(OtherActor))
 	{
 		if (OtherComp == PlayerPawn->GetCollisionComponent())
 		{
-			UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
-			PlatformCameraComponent->AddCameraBoundingBox(this);
+			AddCameraBoundingBox(PlayerPawn);
 		}
 	}
 }
@@ -47,8 +59,7 @@ void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		if (OtherComp == PlayerPawn->GetCollisionComponent())
 		{
-			UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
-			PlatformCameraComponent->RemoveCameraBoundingBox(this);
+			RemoveCameraBoundingBox(PlayerPawn);
 		}
 	}
 }

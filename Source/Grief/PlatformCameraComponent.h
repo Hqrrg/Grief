@@ -106,9 +106,12 @@ private:
 	UPROPERTY()
 	TArray<class ACameraBoundingBox*> CameraBoundingBoxes;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	FCameraBounds CameraBounds;
 
 	void UpdateCameraBounds();
 	void UpdateBound(float &Bound, const float InBound, int32 &Layer, const int32 InLayer);
+
+public:
+	void ResetComponent();
 };

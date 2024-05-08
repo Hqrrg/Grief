@@ -6,6 +6,8 @@
 #include "AngerBossPawn.h"
 #include "AttackHitboxComponent.h"
 #include "CollisionDebugDrawingPublic.h"
+#include "EnemySpawner.h"
+#include "EnemySpawnParamaters.h"
 #include "PaperFlipbookComponent.h"
 #include "ProjectileManager.h"
 #include "SimpleProjectile.h"
@@ -26,6 +28,12 @@ ADenialBossPawn::ADenialBossPawn()
 void ADenialBossPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UDenialSpawnParamaters* DenialSpawnParamaters = Cast<UDenialSpawnParamaters>(SpawnParamaters))
+	{
+		LaserProjectileManager = DenialSpawnParamaters->LaserProjectileManager;
+		AngerSpawner = DenialSpawnParamaters->AngerSpawner;
+	}
 
 	LaserBarrageTimerDelegate.BindUFunction(this, FName("Attack_LaserBarrage"));
 	HyperbeamTimerDelegate.BindUFunction(this, FName("Attack_Hyperbeam"));
@@ -152,7 +160,7 @@ void ADenialBossPawn::Attack_Hyperbeam()
 			ICombatantInterface* Combatant = Player->GetCombatant();
 
 			Combatant->Knockback(SweepResult->ImpactPoint, HyperbeamAttackInfo->KnockbackMultiplier);
-			Combatant->ApplyDamage(HyperbeamAttackInfo->Damage);
+			Combatant->Damage(HyperbeamAttackInfo->Damage);
 		}
 	}
 }
@@ -177,7 +185,7 @@ void ADenialBossPawn::Attack_Slam()
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
 				Combatant->Knockback(GetActorLocation(), SlamAttackInfo->KnockbackMultiplier);
-				Combatant->ApplyDamage(SlamAttackInfo->Damage);
+				Combatant->Damage(SlamAttackInfo->Damage);
 			}
 		}
 		Slammed = true;
@@ -196,6 +204,8 @@ void ADenialBossPawn::FireLaser()
 	FVector LaserTarget = PlayerPawn->GetActorLocation();
 
 	ASimpleProjectile* Laser = LaserProjectileManager->GetProjectile();
+	if (!Laser) return;
+	
 	Laser->SetAttackValues(LaserBarrageAttackInfo->Damage, LaserBarrageAttackInfo->KnockbackMultiplier);
 	Laser->SetActorLocation(LaserOrigin);
 	Laser->FireAt(LaserTarget);
@@ -235,21 +245,12 @@ bool ADenialBossPawn::Killed()
 		UWorld* World = GetWorld();
 
 		if (!World) return false;
-		if (!AngerBossClass) return false;
+		if (!AngerSpawner) return false;
 		
 		FTransform SpawnTransform = GetActorTransform();
-		AAngerBossPawn* AngerBoss = World->SpawnActorDeferred<AAngerBossPawn>(AngerBossClass->GetAuthoritativeClass(), SpawnTransform);
 
-		if (AngerBoss)
-		{
-			AngerBoss->FinishSpawning(SpawnTransform);
-			
-			if (AngerMovementBoundingBox)
-			{
-				AngerBoss->SetMovementBoundingBox(AngerMovementBoundingBox);
-			}
-		}
-		
+		AngerSpawner->SetActorTransform(SpawnTransform);
+		AngerSpawner->Spawn();
 		return true;
 	}
 	return false;

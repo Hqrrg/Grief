@@ -14,6 +14,9 @@ enum class EPlayerAttack : uint8
 	Default = 0
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerKilled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerSpawned, bool, Respawned);
+
 UCLASS()
 class GRIEF_API APlayerPawn : public ABasePawn, public IPlatformPlayer
 {
@@ -49,13 +52,20 @@ class GRIEF_API APlayerPawn : public ABasePawn, public IPlatformPlayer
 public:
 	APlayerPawn();
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FPlayerKilled OnPlayerKilled;
+
+	UPROPERTY(BlueprintAssignable)
+	FPlayerSpawned OnPlayerSpawned;
+	
 protected:
 	// Called when the actor is spawned
 	virtual void BeginPlay() override;
 
 	// Setup input bindings
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
+
 	virtual bool Killed() override;
 
 public:
@@ -77,10 +87,20 @@ private:
 public:
 	virtual ICombatantInterface* GetCombatant() override;
 
+	virtual ACheckpoint* GetCheckpoint() override;
+
+	virtual void SetCheckpoint(ACheckpoint* InCheckpoint) override;
+
 	virtual bool IsInvincible() override;
 
-	virtual void ApplyDamage(const float Damage) override;
+	virtual void Damage(const float Damage) override;
 
+	virtual void ResetPlatformActor() override;
+
+public:
+	FORCEINLINE void BroadcastPlayerSpawned(bool Respawned) { OnPlayerSpawned.Broadcast(Respawned); }
+	FORCEINLINE void BroadcastPlayerKilled() { OnPlayerKilled.Broadcast(); }
+	
 public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UPlatformCameraComponent* GetPlatformCameraComponent() const { return PlatformCameraComponent; }
@@ -88,6 +108,10 @@ public:
 private:
 	UFUNCTION()
 	void RemoveInvincibility();
+
+private:
+	UPROPERTY()
+	ACheckpoint* Checkpoint = nullptr;
 
 private:
 	bool Invincible = false;

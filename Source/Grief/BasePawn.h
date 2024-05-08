@@ -8,6 +8,7 @@
 #include "PlatformPawnMovement.h"
 #include "Enums/Direction.h"
 #include "Interfaces/CombatantInterface.h"
+#include "Interfaces\PlatformActorInterface.h"
 #include "Structs\AttackInfo.h"
 #include "BasePawn.generated.h"
 
@@ -38,7 +39,7 @@ struct FCharacterFlipbooks : public FTableRowBase
 };
 
 UCLASS()
-class GRIEF_API ABasePawn : public APawn, public ICombatantInterface
+class GRIEF_API ABasePawn : public APawn, public IPlatformActorInterface, public ICombatantInterface
 {
 	GENERATED_BODY()
 
@@ -92,6 +93,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE EDirection GetAttackDirection() const { return AttackDirection; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetMovementDirection(EDirection Direction) { MovementDirection = Direction; } 
 	
 protected:
 	UFUNCTION(BlueprintPure)
@@ -105,6 +109,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateDirections(const FVector2D MovementVector);
+
+	UFUNCTION(BlueprintPure)
+	virtual bool IsAttackCoolingDown(uint8 AttackID) override;
 	
 	UFUNCTION()
 	virtual void StopAttacking(uint8 AttackID);
@@ -112,13 +119,42 @@ protected:
 	UFUNCTION()
 	void RemoveAttackCooldown(uint8 AttackID);
 
-	UFUNCTION(BlueprintPure)
-	virtual bool IsAttackCoolingDown(uint8 AttackID) override;
-
 	bool DoAttack(uint8 AttackID, FTimerHandle& TimerHandle, FTimerDelegate& Callback, uint8 BeginFrame, uint8 EndFrame, float& PlaybackBegin, float& PlaybackEnd);
 
 	UFUNCTION()
 	void UpdateFlipbook();
+
+public:
+	UFUNCTION(BlueprintPure)
+	virtual float GetMaxHealth() override;
+	
+	UFUNCTION(BlueprintPure)
+	virtual float GetHealth() override;
+
+	UFUNCTION(BlueprintPure)
+	virtual bool IsObscured(const AActor* TargetActor) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
+
+	virtual void Damage(const float Damage) override;
+
+	virtual void ResetPlatformActor() override;
+
+	UFUNCTION()
+	virtual bool Killed() override;
+	
+protected:
+	UFUNCTION(BlueprintPure)
+	virtual float GetKnockbackAmount() override;
+
+	virtual void SetHealth(const float InHealth) override;
+
+private:
+	UFUNCTION()
+	void CancelAttack(FTimerHandle& AttackTimerHandle, uint8 AttackID);
+
+	virtual void OnAttackFinished(uint8 AttackID);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
@@ -145,30 +181,6 @@ protected:
 	EDirection MovementDirection = EDirection::Right;
 	
 	EDirection AttackDirection;
-
-public:
-	UFUNCTION(BlueprintPure)
-	virtual float GetMaxHealth() override;
-	
-	UFUNCTION(BlueprintPure)
-	virtual float GetHealth() override;
-
-	UFUNCTION(BlueprintPure)
-	virtual bool IsObscured(const AActor* TargetActor) override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void Knockback(const FVector OriginLocation, const float KnockbackMultiplier) override;
-
-	virtual void ApplyDamage(const float Damage) override;
-	
-	UFUNCTION()
-	virtual bool Killed() override;
-	
-protected:
-	UFUNCTION(BlueprintPure)
-	virtual float GetKnockbackAmount() override;
-
-	virtual void SetHealth(const float InHealth) override;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -182,10 +194,4 @@ protected:
 
 private:
 	uint8 LastFootstepFrame = -1;
-
-private:
-	UFUNCTION()
-	void CancelAttack(FTimerHandle& AttackTimerHandle, uint8 AttackID);
-
-	virtual void OnAttackFinished(uint8 AttackID);
 };

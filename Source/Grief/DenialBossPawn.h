@@ -7,6 +7,10 @@
 #include "BossPawn.h"
 #include "DenialBossPawn.generated.h"
 
+class UEnemySpawnParamaters;
+class AProjectileManager;
+class AEnemySpawner;
+
 UENUM(BlueprintType)
 enum class EDenialBossAttack : uint8
 {
@@ -30,7 +34,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:
 	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
 
@@ -41,7 +45,7 @@ public:
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Combat|Projectiles", meta = (AllowPrivateAccess = "true"))
-	class AProjectileManager* LaserProjectileManager = nullptr;
+	AProjectileManager* LaserProjectileManager = nullptr;
 	
 private:
 	UFUNCTION()
@@ -71,11 +75,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Hyperbeam Origin", meta = (AllowPrivateAccess = "true"))
 	FName HyperbeamOriginSocketName = FName("HyperbeamOrigin");
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AAngerBossPawn> AngerBossClass;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	class AMovementBoundingBox* AngerMovementBoundingBox = nullptr;
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Anger, meta = (AllowPrivateAccess = "true"))
+	AEnemySpawner* AngerSpawner = nullptr;
 	
 private:
 	FTimerHandle LaserBarrageTimerHandle;

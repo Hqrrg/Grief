@@ -5,6 +5,7 @@
 
 #include "AttackAreaComponent.h"
 #include "CollisionDebugDrawingPublic.h"
+#include "EnemySpawnParamaters.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
@@ -37,6 +38,11 @@ AAngerBossPawn::AAngerBossPawn()
 void AAngerBossPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (UAngerSpawnParamaters* AngerSpawnParamaters = Cast<UAngerSpawnParamaters>(SpawnParamaters))
+	{
+		FireballProjectileManager = AngerSpawnParamaters->FireballProjectileManager;
+	}
 	
 	OutburstNiagara->SetVariableFloat(FName("Size"), OutburstAttackArea->GetScaledSphereRadius() * 2);
 
@@ -126,7 +132,7 @@ void AAngerBossPawn::Attack_Fireball()
 		
 		CanFireball = false;
 
-		OnAttack(GetAttackID(EAngerBossAttack::Fireball));
+		OnAttack(AttackID);
 	}
 	
 }
@@ -144,7 +150,7 @@ void AAngerBossPawn::Attack_Beam()
 	{
 		BeamTriggered = true;
 		
-		OnAttack(GetAttackID(EAngerBossAttack::Beam));
+		OnAttack(AttackID);
 	}
 	
 	BeamRail->AddRelativeRotation(FRotator(0.0f, 0.0f, BeamRotationSpeed), true);
@@ -185,7 +191,7 @@ void AAngerBossPawn::Attack_Beam()
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
 				Combatant->Knockback(SweepResult->Location, BeamAttackInfo->KnockbackMultiplier);
-				Combatant->ApplyDamage(BeamAttackInfo->Damage);
+				Combatant->Damage(BeamAttackInfo->Damage);
 			}
 		}
 	}
@@ -215,13 +221,15 @@ void AAngerBossPawn::Attack_Outburst()
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
+				if (Combatant->IsObscured(this)) continue;
+				
 				Combatant->Knockback(GetActorLocation(), OutburstAttackInfo->KnockbackMultiplier);
-				Combatant->ApplyDamage(OutburstAttackInfo->Damage);
+				Combatant->Damage(OutburstAttackInfo->Damage);
 			}
 		}
 		CanOutburst = false;
 
-		OnAttack(GetAttackID(EAngerBossAttack::Outburst));
+		OnAttack(AttackID);
 	}
 }
 

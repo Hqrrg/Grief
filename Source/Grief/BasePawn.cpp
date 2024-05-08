@@ -13,11 +13,10 @@ ABasePawn::ABasePawn()
 	CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	CollisionComponent->SetBoxExtent(FVector(35.0f, 35.0f, 90.0f));
 	CollisionComponent->ShapeColor = FColor::White;
-	CollisionComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	CollisionComponent->SetCollisionProfileName(FName("Pawn"));
 	CollisionComponent->CanCharacterStepUpOn = ECB_No;
 	CollisionComponent->SetShouldUpdatePhysicsVolume(true);
 	CollisionComponent->SetCanEverAffectNavigation(false);
-	CollisionComponent->bDynamicObstacle = true;
 	SetRootComponent(CollisionComponent);
 
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
@@ -26,10 +25,13 @@ ABasePawn::ABasePawn()
 	
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	FlipbookComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	FlipbookComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	FlipbookComponent->SetupAttachment(CollisionComponent);
 
 	MovementComponent = CreateDefaultSubobject<UPlatformPawnMovement>("MovementComponent");
 	MovementComponent->SetUpdatedComponent(CollisionComponent);
+	MovementComponent->bConstrainToPlane = true;
+	MovementComponent->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 	AddOwnedComponent(MovementComponent);
 }
 
@@ -58,6 +60,22 @@ void ABasePawn::BeginPlay()
 			
 			AttackInfoArray.Add(AttackInfo);
 		}
+	}
+
+	UpdateFlipbook();
+
+	const float COLLISION_BOUNDS_PADDING = 5.0f;
+	/* Scaling fix for disproportionate sprites */
+	for (float Scale = 1.0f; Scale > 0.0f; Scale-=0.01f)
+	{
+		FVector FlipbookBounds = FlipbookComponent->Bounds.BoxExtent;
+		FVector CollisionBounds = GetCollisionComponent()->GetScaledBoxExtent() + FVector(COLLISION_BOUNDS_PADDING, COLLISION_BOUNDS_PADDING, COLLISION_BOUNDS_PADDING);
+
+		if (FlipbookBounds.Length() > CollisionBounds.Length())
+		{
+			FlipbookComponent->SetRelativeScale3D(FVector(Scale, Scale, Scale));	
+		}
+		else break;
 	}
 }
 
@@ -185,12 +203,35 @@ void ABasePawn::Knockback(const FVector OriginLocation, const float KnockbackMul
 	GetPlatformMovementComponent()->Knockback(FinalKnockbackDirection, TotalKnockback);
 }
 
-void ABasePawn::ApplyDamage(const float Damage)
+void ABasePawn::Damage(const float Damage)
 {
-	ICombatantInterface::ApplyDamage(Damage);
+	ICombatantInterface::Damage(Damage);
 	UpdateFlipbook();
 
 	OnTakeDamage(Health);
+}
+
+void ABasePawn::ResetPlatformActor()
+{
+	SetHealth(MaxHealth);
+
+	Dying = false;
+	Attacking = false;
+	Moving = false;
+
+	LastFootstepFrame = -1;
+
+	UpdateFlipbook();
+
+	for (int32 Index = 0; Index < AttackInfoArray.Num(); Index++)
+	{
+		FAttackInfo* AttackInfo = &AttackInfoArray[Index];
+		AttackInfo->IsCooldown = false;
+	}
+
+	GetPlatformMovementComponent()->ResetComponent();
+	
+	GetWorldTimerManager().ClearAllTimersForObject(this);
 }
 
 bool ABasePawn::Killed()

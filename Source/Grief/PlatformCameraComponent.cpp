@@ -192,3 +192,10 @@ void UPlatformCameraComponent::UpdateBound(float& Bound, const float InBound, in
 	Bound = FMath::Abs(Bound) < FMath::Abs(InBound) ? Bound : InBound;
 }
 
+void UPlatformCameraComponent::ResetComponent()
+{
+	CurrentCameraBoundingBox = nullptr;
+	CameraBoundingBoxes.Empty();
+	CameraBounds = FCameraBounds();
+}
+

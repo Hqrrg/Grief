@@ -3,6 +3,7 @@
 
 #include "ButterflyEnemyPawn.h"
 
+#include "EnemySpawnParamaters.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 
@@ -33,6 +34,13 @@ AButterflyEnemyPawn::AButterflyEnemyPawn()
 void AButterflyEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UButterflySpawnParamaters* ButterflySpawnParamaters = Cast<UButterflySpawnParamaters>(SpawnParamaters))
+	{
+		ButterflyPathType = ButterflySpawnParamaters->ButterflyPathType;
+		MovementPathRadius = ButterflySpawnParamaters->MovementPathRadius;
+		Speed = ButterflySpawnParamaters->Speed;
+	}
 }
 
 void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)

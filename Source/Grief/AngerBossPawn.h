@@ -6,6 +6,8 @@
 #include "BossPawn.h"
 #include "AngerBossPawn.generated.h"
 
+class AProjectileManager;
+
 UENUM(BlueprintType)
 enum class EAngerBossAttack : uint8
 {
@@ -59,7 +61,7 @@ public:
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Combat|Projectiles", meta = (AllowPrivateAccess = "true"))
-	class AProjectileManager* FireballProjectileManager = nullptr;
+	AProjectileManager* FireballProjectileManager = nullptr;
 	
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Beam", meta = (AllowPrivateAccess = "true"))

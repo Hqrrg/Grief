@@ -40,7 +40,7 @@ void USimpleProjectileMovement::HandleMovement(float DeltaTime)
 	// Manipulate Movement Vector
 	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
 	FVector TargetLocation = CurrentLocation + MovementVector * Speed * DeltaTime;
-	FRotator TargetRotation = FRotationMatrix::MakeFromX(TargetLocation - CurrentLocation).Rotator();
+	FRotator TargetRotation = FRotationMatrix::MakeFromX(TargetLocation - CurrentLocation).Rotator(); TargetRotation.Roll = 0.0f;
 	
 	if (CheckCollided(CollisionHitResult, TargetLocation))
 	{

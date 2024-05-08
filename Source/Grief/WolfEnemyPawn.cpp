@@ -66,7 +66,7 @@ void AWolfEnemyPawn::LightAttack()
 			ICombatantInterface* Combatant = Player->GetCombatant();
 
 			Combatant->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
-			Combatant->ApplyDamage(LightAttackInfo.Damage);
+			Combatant->Damage(LightAttackInfo.Damage);
 		}
 	}
 }
