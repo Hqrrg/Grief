@@ -204,8 +204,6 @@ void ADenialBossPawn::FireLaser()
 	FVector LaserTarget = PlayerPawn->GetActorLocation();
 
 	ASimpleProjectile* Laser = LaserProjectileManager->GetProjectile();
-	if (!Laser) return;
-	
 	Laser->SetAttackValues(LaserBarrageAttackInfo->Damage, LaserBarrageAttackInfo->KnockbackMultiplier);
 	Laser->SetActorLocation(LaserOrigin);
 	Laser->FireAt(LaserTarget);
