@@ -2,8 +2,10 @@
 
 
 #include "ButterflyEnemyPawn.h"
-
-#include "EnemySpawnParamaters.h"
+#include "PaperFlipbookComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectileManager.h"
+#include "Interfaces/PlatformPlayer.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 
@@ -35,12 +37,7 @@ void AButterflyEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UButterflySpawnParamaters* ButterflySpawnParamaters = Cast<UButterflySpawnParamaters>(SpawnParamaters))
-	{
-		ButterflyPathType = ButterflySpawnParamaters->ButterflyPathType;
-		MovementPathRadius = ButterflySpawnParamaters->MovementPathRadius;
-		Speed = ButterflySpawnParamaters->Speed;
-	}
+	FireballAttackTimerDelegate.BindUFunction(this, FName("ButterflyShoot"));
 }
 
 void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
@@ -114,4 +111,72 @@ void AButterflyEnemyPawn::Tick(float DeltaTime)
 
 	GetCollisionComponent()->SetWorldLocation(TargetLocation);
 	GetCollisionComponent()->UpdateOverlaps(nullptr, true);
+}
+
+bool AButterflyEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
+{
+	const bool ShouldAttack = Super::Attack(AttackID, StopMovement);
+
+	if (!ShouldAttack) return false;
+
+	constexpr uint8 ButterflyAttackID = static_cast<uint8>(EButterflyAttack::Shoot);
+
+
+	switch (AttackID)
+	{
+	case ButterflyAttackID:
+		ButterflyShoot();
+		break;
+
+	default:
+		break;
+	}
+
+	return true;
+}
+
+void AButterflyEnemyPawn::ButterflyShoot()
+{
+	if (!FireballProjectileManager) return;
+
+	float PlaybackBegin, PlaybackEnd;
+
+	const uint8 AttackID = GetAttackID(EButterflyAttack::Shoot);
+	const FAttackInfo* FireballAttackInfo = &AttackInfoArray[AttackID];
+
+	if (!DoAttack(AttackID, FireballAttackTimerHandle, FireballAttackTimerDelegate, FireballAttackInfo->BeginFrame, FireballAttackInfo->EndFrame, PlaybackBegin, PlaybackEnd)) return;
+
+	if (CanShoot)
+	{
+		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+		FVector OriginLocation = GetFlipbookComponent()->GetSocketLocation(FireballOriginSocketName);
+		FVector TargetLocation = PlayerPawn->GetActorLocation();
+
+		ASimpleProjectile* Fireball = FireballProjectileManager->GetProjectile();
+		Fireball->SetAttackValues(FireballAttackInfo->Damage, FireballAttackInfo->KnockbackMultiplier);
+		Fireball->SetActorLocation(OriginLocation);
+		Fireball->FireAt(TargetLocation);
+
+		CanShoot = false;
+
+		OnAttack(GetAttackID(EButterflyAttack::Shoot));
+	}
+
+}
+
+void AButterflyEnemyPawn::OnAttackFinished(uint8 AttackID)
+{
+	constexpr uint8 ButterflyAttackID = static_cast<uint8>(EButterflyAttack::Shoot);
+
+
+	switch (AttackID)
+	{
+	case ButterflyAttackID:
+		CanShoot = true;
+		break;
+
+	default:
+		break;
+	}
 }
