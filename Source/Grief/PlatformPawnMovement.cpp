@@ -131,7 +131,7 @@ bool UPlatformPawnMovement::IsFalling() const
 
 bool UPlatformPawnMovement::IsGrounded()
 {
-	FHitResult* Ground = FindGround(2.0f);
+	FHitResult* Ground = FindGround(15.0f);
 	return Ground ? true : false;
 }
 
@@ -326,11 +326,11 @@ void UPlatformPawnMovement::HandleKnockback(float DeltaTime)
 					}
 				}
 				
-				FHitResult* Ground = FindGround(2.0f);
+				FHitResult* Ground = FindGround(15.0f);
 
 				if (Ground)
 				{
-					if (Ground->Distance < ActorLocation.Z-2.0f)
+					if (Ground->Distance < ActorLocation.Z-15.0f)
 					{
 						TargetLocation = ActorLocation + FVector(KnockbackVector.X, KnockbackVector.Y, 0.0f) * (CurrentKnockbackCurveValueDelta * KnockbackVelocity);
 					}
