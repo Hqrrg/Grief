@@ -18,16 +18,9 @@ class GRIEF_API IEnemyInterface
 	GENERATED_BODY()
 
 public:
-	virtual float GetMaxHealth();
-	virtual float GetHealth();
-
-	virtual bool IsObscured(const AActor* TargetActor);
-	virtual void Killed() = 0;
+	virtual class UBehaviorTree* GetBehaviourTree();
 	
-	virtual void ApplyDamage(const float Damage) final;
-	virtual bool IsAlive() final;
+	virtual bool Attack(uint8 AttackID, bool StopMovement) = 0;
 
-private:
-	virtual void SetMaxHealth(const float InMaxHealth) = 0;
-	virtual void SetHealth(const float InHealth) = 0;
+	virtual class ICombatantInterface* GetCombatant() = 0;
 };

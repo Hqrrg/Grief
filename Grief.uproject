@@ -11,6 +11,11 @@
 			"AdditionalDependencies": [
 				"Paper2D"
 			]
+		},
+		{
+			"Name": "GriefEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
 		}
 	],
 	"Plugins": [

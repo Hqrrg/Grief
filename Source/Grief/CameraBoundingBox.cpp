@@ -3,16 +3,17 @@
 
 #include "CameraBoundingBox.h"
 
-#include "PlayerCharacter.h"
+#include "PlayerPawn.h"
 #include "PlatformCameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 
 
 // Sets default values
 ACameraBoundingBox::ACameraBoundingBox()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	
 	BoundingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoundingBox"));
 	SetRootComponent(BoundingBox);
 	
@@ -28,21 +29,38 @@ void ACameraBoundingBox::BeginPlay()
 	BoundingBox->OnComponentEndOverlap.AddDynamic(this, &ACameraBoundingBox::EndOverlap);
 }
 
+void ACameraBoundingBox::AddCameraBoundingBox(APlayerPawn* PlayerPawn)
+{
+	UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
+	PlatformCameraComponent->AddCameraBoundingBox(this);
+}
+
+void ACameraBoundingBox::RemoveCameraBoundingBox(APlayerPawn* PlayerPawn)
+{
+	UPlatformCameraComponent* PlatformCameraComponent = PlayerPawn->GetPlatformCameraComponent();
+	PlatformCameraComponent->RemoveCameraBoundingBox(this);
+}
+
+
 void ACameraBoundingBox::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(OtherActor))
 	{
-		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
-		PlatformCameraComponent->AddCameraBoundingBox(this);
+		if (OtherComp == PlayerPawn->GetCollisionComponent())
+		{
+			AddCameraBoundingBox(PlayerPawn);
+		}
 	}
 }
 
 void ACameraBoundingBox::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const APlayerCharacter* GriefCharacter = Cast<APlayerCharacter>(OtherActor))
+	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(OtherActor))
 	{
-		UPlatformCameraComponent* PlatformCameraComponent = GriefCharacter->GetPlatformCameraComponent();
-		PlatformCameraComponent->RemoveCameraBoundingBox(this);
+		if (OtherComp == PlayerPawn->GetCollisionComponent())
+		{
+			RemoveCameraBoundingBox(PlayerPawn);
+		}
 	}
 }
 
