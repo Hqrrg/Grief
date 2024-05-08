@@ -2,6 +2,8 @@
 
 
 #include "ButterflyEnemyPawn.h"
+
+#include "EnemySpawnParamaters.h"
 #include "PaperFlipbookComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectileManager.h"
@@ -38,6 +40,14 @@ void AButterflyEnemyPawn::BeginPlay()
 	Super::BeginPlay();
 
 	FireballAttackTimerDelegate.BindUFunction(this, FName("ButterflyShoot"));
+
+	if (UButterflySpawnParamaters* ButterflySpawnParamaters = Cast<UButterflySpawnParamaters>(SpawnParamaters))
+	{
+		MovementPathRadius = ButterflySpawnParamaters->MovementPathRadius;
+		ButterflyPathType = ButterflySpawnParamaters->ButterflyPathType;
+		Speed = ButterflySpawnParamaters->Speed;
+	}
+	OnConstruction(GetActorTransform());
 }
 
 void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)

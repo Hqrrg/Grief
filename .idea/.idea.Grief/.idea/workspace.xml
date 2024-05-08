@@ -9,61 +9,29 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Clock_Corkboard_Sign/M_ccs.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Clock_Corkboard_Sign/M_ccs.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_1/M_Group1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_1/M_Group1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_2/M_Group2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_2/M_Group2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_3/M_Group3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_3/M_Group3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_4/M_Group4.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Group_4/M_Group4.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_1/M_mushroom.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_1/M_mushroom.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_2/M_mushroom2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_2/M_mushroom2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_3/M_mushroom3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Mushroom_3/M_mushroom3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Plant_1/M_plant.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Plant_1/M_plant.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_1/M_Platform_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_1/M_Platform_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_2/M_Platform_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_2/M_Platform_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_3/M_Platform_3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Platform_3/M_Platform_3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Pot_1/M_Pot_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Pot_1/M_Pot_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Pot_2/M_Pot_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Pot_2/M_Pot_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_1/M_Rock_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_1/M_Rock_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_2/M_Rock_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_2/M_Rock_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_3/M_Rock_3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Rock_3/M_Rock_3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Vine/M_vine.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Vine/M_vine.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Weed/M_weed.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/Weed/M_weed.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/cafe_building/M_cafe_building.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/cafe_building/M_cafe_building.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/chairstooltable/M_chairstooltable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/chairstooltable/M_chairstooltable.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/character_reference/M_characterref.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/character_reference/M_characterref.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/syrupstanddoor/M_syrupstanddoor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/syrupstanddoor/M_syrupstanddoor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_1/M_tree_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_1/M_tree_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_2/M_tree_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_2/M_tree_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_3/M_tree_3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/tree_3/M_tree_3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Materials/vertex_paint/M_vertex_paint.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Materials/vertex_paint/M_vertex_paint.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Mushroom3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Plant1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Plant1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Pot_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Pot_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Pot_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Pot_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Rock_3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Vine.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_Vine.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_coffee_shop_building.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_coffee_shop_building.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_tree_3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/standardSurface12.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/standardSurface12.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/BP_GriefGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/BP_GriefGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/BB_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/BB_Anger.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/BushRoundv2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/BushRoundv2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_bush.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Assets/Meshes/SM_bush.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTService_WolfAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTService_WolfAttack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTTask_ChasePlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTTask_ChasePlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTTask_WolfHitPlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BTT_WolfEnemy/BTTask_WolfHitPlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BT_WolfEnemyTree.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/AI/BehaviourTrees/WolfEnemy/BT_WolfEnemyTree.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/BT_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/BT_Anger.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BB_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BB_Denial.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BT_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BT_Denial.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/BP_Denial.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/DT_DenialAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/DT_DenialAttackInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/BP_Butterfly.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/BP_Butterfly.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/DT_ButterflyAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Butterfly/DT_ButterflyAttackInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_WolfEnemyPawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_WolfEnemyPawn.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/DT_WolfAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/DT_WolfAttackInfo.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_PlayerCharacter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/DT_Flipbooks.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ButterflyEnemyPawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemySpawnParamaters.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemySpawnParamaters.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemySpawner.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemySpawner.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/WolfEnemyPawn.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -244,6 +212,7 @@
       <workItem from="1715130840300" duration="5770000" />
       <workItem from="1715139265816" duration="182000" />
       <workItem from="1715139505504" duration="3703000" />
+      <workItem from="1715163338448" duration="3759000" />
     </task>
     <servers />
   </component>

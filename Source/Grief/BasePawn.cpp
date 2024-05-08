@@ -64,8 +64,17 @@ void ABasePawn::BeginPlay()
 
 	UpdateFlipbook();
 
+
+	/*
+	TArray<TObjectPtr<USceneComponent>> AttachChildren = FlipbookComponent->GetAttachChildren();
+
+	for (TObjectPtr<USceneComponent> Child : AttachChildren)
+	{
+		FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(EDetachmentRule::KeepRelative, false);
+		Child->DetachFromComponent(DetachmentRules);
+	}
+
 	const float COLLISION_BOUNDS_PADDING = 5.0f;
-	/* Scaling fix for disproportionate sprites */
 	for (float Scale = 1.0f; Scale > 0.0f; Scale-=0.01f)
 	{
 		FVector FlipbookBounds = FlipbookComponent->Bounds.BoxExtent;
@@ -77,6 +86,13 @@ void ABasePawn::BeginPlay()
 		}
 		else break;
 	}
+
+	for (TObjectPtr<USceneComponent> Child : AttachChildren)
+	{
+		FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, false);
+		Child->AttachToComponent(FlipbookComponent, AttachmentRules);
+	}
+	*/
 }
 
 void ABasePawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
