@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces\PlatformActorInterface.h"
 #include "SimpleProjectile.generated.h"
 
 
@@ -21,7 +22,7 @@ struct FProjectileFlipbooks : public FTableRowBase
 };
 
 UCLASS()
-class GRIEF_API ASimpleProjectile : public AActor
+class GRIEF_API ASimpleProjectile : public AActor, public IPlatformActorInterface
 {
 	GENERATED_BODY()
 
@@ -62,6 +63,8 @@ public:
 	void FireAt(const AActor* TargetActor);
 	void FireAt(const FVector& TargetLocation);
 
+	void DeflectFrom(const FVector& OriginLocation);
+
 private:
 	void Retrieve();
 
@@ -73,6 +76,9 @@ public:
 	
 	FORCEINLINE void SetAttackValues(float InDamage, float InKnockbackMultiplier) { Damage = InDamage; KnockbackMultiplier = InKnockbackMultiplier; };
 	FORCEINLINE void GetAttackValues(float& InDamage, float &InKnockbackMultiplier) { InDamage = Damage; InKnockbackMultiplier = KnockbackMultiplier; };
+
+public:
+	virtual void ResetPlatformActor() override;
 
 private:
 	void UpdateFlipbook();

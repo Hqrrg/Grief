@@ -78,6 +78,10 @@ public:
 	FORCEINLINE void BroadcastJumped() { OnJumped.Broadcast(); }
 	FORCEINLINE void BroadcastFootstep() { OnFootstep.Broadcast(); }
 
+
+public:
+	void ResetComponent();
+	
 private:
 	bool CanJump();
 	void Landed();

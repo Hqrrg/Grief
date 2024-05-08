@@ -19,17 +19,17 @@ APlayerPawn::APlayerPawn()
 	Camera->SetupAttachment(RootComponent);
 
 	HighAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("HighAttackHitbox"));
-	HighAttackHitbox->SetupAttachment(GetFlipbookComponent());
+	HighAttackHitbox->SetupAttachment(FlipbookComponent);
 
 	MiddleAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("MiddleAttackHitbox"));
-	MiddleAttackHitbox->SetupAttachment(GetFlipbookComponent());
+	MiddleAttackHitbox->SetupAttachment(FlipbookComponent);
 	
 	LowAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("LowAttackHitbox"));
-	LowAttackHitbox->SetupAttachment(GetFlipbookComponent());
+	LowAttackHitbox->SetupAttachment(FlipbookComponent);
 	
 	PlatformCameraComponent = CreateDefaultSubobject<UPlatformCameraComponent>(TEXT("PlatformCameraComponent"));
 	AddOwnedComponent(PlatformCameraComponent);
-
+	
 	MaxHealth = 6.0f;
 }
 
@@ -68,7 +68,7 @@ bool APlayerPawn::Killed()
 
 	if (IsAnimationFinished)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Killed"));
+		BroadcastPlayerKilled();
 	}
 	
 	return IsAnimationFinished;
@@ -197,7 +197,7 @@ void APlayerPawn::DefaultAttack(UAttackHitboxComponent* Hitbox)
 				if (Combatant->IsObscured(this) || !Combatant->IsAlive()) continue;
 
 				Combatant->Knockback(GetActorLocation(), DefaultAttackInfo->KnockbackMultiplier);
-				Combatant->ApplyDamage(DefaultAttackInfo->Damage);
+				Combatant->Damage(DefaultAttackInfo->Damage);
 			}
 
 			// Projectile deflection
@@ -205,8 +205,8 @@ void APlayerPawn::DefaultAttack(UAttackHitboxComponent* Hitbox)
 			{
 				if (Projectile->IsDeflectable())
 				{
-					FVector Direction = (Projectile->GetActorLocation() - GetActorLocation()).GetSafeNormal() * 1000.0f; Direction.X = 0.0f;
-					Projectile->FireAt(Direction);
+					FVector ActorLocation = GetActorLocation();
+					Projectile->DeflectFrom(ActorLocation);
 				}
 			}
 		}
@@ -236,14 +236,24 @@ ICombatantInterface* APlayerPawn::GetCombatant()
 	return this;
 }
 
+ACheckpoint* APlayerPawn::GetCheckpoint()
+{
+	return Checkpoint;
+}
+
+void APlayerPawn::SetCheckpoint(ACheckpoint* InCheckpoint)
+{
+	Checkpoint = InCheckpoint;
+}
+
 bool APlayerPawn::IsInvincible()
 {
 	return Invincible;
 }
 
-void APlayerPawn::ApplyDamage(const float Damage)
+void APlayerPawn::Damage(const float Damage)
 {
-	Super::ApplyDamage(Damage);
+	Super::Damage(Damage);
 
 	if (!IsInvincible())
 	{
@@ -252,6 +262,16 @@ void APlayerPawn::ApplyDamage(const float Damage)
 		FTimerHandle InvincibilityTimerHandle;
 		GetWorldTimerManager().SetTimer(InvincibilityTimerHandle, this, &APlayerPawn::RemoveInvincibility, InvincibilityDuration, false, InvincibilityDuration);
 	}
+}
+
+void APlayerPawn::ResetPlatformActor()
+{
+	Super::ResetPlatformActor();
+	
+	Invincible = false;
+	DefaultAttackTriggered = false;
+
+	GetPlatformCameraComponent()->ResetComponent();
 }
 
 void APlayerPawn::RemoveInvincibility()

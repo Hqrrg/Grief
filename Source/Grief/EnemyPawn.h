@@ -7,6 +7,9 @@
 #include "Interfaces/EnemyInterface.h"
 #include "EnemyPawn.generated.h"
 
+class AAIPatrolRoute;
+class AMovementBoundingBox;
+
 UCLASS()
 class GRIEF_API AEnemyPawn : public ABasePawn, public IEnemyInterface
 {
@@ -47,16 +50,24 @@ public:
 
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce) override;
 
+	virtual void ResetPlatformActor() override;
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetSpawnParamaters(UEnemySpawnParamaters* InSpawnParamaters) { SpawnParamaters = InSpawnParamaters; }
+
 protected:
 	virtual bool Killed() override;
 
-private:
+protected:
+	UPROPERTY()
+	UEnemySpawnParamaters* SpawnParamaters = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviourTree = nullptr;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
-	class AAIPatrolRoute* PatrolRoute = nullptr;
+	AAIPatrolRoute* PatrolRoute = nullptr;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	class AMovementBoundingBox* MovementBoundingBox = nullptr;
+	AMovementBoundingBox* MovementBoundingBox = nullptr;
 };

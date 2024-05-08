@@ -7,6 +7,8 @@
 #include "UObject/Interface.h"
 #include "PlatformPlayer.generated.h"
 
+class ACheckpoint;
+
 // This class does not need to be modified.
 UINTERFACE()
 class UPlatformPlayer : public UInterface
@@ -24,4 +26,7 @@ class GRIEF_API IPlatformPlayer
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual ICombatantInterface* GetCombatant() = 0;
+
+	virtual ACheckpoint* GetCheckpoint() = 0;
+	virtual void SetCheckpoint(ACheckpoint* InCheckpoint) = 0;
 };

@@ -10,6 +10,8 @@
 #include "Interfaces/CombatantInterface.h"
 
 
+#define ENEMY_COLLISION_CHANNEL ECC_GameTraceChannel1
+
 // Sets default values
 ASimpleProjectile::ASimpleProjectile()
 {
@@ -63,17 +65,27 @@ void ASimpleProjectile::ProjectileHit(AActor* HitActor)
 	Hit = true;
 	UpdateFlipbook();
 
+	SetActorEnableCollision(false);
+
 	bool HitTarget = false;
 	
 	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(HitActor))
 	{
 		Combatant->Knockback(GetActorLocation(), KnockbackMultiplier);
-		Combatant->ApplyDamage(Damage);
+		Combatant->Damage(Damage);
 		HitTarget = true;
 	}
 	
 	const float CollidedPlaybackLength = FlipbookComponent->GetFlipbookLength();
-	GetWorldTimerManager().SetTimer(CollidedTimerHandle, this, &ASimpleProjectile::Retrieve, CollidedPlaybackLength, false, CollidedPlaybackLength);
+
+	if (CollidedPlaybackLength > 0.0f)
+	{
+		GetWorldTimerManager().SetTimer(CollidedTimerHandle, this, &ASimpleProjectile::Retrieve, CollidedPlaybackLength, false, CollidedPlaybackLength);
+	}
+	else
+	{
+		Retrieve();
+	}
 
 	Collided(HitTarget);
 }
@@ -101,7 +113,7 @@ void ASimpleProjectile::FireAt(const FVector& TargetLocation)
 	ResetProjectile();
 	
 	FVector ProjectileLocation = GetActorLocation();
-	FVector Direction = (TargetLocation - ProjectileLocation).GetSafeNormal();
+	FVector Direction = (TargetLocation - ProjectileLocation).GetSafeNormal(); Direction.X = 0.0f;
 	
 	ProjectileMovement->SetMovementVector(Direction);
 
@@ -113,10 +125,22 @@ void ASimpleProjectile::FireAt(const FVector& TargetLocation)
 	Fired();
 }
 
+void ASimpleProjectile::DeflectFrom(const FVector& OriginLocation)
+{
+	CollisionComponent->SetCollisionResponseToChannel(ENEMY_COLLISION_CHANNEL, ECR_Block);
+	
+	FVector ProjectileLocation = GetActorLocation();
+	FVector Direction = (ProjectileLocation-OriginLocation).GetSafeNormal() * 1000.0f; Direction.X = 0.0f;
+	
+	FireAt(Direction);
+}
+
 void ASimpleProjectile::Retrieve()
 {
 	Active = false;
 	Hit = false;
+
+	CollisionComponent->SetCollisionProfileName(FName("Projectile"));
 	
 	bool LifetimeElapsed = false;
 
@@ -130,6 +154,11 @@ void ASimpleProjectile::Retrieve()
 	if (ProjectileManager) ProjectileManager->RetrieveProjectile(this);
 
 	Retrieved(LifetimeElapsed);
+}
+
+void ASimpleProjectile::ResetPlatformActor()
+{
+	Retrieve();
 }
 
 void ASimpleProjectile::UpdateFlipbook()

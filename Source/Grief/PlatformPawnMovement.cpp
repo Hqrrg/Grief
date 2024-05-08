@@ -350,3 +350,26 @@ void UPlatformPawnMovement::HandleKnockback(float DeltaTime)
 	}
 }
 
+void UPlatformPawnMovement::ResetComponent()
+{
+	StopJumping();
+	SetMovementMode(EPlatformMovementMode::Walking);
+	
+	CurrentJumpCount = 0;
+	Jumping = false;
+	Falling = false;
+	ReceivingKnockback = false;
+	
+	CurrentJumpCurveTime = 0.0f;
+	PreviousJumpCurveValue = 0.0f;
+
+	CurrentFallCurveTime = 0.0f;
+	PreviousFallCurveValue = 0.0f;
+
+	KnockbackVector = FVector::ZeroVector;
+	KnockbackVelocity = 0.0f;
+	
+	CurrentKnockbackCurveTime = 0.0f;
+	PreviousKnockbackCurveValue = 0.0f;
+}
+

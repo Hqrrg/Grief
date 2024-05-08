@@ -33,7 +33,7 @@ public:
 	virtual bool IsAttackCoolingDown(uint8 AttackID);
 
 	virtual bool IsInvincible();
-	virtual void ApplyDamage(const float Damage);
+	virtual void Damage(const float Damage);
 	
 	virtual bool IsAlive() final;
 	virtual bool ShouldKnockback() final;
