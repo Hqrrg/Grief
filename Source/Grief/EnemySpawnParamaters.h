@@ -60,6 +60,9 @@ class GRIEF_API UButterflySpawnParamaters : public UEnemySpawnParamaters
 
 public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Butterfly")
+	AProjectileManager* ProjectileManager = nullptr;
+	
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Butterfly")
 	EButterflyPathType ButterflyPathType;
 	
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Butterfly")

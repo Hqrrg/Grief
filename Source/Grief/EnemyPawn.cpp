@@ -20,6 +20,8 @@ AEnemyPawn::AEnemyPawn()
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	PlayerSensing = CreateDefaultSubobject<UPlayerSensingComponent>(TEXT("PlayerSensing"));
 	AddOwnedComponent(PlayerSensing);
 	

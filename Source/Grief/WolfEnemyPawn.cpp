@@ -2,7 +2,6 @@
 
 
 #include "WolfEnemyPawn.h"
-
 #include "AttackHitboxComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "PlayerPawn.h"
@@ -56,6 +55,7 @@ void AWolfEnemyPawn::LightAttack()
 	const FAttackInfo LightAttackInfo = AttackInfoArray[GetAttackID(EWolfAttack::Light)];
 	
 	TArray<AActor*> OverlappingPawns = LightAttackHitbox->GetContainedActors();
+
 
 	if (OverlappingPawns.IsEmpty()) return;
 	
