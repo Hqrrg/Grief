@@ -16,13 +16,13 @@ void AProjectileManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ProjectilePool = TArray<ASimpleProjectile*, TFixedAllocator<20>>();
+	ProjectilePool = TArray<ASimpleProjectile*, TFixedAllocator<10>>();
 
 	UWorld* World = GetWorld();
 
 	if (!World) return;
 
-	for (int32 i = 0; i < 20; i++)
+	for (int32 i = 0; i < 10; i++)
 	{
 		SpawnProjectile(World);
 	}
@@ -65,7 +65,7 @@ ASimpleProjectile* AProjectileManager::SpawnProjectile(UWorld* World)
 
 void AProjectileManager::RetrieveProjectile(ASimpleProjectile* Projectile)
 {
-	if (ProjectilePool.Num() < 20)
+	if (ProjectilePool.Num() < 10)
 	{
 		const FVector Location = FVector::ZeroVector;
 		const FRotator Rotation = FRotator::ZeroRotator;

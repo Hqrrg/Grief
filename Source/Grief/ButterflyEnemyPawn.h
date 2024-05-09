@@ -13,12 +13,6 @@ enum class EButterflyPathType : uint8
 	Circle
 };
 
-UENUM(BlueprintType)
-enum class EButterflyAttack : uint8
-{
-	Shoot
-};
-
 UCLASS()
 class GRIEF_API AButterflyEnemyPawn : public AEnemyPawn
 {
@@ -44,38 +38,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool Attack(uint8 AttackID, bool StopMovement) override;
-
-	UFUNCTION()
-	void ButterflyShoot();
-
-	virtual void OnAttackFinished(uint8 AttackID) override;
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE uint8 GetAttackID(EButterflyAttack InButterflyAttack) const {
-		return static_cast<uint8>(InButterflyAttack);
-	}
-
 private:
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Combat|Projectiles", meta = (AllowPrivateAccess = "true"))
-	class AProjectileManager* FireballProjectileManager = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	EButterflyPathType ButterflyPathType = EButterflyPathType::Figure8;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float MovementPathRadius = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Fireball Origin", meta = (AllowPrivateAccess = "true"))
-	FName FireballOriginSocketName = FName("FireballOrigin");
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float Speed = 3.0f;
 	
 	float Alpha = 0.0f;
-
-	bool CanShoot = true;
-
-	FTimerHandle FireballAttackTimerHandle;
-	FTimerDelegate FireballAttackTimerDelegate;
 };

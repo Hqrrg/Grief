@@ -130,7 +130,7 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	float TargetLocY = FMath::Lerp(HyperbeamStart.Y, HyperbeamTarget.Y, Alpha);
 	float TargetLocZ = FMath::Lerp(0.0f, 300.0f, Alpha);
 	FVector TargetLoc = FVector(0.0f, TargetLocY, TargetLocZ);
-	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
+	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal();
 
 	FVector TraceEnd = HyperbeamOrigin + ForwardVector * 5000.0f;
 
@@ -204,9 +204,8 @@ void ADenialBossPawn::FireLaser()
 	FVector LaserTarget = PlayerPawn->GetActorLocation();
 
 	ASimpleProjectile* Laser = LaserProjectileManager->GetProjectile();
-
 	if (!Laser) return;
-
+	
 	Laser->SetAttackValues(LaserBarrageAttackInfo->Damage, LaserBarrageAttackInfo->KnockbackMultiplier);
 	Laser->SetActorLocation(LaserOrigin);
 	Laser->FireAt(LaserTarget);
