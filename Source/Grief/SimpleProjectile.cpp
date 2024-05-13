@@ -130,9 +130,11 @@ void ASimpleProjectile::DeflectFrom(const FVector& OriginLocation)
 	CollisionComponent->SetCollisionResponseToChannel(ENEMY_COLLISION_CHANNEL, ECR_Block);
 	
 	FVector ProjectileLocation = GetActorLocation();
-	FVector Direction = (ProjectileLocation-OriginLocation).GetSafeNormal() * 1000.0f; Direction.X = 0.0f;
+	FVector Direction = (ProjectileLocation-OriginLocation).GetSafeNormal(); Direction.X = 0.0f;
+
+	FVector TargetLocation = ProjectileLocation + Direction * 1000.0f;
 	
-	FireAt(Direction);
+	FireAt(TargetLocation);
 }
 
 void ASimpleProjectile::Retrieve()
