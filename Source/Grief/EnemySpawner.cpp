@@ -45,8 +45,6 @@ void AEnemySpawner::Spawn()
 	UWorld* World = GetWorld();
 
 	if (!World) return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("World"));
 	
 	SpawnTransform = GetActorTransform();
 	EnemyPawn = World->SpawnActorDeferred<AEnemyPawn>(EnemyClass->GetAuthoritativeClass(), SpawnTransform);
@@ -55,8 +53,6 @@ void AEnemySpawner::Spawn()
 
 	EnemyPawn->SetSpawnParamaters(EnemySpawnParamaters);
 	EnemyPawn->FinishSpawning(SpawnTransform);
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString("Spawned"));
 }
 
 void AEnemySpawner::ResetPlatformActor()

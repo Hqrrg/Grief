@@ -128,9 +128,10 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	
 	float Alpha = FMath::GetMappedRangeValueClamped(FVector2D(PlaybackBegin, PlaybackEnd), FVector2D(0.0f, 1.0f), PlaybackCurrent);
 	float TargetLocY = FMath::Lerp(HyperbeamStart.Y, HyperbeamTarget.Y, Alpha);
-	float TargetLocZ = FMath::Lerp(0.0f, 300.0f, Alpha);
+	float StartZ = GetActorLocation().Z - GetCollisionComponent()->GetScaledBoxExtent().Z;
+	float TargetLocZ = StartZ + FMath::Lerp(0.0f, 300.0f, Alpha);
 	FVector TargetLoc = FVector(0.0f, TargetLocY, TargetLocZ);
-	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
+	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.X = 0.0f; //ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
 
 	FVector TraceEnd = HyperbeamOrigin + ForwardVector * 5000.0f;
 

@@ -183,22 +183,28 @@ void UPlatformPawnMovement::Landed()
 
 void UPlatformPawnMovement::HandleJumping(float DeltaTime)
 {
+	// If there is a float curve to use and the pawn is jumping
 	if (JumpCurve && Jumping)
 	{
+		// Increment with delta time for a smooth jump
 		CurrentJumpCurveTime+=DeltaTime;
 
+		// If not reached the end of the curve
 		if (CurrentJumpCurveTime <= MaxJumpCurveTime)
 		{
+			// Multiply 0-1 curve value by JumpHeight
 			float CurrentJumpCurveValue = JumpCurve->GetFloatValue(CurrentJumpCurveTime) * JumpHeight;
 			float CurrentJumpCurveValueDelta = CurrentJumpCurveValue - PreviousJumpCurveValue;
 
 			PreviousJumpCurveValue = CurrentJumpCurveValue;
-			
+
+			// Jump velocity
 			float ZVelocity = CurrentJumpCurveValueDelta / DeltaTime;
 
 			FVector ActorLocation = GetActorLocation();
 			FVector TargetLocation = ActorLocation + FVector(0.0f, 0.0f, CurrentJumpCurveValueDelta);
 
+			// Ascending
 			if (ZVelocity > 0.0f)
 			{
 				FVector BoxLocation = CollisionComponent->GetComponentLocation();
@@ -211,7 +217,8 @@ void UPlatformPawnMovement::HandleJumping(float DeltaTime)
 				
 				FCollisionQueryParams CollisionQueryParams; CollisionQueryParams.AddIgnoredActor(PawnOwner);
 				FHitResult* HitResult = new FHitResult();
-				
+
+				// Simulate collision between pawn and target location
 				bool IsBlocking = GetWorld()->SweepSingleByProfile(
 					*HitResult,
 					Start,
@@ -221,18 +228,22 @@ void UPlatformPawnMovement::HandleJumping(float DeltaTime)
 					CollisionShape,
 					CollisionQueryParams);
 
+				// Cancel jump and set falling if collided
 				if (IsBlocking)
 				{
 					TargetLocation = ActorLocation;
 					SetFalling();
 				}
 			}
+			// Descending
 			else if (ZVelocity < 0.0f)
 			{
+				// Set movement mode to falling but don't switch to fall curve
 				SetMovementMode(EPlatformMovementMode::Falling);
 
 				FHitResult* Ground = FindGround(ActorLocation.Z-TargetLocation.Z);
-				
+
+				// If ground was found, set target location and call Landed
 				if (Ground)
 				{
 					if (Ground->Distance < ActorLocation.Z-TargetLocation.Z)
@@ -242,10 +253,11 @@ void UPlatformPawnMovement::HandleJumping(float DeltaTime)
 					}
 				}
 			}
-			
+			// Set actor location for collision sweeping & update overlaps
 			PawnOwner->SetActorLocation(TargetLocation, true);
 			PawnOwner->UpdateOverlaps(true);
 		}
+		// End of jump curve
 		else
 		{
 			if (IsGrounded()) Landed();
@@ -372,4 +384,6 @@ void UPlatformPawnMovement::ResetComponent()
 	CurrentKnockbackCurveTime = 0.0f;
 	PreviousKnockbackCurveValue = 0.0f;
 }
+
+
 

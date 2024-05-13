@@ -41,13 +41,23 @@ void UAIPawnFunctionLibrary::AIPawnMoveToLocation(AAIController* InController, F
 void FAIPawnMoveToLocation::UpdateOperation(FLatentResponse& Response)
 {
 	ElapsedTime+=Response.ElapsedTime();
+
+	if (TickCount % FailCheckRate == 0)
+	{
+		bShouldFail = LastPosition == Pawn->GetActorLocation();
+		LastPosition = Pawn->GetActorLocation();
+	}
+
+	TickCount++;
+
+	LastPosition = Pawn->GetActorLocation();
 	
 	FVector PawnLocation = Pawn->GetActorLocation();
 	FVector DirectionVector = TargetLocation - PawnLocation;
 	FVector DirectionVector2D = DirectionVector.GetSafeNormal();
 	float DistanceToTarget = DirectionVector.Length();
 	
-	if (Timeout != -1.0f && ElapsedTime >= Timeout)
+	if (bShouldFail || Timeout != -1.0f && ElapsedTime >= Timeout)
 	{
 		Output = EAIPawnMoveToLocationOutput::Failure;
 		Response.FinishAndTriggerIf(true, LatentActionInfo.ExecutionFunction, LatentActionInfo.Linkage, LatentActionInfo.CallbackTarget);

@@ -160,7 +160,7 @@ void AAngerBossPawn::Attack_Beam()
 	for (int32 Index = 1; Index <= BeamCount; Index++)
 	{
 		FVector Origin = BeamRail->GetLocationAtDistanceAlongSpline(SplineLength * Index / BeamCount, ESplineCoordinateSpace::World);
-		FVector ForwardVector = (Origin - GetActorLocation()).GetSafeNormal();
+		FVector ForwardVector = (Origin - BeamRail->GetComponentLocation()).GetSafeNormal();
 		float TraceLength = 5000.0f;
 
 		FVector TraceEnd = Origin + ForwardVector * TraceLength;

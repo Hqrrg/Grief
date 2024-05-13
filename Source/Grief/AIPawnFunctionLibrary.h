@@ -51,6 +51,10 @@ public:
 public:
 	bool bFirstCall = true;
 	float ElapsedTime = 0.0f;
+	FVector LastPosition = FVector::ZeroVector;
+	uint32 TickCount = 0.0f;
+	uint32 FailCheckRate = 10.0f;
+	bool bShouldFail = false;
 
 public:
 	FLatentActionInfo LatentActionInfo;
