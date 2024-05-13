@@ -9,24 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/Services_Tasks/BTS_DelayAttacks.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/Services_Tasks/BTS_DelayAttacks.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BB_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BB_Denial.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/BP_GriefGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/BP_GriefGameMode.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BT_Denial.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/BT_Denial.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/Services_Tasks/BTS_DenialChase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/Services_Tasks/BTS_DenialChase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/Services_Tasks/BTT_DenialAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/AI/Services_Tasks/BTT_DenialAttack.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/DT_DenialAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/DT_DenialAttackInfo.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_WolfEnemyPawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Enemies/Wolf/BP_WolfEnemyPawn.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Sandbox.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Sandbox.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPawnFunctionLibrary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AngerBossPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/DenialBossPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemySpawner.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemySpawner.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,6 +202,7 @@
       <workItem from="1715472919200" duration="268000" />
       <workItem from="1715549424429" duration="4437000" />
       <workItem from="1715613317455" duration="2475000" />
+      <workItem from="1715617701144" duration="625000" />
     </task>
     <servers />
   </component>
