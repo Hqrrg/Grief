@@ -17,6 +17,7 @@ AEnemySpawner::AEnemySpawner()
 	EnemySpawnParamaters = NewObject<UEnemySpawnParamaters>();
 
 	PreviewBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PreviewBox"));
+	PreviewBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PreviewBox->SetBoxExtent(FVector(35.0f, 35.0f, 90.0f));
 	PreviewBox->ShapeColor = FColor::Red;
 	SetRootComponent(PreviewBox);

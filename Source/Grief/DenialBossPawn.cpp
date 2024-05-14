@@ -122,7 +122,6 @@ void ADenialBossPawn::Attack_Hyperbeam()
 			: GetActorLocation() + (HyperbeamTarget - HyperbeamOrigin).GetSafeNormal() * 500.0f;
 
 		HyperbeamNiagara->SetWorldLocation(HyperbeamOrigin);
-		HyperbeamNiagara->Activate();
 	}
 
 	if (!DoAttack(AttackID, HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo->BeginFrame, HyperbeamAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
@@ -130,6 +129,8 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	if (!HyperbeamFiring)
 	{
 		HyperbeamFiring = true;
+		
+		HyperbeamNiagara->Activate();
 		
 		OnAttack(AttackID);
 	}
@@ -139,11 +140,11 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	float StartZ = GetActorLocation().Z - GetCollisionComponent()->GetScaledBoxExtent().Z;
 	float TargetLocZ = StartZ + FMath::Lerp(0.0f, 300.0f, Alpha);
 	FVector TargetLoc = FVector(0.0f, TargetLocY, TargetLocZ);
-	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.X = 0.0f; ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
+	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal();
 	
 	FVector TraceEnd = HyperbeamOrigin + ForwardVector * 5000.0f;
 
-	HyperbeamNiagara->SetVectorParameter(FName("BeamEnd"), HyperbeamOrigin + ForwardVector * 1000.0f);
+	HyperbeamNiagara->SetVectorParameter(FName("BeamEnd"), TraceEnd);
 
 	FCollisionShape CollisionShape = FCollisionShape::MakeBox(FVector(10.0f, 10.0f, 10.0f));
 	
