@@ -8,6 +8,7 @@
 #include "CollisionDebugDrawingPublic.h"
 #include "EnemySpawner.h"
 #include "EnemySpawnParamaters.h"
+#include "NiagaraComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "ProjectileManager.h"
 #include "SimpleProjectile.h"
@@ -22,6 +23,10 @@ ADenialBossPawn::ADenialBossPawn()
 	
 	SlamAttackHitbox = CreateDefaultSubobject<UAttackHitboxComponent>(TEXT("SlamAttackArea"));
 	SlamAttackHitbox->SetupAttachment(FlipbookComponent);
+
+	HyperbeamNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("HyperbeamNiagara"));
+	HyperbeamNiagara->SetAutoActivate(false);
+	HyperbeamNiagara->SetupAttachment(FlipbookComponent);
 }
 
 // Called when the game starts or when spawned
@@ -115,6 +120,9 @@ void ADenialBossPawn::Attack_Hyperbeam()
 		HyperbeamStart = FMath::Abs(((HyperbeamOrigin + HyperbeamTarget) / 2).Length()) >= 500.0f
 			? (HyperbeamOrigin + HyperbeamTarget) / 2
 			: GetActorLocation() + (HyperbeamTarget - HyperbeamOrigin).GetSafeNormal() * 500.0f;
+
+		HyperbeamNiagara->SetWorldLocation(HyperbeamOrigin);
+		HyperbeamNiagara->Activate();
 	}
 
 	if (!DoAttack(AttackID, HyperbeamTimerHandle,HyperbeamTimerDelegate, HyperbeamAttackInfo->BeginFrame, HyperbeamAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
@@ -131,9 +139,11 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	float StartZ = GetActorLocation().Z - GetCollisionComponent()->GetScaledBoxExtent().Z;
 	float TargetLocZ = StartZ + FMath::Lerp(0.0f, 300.0f, Alpha);
 	FVector TargetLoc = FVector(0.0f, TargetLocY, TargetLocZ);
-	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.X = 0.0f; //ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
-
+	FVector ForwardVector = (TargetLoc - HyperbeamOrigin).GetSafeNormal(); ForwardVector.X = 0.0f; ForwardVector.Z = ForwardVector.Z < 0.0f ? -1.0f : 1.0f; ForwardVector.Y = ForwardVector.Y < 0.0f ? -1.0f : 1.0f;
+	
 	FVector TraceEnd = HyperbeamOrigin + ForwardVector * 5000.0f;
+
+	HyperbeamNiagara->SetVectorParameter(FName("BeamEnd"), HyperbeamOrigin + ForwardVector * 1000.0f);
 
 	FCollisionShape CollisionShape = FCollisionShape::MakeBox(FVector(10.0f, 10.0f, 10.0f));
 	
@@ -148,11 +158,6 @@ void ADenialBossPawn::Attack_Hyperbeam()
 		ECC_Visibility,
 		CollisionShape,
 		QueryParams);
-
-	TArray<FHitResult> Results;
-	Results.Add(*SweepResult);
-		
-	DrawBoxSweeps(GetWorld(), HyperbeamOrigin, TraceEnd, CollisionShape.GetExtent(), GetActorRotation().Quaternion(), Results, 0.01f);
 	
 	if (IsBlocking)
 	{
@@ -227,6 +232,8 @@ void ADenialBossPawn::OnAttackFinished(uint8 AttackID)
 		
 	case HyperbeamAttackID:
 		HyperbeamFiring = false;
+		HyperbeamNiagara->DestroyInstance();
+		HyperbeamNiagara->Deactivate();
 		break;
 		
 	case SlamAttackID:

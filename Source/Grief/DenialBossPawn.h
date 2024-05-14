@@ -27,6 +27,9 @@ class GRIEF_API ADenialBossPawn : public ABossPawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	class UAttackHitboxComponent* SlamAttackHitbox = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class UNiagaraComponent* HyperbeamNiagara = nullptr;
+
 public:
 	// Sets default values for this pawn's properties
 	ADenialBossPawn();
