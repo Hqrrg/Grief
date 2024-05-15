@@ -3,7 +3,10 @@
 
 #include "AIPawnFunctionLibrary.h"
 
+#if WITH_EDITOR
 #include "Editor.h"
+#endif
+
 #include "Engine/LatentActionManager.h"
 
 
@@ -11,10 +14,12 @@ void UAIPawnFunctionLibrary::AIPawnMoveToLocation(AAIController* InController, F
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(InController, EGetWorldErrorMode::ReturnNull);
 
+#if WITH_EDITOR
 	if (!World && GEditor)
 	{
 		//World = GEditor->GetEditorWorldContext().World();
 	}
+#endif
 
 	if (!World) return;
 

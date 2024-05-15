@@ -75,6 +75,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat|Sockets", DisplayName = "Fireball Origin", meta = (AllowPrivateAccess = "true"))
 	FName FireballOriginSocketName = FName("FireballOrigin");
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Niagara", meta = (AllowPrivateAccess = "true"))
+	class UNiagaraSystem* BeamNiagaraSystem = nullptr;
 	
 private:
 	FTimerHandle FireballAttackTimerHandle;
@@ -88,4 +91,6 @@ private:
 	bool CanOutburst = true;
 	bool CanFireball = true;
 	bool BeamTriggered = false;
+
+	TArray<class UNiagaraComponent*> NiagaraComponents;
 };

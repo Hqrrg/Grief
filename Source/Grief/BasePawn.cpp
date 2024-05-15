@@ -225,6 +225,8 @@ bool ABasePawn::Killed()
 	if (!IsDying())
 	{
 		Dying = true;
+
+		GetWorldTimerManager().ClearAllTimersForObject(this);
 		
 		UPaperFlipbook* DyingFlipbook = nullptr;
 

@@ -19,10 +19,19 @@ public class GriefEditor : ModuleRules
             {
                 "CoreUObject",
                 "Engine",
-                "UnrealEd",
-                "ComponentVisualizers",
                 "Grief",
             }
         );
+
+        if (Target.bBuildEditor)
+        {
+            PrivateDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "UnrealEd",
+                    "ComponentVisualizers",
+                }
+            );
+        }
     }
 }

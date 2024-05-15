@@ -125,10 +125,10 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 
 	for (int32 C = 0; C < 3; C++)
 	{
-		
 		FVector Temp = FVector::ZeroVector; Temp.Component(C) = WorldDirection.Component(C);
 		float Direction = Temp.Component(C) > 0.0f ? 1.0f : -1.0f;
-		FVector TempTargetLocation = GetActorLocation() + (GetCollisionComponent()->GetScaledBoxExtent().Component(C)+10.0f)*Direction + Temp * ScaleValue;
+		FVector Buffer = GetActorLocation(); Buffer.Component(C)+=(GetCollisionComponent()->GetScaledBoxExtent().Component(C)+10.0f)*Direction;
+		FVector TempTargetLocation = Buffer + Temp;
 		
 		if (!MovementBoundingBox->IsLocationWithinArea(TempTargetLocation)) continue;
 

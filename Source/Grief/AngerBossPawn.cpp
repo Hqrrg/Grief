@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "ProjectileManager.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 // Sets default values
@@ -126,6 +127,9 @@ void AAngerBossPawn::Attack_Fireball()
 		FVector TargetLocation = PlayerPawn->GetActorLocation();
 
 		ASimpleProjectile* Fireball = FireballProjectileManager->GetProjectile();
+
+		if (!Fireball) return;
+		
 		Fireball->SetAttackValues(FireballAttackInfo->Damage, FireballAttackInfo->KnockbackMultiplier);
 		Fireball->SetActorLocation(OriginLocation);
 		Fireball->FireAt(TargetLocation);
@@ -165,6 +169,28 @@ void AAngerBossPawn::Attack_Beam()
 
 		FVector TraceEnd = Origin + ForwardVector * TraceLength;
 
+		if (NiagaraComponents.Num() < Index)
+		{
+			UNiagaraComponent* BeamNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			BeamNiagaraSystem,
+			BeamRail,
+			NAME_None,
+			Origin,
+			BeamRail->GetComponentRotation(),
+			EAttachLocation::KeepWorldPosition,
+			true, true
+			);
+
+			NiagaraComponents.Add(BeamNiagaraComponent);
+		}
+		
+		UNiagaraComponent* BeamNiagaraComponent = NiagaraComponents[Index-1];
+
+		if (BeamNiagaraComponent)
+		{
+			BeamNiagaraComponent->SetVectorParameter(FName("BeamEnd"), Origin + ForwardVector * 1000.0f);
+		}
+
 		FCollisionShape CollisionShape = FCollisionShape::MakeBox(FVector(10.0f, 10.0f, 10.0f));
 	
 		FHitResult* SweepResult = new FHitResult();
@@ -178,11 +204,6 @@ void AAngerBossPawn::Attack_Beam()
 			ECC_Visibility,
 			CollisionShape,
 			QueryParams);
-
-		TArray<FHitResult> Results;
-		Results.Add(*SweepResult);
-		
-		DrawBoxSweeps(GetWorld(), Origin, TraceEnd, CollisionShape.GetExtent(), GetActorRotation().Quaternion(), Results, 0.01f);
 
 		if (IsBlocking)
 		{
@@ -246,6 +267,14 @@ void AAngerBossPawn::OnAttackFinished(uint8 AttackID)
 		break;
 		
 	case BeamAttackID:
+		
+		for (int32 NiagaraIndex = 0; NiagaraIndex < NiagaraComponents.Num(); NiagaraIndex++)
+		{
+			UNiagaraComponent* BeamNiagaraComponent = NiagaraComponents[NiagaraIndex];
+			BeamNiagaraComponent->DestroyComponent();
+		}
+		
+		NiagaraComponents.Empty();
 		BeamRail->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 		BeamTriggered = false;
 		break;
