@@ -131,7 +131,7 @@ bool UPlatformPawnMovement::IsFalling() const
 
 bool UPlatformPawnMovement::IsGrounded()
 {
-	FHitResult* Ground = FindGround(15.0f);
+	FHitResult* Ground = FindGround(30.0f);
 	return Ground ? true : false;
 }
 
