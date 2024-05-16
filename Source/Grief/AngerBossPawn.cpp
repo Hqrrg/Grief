@@ -227,6 +227,7 @@ void AAngerBossPawn::Attack_Outburst()
 
 	if (!DoAttack(AttackID, OutburstAttackTimerHandle,OutburstAttackTimerDelegate, OutburstAttackInfo->BeginFrame, OutburstAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
 
+
 	if (CanOutburst)
 	{
 		const float OutburstDuration = PlaybackEnd - PlaybackBegin;
