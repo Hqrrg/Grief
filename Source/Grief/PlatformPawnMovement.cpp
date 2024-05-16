@@ -179,6 +179,8 @@ void UPlatformPawnMovement::Landed()
 	Falling = false;
 	CurrentJumpCount = 0;
 	SetMovementMode(EPlatformMovementMode::Walking);
+
+	OnLanded.Broadcast();
 }
 
 void UPlatformPawnMovement::HandleJumping(float DeltaTime)
