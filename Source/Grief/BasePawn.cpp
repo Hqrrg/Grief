@@ -181,8 +181,8 @@ void ABasePawn::Knockback(const FVector OriginLocation, const float KnockbackMul
 {
 	if (!ShouldKnockback()) return;
 	
-	const FVector ActorLocation = GetActorLocation();
-	FVector KnockbackDirection = (ActorLocation - OriginLocation).GetSafeNormal();
+	const FVector CollisionLocation = GetCollisionComponent()->GetComponentLocation();
+	FVector KnockbackDirection = (CollisionLocation - OriginLocation).GetSafeNormal();
 	FVector FinalKnockbackDirection = FVector(0.0f, KnockbackDirection.Y < 0.0f ? -1.0f : 1.0f, KnockbackDirection.Z < 0.0f ? -1.0f : 1.0f);
 	const float TotalKnockback = GetKnockbackAmount() * KnockbackMultiplier;
 	
@@ -194,7 +194,10 @@ void ABasePawn::Damage(const float Damage)
 	ICombatantInterface::Damage(Damage);
 	UpdateFlipbook();
 
-	OnTakeDamage(Health);
+	if (!IsInvincible() && IsAlive())
+	{
+		OnTakeDamage(Health);
+	}
 }
 
 void ABasePawn::ResetPlatformActor()

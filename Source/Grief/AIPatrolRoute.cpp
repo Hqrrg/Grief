@@ -3,6 +3,12 @@
 
 #include "AIPatrolRoute.h"
 
+AAIPatrolRoute::AAIPatrolRoute()
+{
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(SceneComponent);
+}
+
 FVector AAIPatrolRoute::GetLocationAtIndex(uint8 Index)
 {
 	const FVector ActorLocation = GetActorLocation();

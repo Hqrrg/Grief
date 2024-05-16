@@ -112,7 +112,7 @@ void APlayerPawn::Jump(const FInputActionValue& Value)
 
 void APlayerPawn::Attack(const FInputActionValue& Value)
 {
-	if (Attacking || AttackInfoArray.IsEmpty()) return;
+	if (IsDying() || Attacking || AttackInfoArray.IsEmpty()) return;
 
 	constexpr uint8 AttackID = static_cast<uint8>(EPlayerAttack::Default);
 

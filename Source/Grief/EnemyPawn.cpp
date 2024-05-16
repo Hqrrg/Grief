@@ -76,7 +76,7 @@ UBehaviorTree* AEnemyPawn::GetBehaviourTree()
 
 bool AEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 {
-	if (Attacking || AttackInfoArray.IsEmpty()) return false;
+	if (IsDying() || Attacking || AttackInfoArray.IsEmpty()) return false;
 
 	if (AttackID > AttackInfoArray.Num()-1) return false;
 	

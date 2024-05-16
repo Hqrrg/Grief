@@ -58,7 +58,7 @@ ASimpleProjectile* AProjectileManager::SpawnProjectile(UWorld* World)
 	
 	Projectile->FinishSpawning(SpawnTransform);
 	Projectile->SetProjectileManager(this);
-	ProjectilePool.Emplace(Projectile);
+	ProjectilePool.Add(Projectile);
 
 	return Projectile;
 }

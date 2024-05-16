@@ -52,7 +52,8 @@ void ASimpleProjectile::ResetProjectile()
 	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
-	
+
+	Active = false;
 	Hit = false;
 
 	UpdateFlipbook();

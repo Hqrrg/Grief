@@ -142,7 +142,6 @@ bool UPlatformPawnMovement::IsFlying() const
 
 FHitResult* UPlatformPawnMovement::FindGround(float InDistance)
 {
-	
 	FVector BoxLocation = CollisionComponent->GetComponentLocation();
 	FVector BoxExtent = CollisionComponent->GetScaledBoxExtent();
 	
