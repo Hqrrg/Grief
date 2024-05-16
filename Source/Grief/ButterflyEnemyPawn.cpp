@@ -43,6 +43,7 @@ void AButterflyEnemyPawn::BeginPlay()
 
 	if (UButterflySpawnParamaters* ButterflySpawnParamaters = Cast<UButterflySpawnParamaters>(SpawnParamaters))
 	{
+		FireballProjectileManager = ButterflySpawnParamaters->ProjectileManager;
 		MovementPathRadius = ButterflySpawnParamaters->MovementPathRadius;
 		ButterflyPathType = ButterflySpawnParamaters->ButterflyPathType;
 		Speed = ButterflySpawnParamaters->Speed;
@@ -164,6 +165,9 @@ void AButterflyEnemyPawn::ButterflyShoot()
 		FVector TargetLocation = PlayerPawn->GetActorLocation();
 
 		ASimpleProjectile* Fireball = FireballProjectileManager->GetProjectile();
+
+		if (!Fireball) return;
+		
 		Fireball->SetAttackValues(FireballAttackInfo->Damage, FireballAttackInfo->KnockbackMultiplier);
 		Fireball->SetActorLocation(OriginLocation);
 		Fireball->FireAt(TargetLocation);

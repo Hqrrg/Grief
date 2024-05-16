@@ -97,7 +97,7 @@ void ASlimeEnemyPawn::ProxyAttack()
 			ICombatantInterface* Combatant = Player->GetCombatant();
 
 			Combatant->Knockback(GetActorLocation(), LightAttackInfo.KnockbackMultiplier);
-			Combatant->ApplyDamage(LightAttackInfo.Damage);
+			Combatant->Damage(LightAttackInfo.Damage);
 		}
 	}
 }
@@ -128,7 +128,7 @@ void ASlimeEnemyPawn::ExplodeAttack()
 				ICombatantInterface* Combatant = Player->GetCombatant();
 
 				Combatant->Knockback(GetActorLocation(), OutburstAttackInfo->KnockbackMultiplier);
-				Combatant->ApplyDamage(OutburstAttackInfo->Damage);
+				Combatant->Damage(OutburstAttackInfo->Damage);
 			}
 		}
 		CanOutburst = false;

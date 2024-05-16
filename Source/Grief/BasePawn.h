@@ -86,6 +86,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnTakeDamage(float NewHealth);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnKilled();
 	
 public:
 	UFUNCTION(BlueprintPure)

@@ -194,7 +194,7 @@ void ABasePawn::Damage(const float Damage)
 	ICombatantInterface::Damage(Damage);
 	UpdateFlipbook();
 
-	if (!IsInvincible() && IsAlive())
+	if (!IsInvincible())
 	{
 		OnTakeDamage(Health);
 	}
@@ -246,7 +246,7 @@ bool ABasePawn::Killed()
 		GetWorldTimerManager().SetTimer(DyingTimerHandle, DyingTimerDelegate, DyingDuration, false, DyingDuration);
 		return false;
 	}
-
+	OnKilled();
 	return true;
 }
 

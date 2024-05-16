@@ -9,23 +9,14 @@
   <component name="ChangeListManager">
     <list default="true" id="7d3c71d6-6148-4cfe-969a-8ce516e48a25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Grief/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/Services_Tasks/BTT_AngerAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/AI/Services_Tasks/BTT_AngerAttack.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/BP_Anger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/DT_AngerAttackInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/DT_AngerAttackInfo.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/BP_Fireball.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Anger/Fireball/BP_Fireball.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/BP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/Inputs/IMC_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Player/Inputs/IMC_Player.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/Laser/BP_Laser.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/Bosses/Denial/Laser/BP_Laser.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/AngerBossBar.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/AngerBossBar.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/DenialBossBar.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/DenialBossBar.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/WBP_EndScreen.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Blueprints/UI/WBP_EndScreen.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Grief/Levels/L_Grief.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPatrolRoute.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPatrolRoute.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/AIPatrolRoute.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/AIPatrolRoute.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/BasePawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/EnemyPawn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlatformPawnMovement.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/PlayerPawn.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Grief/ProjectileManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/ProjectileManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Grief/SimpleProjectile.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -346,6 +337,7 @@
       <workItem from="1715818222205" duration="1073000" />
       <workItem from="1715822081213" duration="1941000" />
       <workItem from="1715824599553" duration="7253000" />
+      <workItem from="1715835491274" duration="10525000" />
     </task>
     <servers />
   </component>

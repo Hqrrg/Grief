@@ -30,15 +30,18 @@ void AProjectileManager::BeginPlay()
 
 ASimpleProjectile* AProjectileManager::GetProjectile()
 {
+	UWorld* World = GetWorld();
+	
 	if (ProjectilePool.IsEmpty())
 	{
-		UWorld* World = GetWorld();
 		return SpawnProjectile(World);
 	}
 
 	const int32 LastIndex = ProjectilePool.Num()-1;
 	
 	ASimpleProjectile* Projectile = ProjectilePool[LastIndex];
+
+	if (!Projectile) Projectile = SpawnProjectile(World);
 	
 	ProjectilePool.RemoveAt(LastIndex);
 	
