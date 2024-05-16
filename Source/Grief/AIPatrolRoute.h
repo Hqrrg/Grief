@@ -11,6 +11,13 @@ class GRIEF_API AAIPatrolRoute : public AActor
 {
 	GENERATED_BODY()
 
+	/* Root Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* SceneComponent;
+
+public:
+	AAIPatrolRoute();
+
 public:
 	UFUNCTION(BlueprintPure)
 	FVector GetLocationAtIndex(uint8 Index);

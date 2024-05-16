@@ -52,7 +52,6 @@ bool AWolfEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 
 void AWolfEnemyPawn::LightAttack()
 {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
 	const FAttackInfo LightAttackInfo = AttackInfoArray[GetAttackID(EWolfAttack::Light)];
 	
 	TArray<AActor*> OverlappingPawns = LightAttackHitbox->GetContainedActors();

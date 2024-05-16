@@ -53,7 +53,7 @@ public:
 protected:
 	virtual bool Killed() override;
 
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviourTree = nullptr;
 
