@@ -49,12 +49,14 @@ bool ADenialBossPawn::Attack(uint8 AttackID, bool StopMovement)
 {
 	const bool ShouldAttack = Super::Attack(AttackID, StopMovement);
 
+	// Don't continue if parent call returned false.
 	if (!ShouldAttack) return false;
 
 	constexpr uint8 LaserBarrageAttackID = static_cast<uint8>(EDenialBossAttack::LaserBarrage);
 	constexpr uint8 HyperbeamAttackID = static_cast<uint8>(EDenialBossAttack::Hyperbeam);
 	constexpr uint8 SlamAttackID = static_cast<uint8>(EDenialBossAttack::Slam);
 
+	// Select attack based on AttackID arg.
 	switch (AttackID)
 	{
 	case LaserBarrageAttackID:
@@ -78,6 +80,7 @@ bool ADenialBossPawn::Attack(uint8 AttackID, bool StopMovement)
 
 void ADenialBossPawn::Attack_LaserBarrage()
 {
+	// Don't continue if there is no laser projectile manager
 	if (!LaserProjectileManager) return;
 
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -93,13 +96,26 @@ void ADenialBossPawn::Attack_LaserBarrage()
 	const uint8 AttackID = GetAttackID(EDenialBossAttack::LaserBarrage);
 	const FAttackInfo* LaserBarrageAttackInfo = &AttackInfoArray[AttackID];
 
-	if (!DoAttack(AttackID, LaserBarrageTimerHandle,LaserBarrageTimerDelegate, LaserBarrageAttackInfo->BeginFrame, LaserBarrageAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
+	// Don't continue if DoAttack returns false
+	if (!DoAttack(
+		AttackID,
+		LaserBarrageTimerHandle,
+		LaserBarrageTimerDelegate,
+		LaserBarrageAttackInfo->BeginFrame,
+		LaserBarrageAttackInfo->EndFrame,
+		PlaybackBegin,
+		PlaybackEnd)) return;
 
+	// Start looping timer calling FireLaser if not already active
 	if (!GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle))
 	{
-		GetWorldTimerManager().SetTimer(FireLaserTimerHandle, this, &ADenialBossPawn::FireLaser, LaserBarrageFireRate, true);
-
-		OnAttack(AttackID);
+		GetWorldTimerManager().SetTimer(
+			FireLaserTimerHandle,
+			this,
+			&ADenialBossPawn::FireLaser,
+			LaserBarrageFireRate,
+			true);
+		OnAttack(AttackID); // Call notify event
 	}
 }
 
@@ -129,9 +145,7 @@ void ADenialBossPawn::Attack_Hyperbeam()
 	if (!HyperbeamFiring)
 	{
 		HyperbeamFiring = true;
-		
 		HyperbeamNiagara->Activate();
-		
 		OnAttack(AttackID);
 	}
 	
@@ -178,25 +192,34 @@ void ADenialBossPawn::Attack_Slam()
 
 	const uint8 AttackID = GetAttackID(EDenialBossAttack::Slam);
 	const FAttackInfo* SlamAttackInfo = &AttackInfoArray[AttackID];
-	
-	if (!DoAttack(AttackID, SlamTimerHandle,SlamTimerDelegate, SlamAttackInfo->BeginFrame, SlamAttackInfo->EndFrame,PlaybackBegin,PlaybackEnd)) return;
 
+	// Don't continue if flipbook animation is not in the attack window
+	// BY REF: Set PlaybackBegin, PlaybackEnd & Start timer using SlamTimerHandle & SlamTimerDelegate
+	if (!DoAttack
+		(AttackID, SlamTimerHandle,SlamTimerDelegate,
+		SlamAttackInfo->BeginFrame, SlamAttackInfo->EndFrame,
+		PlaybackBegin,PlaybackEnd)) return;
+
+	// If the slam hasn't already happened
 	if (!Slammed)
 	{
+		// Loop through actors contained within the hitbox for this attack
 		TArray<AActor*> ContainedActors = SlamAttackHitbox->GetContainedActors();
 
 		for (int32 Index = 0; Index < ContainedActors.Num(); Index++)
 		{
+			// If the player is one of them, knockback and damage them with the amounts from the attack info
 			if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(ContainedActors[Index]))
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
-
+				
 				Combatant->Knockback(GetActorLocation(), SlamAttackInfo->KnockbackMultiplier);
 				Combatant->Damage(SlamAttackInfo->Damage);
 			}
 		}
 		Slammed = true;
 
+		//Call notify event
 		OnAttack(AttackID);
 	}
 }
@@ -228,7 +251,8 @@ void ADenialBossPawn::OnAttackFinished(uint8 AttackID)
 	switch (AttackID)
 	{
 	case LaserBarrageAttackID:
-		if (GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle)) GetWorldTimerManager().ClearTimer(FireLaserTimerHandle);
+		if (GetWorldTimerManager().IsTimerActive(FireLaserTimerHandle))
+			GetWorldTimerManager().ClearTimer(FireLaserTimerHandle);
 		break;
 		
 	case HyperbeamAttackID:

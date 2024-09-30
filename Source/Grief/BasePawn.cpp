@@ -262,7 +262,9 @@ void ABasePawn::SetHealth(const float InHealth)
 
 void ABasePawn::CancelAttack(FTimerHandle& AttackTimerHandle, uint8 AttackID)
 {
+	// Clear attack timer
 	if (GetWorldTimerManager().IsTimerActive(AttackTimerHandle)) GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+	// Call overriden attack finished
 	OnAttackFinished(AttackID);
 }
 
@@ -319,27 +321,31 @@ bool ABasePawn::DoAttack(uint8 AttackID, FTimerHandle& TimerHandle, FTimerDelega
 {
 	float PlaybackCurrent = GetFlipbookComponent()->GetPlaybackPosition();
 	float PlaybackMax = GetFlipbookComponent()->GetFlipbookLength();
-	
+
+	//Initiate attack timer if not already active
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle))
 	{
+		// Call attack_name function every 0.01 seconds
 		GetWorldTimerManager().SetTimer(TimerHandle, Callback, 0.01f, true);
 
 		FTimerHandle CancelAttackTimerHandle;
 		FTimerDelegate CancelAttackTimerDelegate;
 		float RemainingDuration = PlaybackMax - PlaybackCurrent;
-		
+
+		// Cancel attack timer at the end of the flipbook animation
 		CancelAttackTimerDelegate.BindUFunction(this, FName("CancelAttack"), TimerHandle, AttackID);
 		GetWorldTimerManager().SetTimer(CancelAttackTimerHandle, CancelAttackTimerDelegate, RemainingDuration, false, RemainingDuration);
 		return false;
 	}
 	
 	float Framerate = GetFlipbookComponent()->GetFlipbookFramerate();
-
+	
 	PlaybackBegin = BeginFrame / Framerate;
 	PlaybackEnd = EndFrame / Framerate;
 
+	// If not in attack window
 	if (PlaybackCurrent < PlaybackBegin || PlaybackCurrent > PlaybackEnd) return false;
-
+	// If in attack window
 	return true;
 }
 

@@ -55,11 +55,13 @@ void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
+	// Reset spline
 	MovementPath->ClearSplinePoints();
 	
 	const FVector PointLocationZ = FVector(0.0f, 0.0f, MovementPathRadius);
 	const FVector PointLocationY = FVector(0.0f, MovementPathRadius, 0.0f);
-	
+
+	// Found online - don't ask, it works
 	float TangentFactor = 4 * (sqrt(2) - 1) / 3 + 1;
 	
 	FVector YTangent = FVector(0.0f, MovementPathRadius * TangentFactor, 0.0f);
@@ -67,6 +69,7 @@ void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
 	
 	switch (ButterflyPathType)
 	{
+	// Construct a circular spline path
 	case EButterflyPathType::Circle:
 
 		PathCollision->SetBoxExtent(FVector(CollisionComponent->GetScaledBoxExtent().X, MovementPathRadius, MovementPathRadius));
@@ -81,7 +84,7 @@ void AButterflyEnemyPawn::OnConstruction(const FTransform& Transform)
 		MovementPath->SetTangentAtSplinePoint(2, -ZTangent, ESplineCoordinateSpace::Local);
 		MovementPath->SetTangentAtSplinePoint(3, YTangent, ESplineCoordinateSpace::Local);
 		break;
-		
+	// Construct a figure 8 spline path
 	case EButterflyPathType::Figure8:
 		
 		const FVector Offset = FVector(0.0f, MovementPathRadius * 1.5, 0.0f);

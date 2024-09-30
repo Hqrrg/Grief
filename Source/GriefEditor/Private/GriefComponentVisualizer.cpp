@@ -8,11 +8,11 @@
 
 void FGriefComponentVisualizer::DrawVisualization(const UActorComponent* Component, const FSceneView* View,FPrimitiveDrawInterface* PDI)
 {
-
 	if (const UPlayerSensingComponent* PlayerSensingComponent = Cast<UPlayerSensingComponent>(Component))
 	{
 		if (!PlayerSensingComponent->IsEnabled()) return;
-		
+
+		// Draw detection radius
 		DrawWireSphere(
 			PDI,
 			PlayerSensingComponent->GetOwner()->GetActorLocation(),
@@ -24,17 +24,17 @@ void FGriefComponentVisualizer::DrawVisualization(const UActorComponent* Compone
 			0,
 			false);
 
-
-			DrawWireSphere(
-		PDI,
-		PlayerSensingComponent->GetOwner()->GetActorLocation(),
-		FColor::Magenta,
-		PlayerSensingComponent->GetSearchRadius(),
-		24,
-		0,
-		1.0f,
-		0,
-		false);
+		// Draw search radius
+		DrawWireSphere(
+			PDI,
+			PlayerSensingComponent->GetOwner()->GetActorLocation(),
+			FColor::Magenta,
+			PlayerSensingComponent->GetSearchRadius(),
+			24,
+			0,
+			1.0f,
+			0,
+			false);
 	}
 }
 #endif

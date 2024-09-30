@@ -42,16 +42,17 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	const FVector ActorLocation = GetOwner()->GetActorLocation();
 	const FVector CameraLocation = Camera->GetComponentLocation();
 
+	// Default biases and interp speeds
 	float YTargetBias = 0.0f;
 	float ZTargetBias = 0.0f;
 	float YInterpSpeed = 5.0f;
 	float ZInterpSpeed = 10.0f;
 	
-
 	if (APlayerPawn* PlayerCharacter = Cast<APlayerPawn>(GetOwner()))
 	{
 		EDirection MovementDirection = PlayerCharacter->GetMovementDirection();
-		
+
+		// Y-Bias based on movement direction
 		switch (MovementDirection)
 		{
 		case EDirection::Left:
@@ -68,6 +69,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 		EPlatformMovementMode PlatformerMovementMode = PlayerCharacter->GetPlatformMovementComponent()->GetMovementMode();
 
+		// Z-Bias based on movement mode
 		switch (PlatformerMovementMode)
 		{
 		case EPlatformMovementMode::Jumping:
@@ -82,26 +84,28 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			break;
 		}
 	}
-
+	// Multiply bias (direction) by amount
 	YTargetBias*=YawMovementBias;
 	ZTargetBias*=PitchMovementBias;
 
+	// X Offset / Zoom
 	float XTargetBias = CameraZoom;
 	float XInterpSpeed = 5.0f;
 
 	if (CurrentCameraBoundingBox) XTargetBias+=CurrentCameraBoundingBox->GetOffset();
 	if (CurrentCameraBoundingBox) XInterpSpeed = CurrentCameraBoundingBox->GetOffsetInterpSpeed();
 
+	// Create camera target location
 	float TargetX = ActorLocation.X-XTargetBias;
 	float TargetY = ActorLocation.Y+YTargetBias;
 	float TargetZ = ActorLocation.Z+ZTargetBias;
-
 	
 	if (TargetY > CameraBounds.Right) TargetY = CameraBounds.Right;
 	if (TargetY < CameraBounds.Left) TargetY = CameraBounds.Left;
 	if (TargetZ > CameraBounds.Up) TargetZ = CameraBounds.Up;
 	if (TargetZ < CameraBounds.Down) TargetZ = CameraBounds.Down;
 
+	// Set interp speeds to new target location
 	if (FMath::IsNearlyEqual(GetOwner()->GetVelocity().Length(), 0.0f, 0.5f))
 	{
 		YInterpSpeed = 2.5f;
@@ -113,7 +117,7 @@ void UPlatformCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	const float InterpTargetZ = FMath::FInterpTo(CameraLocation.Z, TargetZ, DeltaTime, ZInterpSpeed);
 
 	const FVector TargetLocation = FVector(InterpTargetX, InterpTargetY, InterpTargetZ);
-	
+	// Update location
 	Camera->SetWorldLocation(TargetLocation);
 }
 
@@ -140,8 +144,10 @@ void UPlatformCameraComponent::SetupCamera()
 
 void UPlatformCameraComponent::UpdateCameraBounds()
 {
+	// Don't continue if there are no active bounds
 	if (CameraBoundingBoxes.IsEmpty()) return;
 
+	// Update current bounds to the last one entered
 	CurrentCameraBoundingBox = CameraBoundingBoxes[CameraBoundingBoxes.Num()-1];
 	
 	int32 LayerUp = INT_MIN;
@@ -153,7 +159,8 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 	float Down = FLT_MIN;
 	float Left = FLT_MIN;
 	float Right = FLT_MAX;
-	
+
+	// Loop through bounding boxes and calculate which bounds to use
 	for (uint8 Index = 0; Index < CameraBoundingBoxes.Num(); Index++)
 	{
 		if (ACameraBoundingBox* BoundingBox = CameraBoundingBoxes[Index])
@@ -171,7 +178,8 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 			if (BoundingBox->IsBoundActive(EDirection::Right)) UpdateBound(Right, BoundingBoxRight, LayerRight, BoundingBoxLayer);
 		}
 	}
-	
+
+	// Update bounds
 	CameraBounds.SetBound(EDirection::Up, Up, LayerUp);
 	CameraBounds.SetBound(EDirection::Down, Down, LayerDown);
 	CameraBounds.SetBound(EDirection::Left, Left, LayerLeft);
@@ -180,15 +188,16 @@ void UPlatformCameraComponent::UpdateCameraBounds()
 
 void UPlatformCameraComponent::UpdateBound(float& Bound, const float InBound, int32& Layer, const int32 InLayer)
 {
+	// Dont update if current layer is above new layer
 	if (Layer > InLayer) return;
-	
+	// Update if new layer is above current layer
 	if (Layer < InLayer)
 	{
 		Bound = InBound;
 		Layer = InLayer;
 		return;
 	}
-
+	// If layers are identical, choose the smallest (absolute) bound
 	Bound = FMath::Abs(Bound) < FMath::Abs(InBound) ? Bound : InBound;
 }
 

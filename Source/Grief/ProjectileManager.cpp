@@ -31,25 +31,24 @@ void AProjectileManager::BeginPlay()
 ASimpleProjectile* AProjectileManager::GetProjectile()
 {
 	UWorld* World = GetWorld();
-	
-	if (ProjectilePool.IsEmpty())
-	{
-		return SpawnProjectile(World);
-	}
 
+	// Pool empty, spawn new projectile
+	if (ProjectilePool.IsEmpty()) return SpawnProjectile(World);
+
+	// Get last projectile in pool
 	const int32 LastIndex = ProjectilePool.Num()-1;
-	
 	ASimpleProjectile* Projectile = ProjectilePool[LastIndex];
 
 	if (!Projectile) Projectile = SpawnProjectile(World);
 	
+	//Remove projectile from pool before returning
 	ProjectilePool.RemoveAt(LastIndex);
-	
 	return Projectile;
 }
 
 ASimpleProjectile* AProjectileManager::SpawnProjectile(UWorld* World)
 {
+	// Don't spawn if world is invalid or there is no projectile class assigned
 	if (!World) return nullptr;
 	if (!ProjectileClass) return nullptr;
 	
@@ -58,7 +57,7 @@ ASimpleProjectile* AProjectileManager::SpawnProjectile(UWorld* World)
 	ASimpleProjectile* Projectile = World->SpawnActorDeferred<ASimpleProjectile>(ProjectileClass, SpawnTransform);
 	
 	if (!Projectile) return nullptr;
-	
+	// Set projectile manager to this and add to pool
 	Projectile->FinishSpawning(SpawnTransform);
 	Projectile->SetProjectileManager(this);
 	ProjectilePool.Add(Projectile);
@@ -68,19 +67,19 @@ ASimpleProjectile* AProjectileManager::SpawnProjectile(UWorld* World)
 
 void AProjectileManager::RetrieveProjectile(ASimpleProjectile* Projectile)
 {
-	if (ProjectilePool.Num() < 20)
+	if (ProjectilePool.Num() < 20) // If there is space in the pool
 	{
 		const FVector Location = FVector::ZeroVector;
 		const FRotator Rotation = FRotator::ZeroRotator;
 		
-		Projectile->TeleportTo(Location, Rotation);
-		
+		Projectile->TeleportTo(Location, Rotation); // Reset location
+		// Already contains this projectile
 		if (ProjectilePool.Contains(Projectile)) return;
-		
+		// Add to pool
 		ProjectilePool.Add(Projectile);
 		return;
 	}
-	
+	// Else destroy 
 	Projectile->Destroy();
 }
 

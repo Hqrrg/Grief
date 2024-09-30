@@ -47,15 +47,17 @@ void UPlayerSensingComponent::Update()
 
 		float DistanceToPawn = SensingToPawn.Length();
 
+		// Outside search radius
 		if (DistanceToPawn > GetSearchRadius())
 		{
+			// Was sensed - return to slower check intervals
 			if (bPlayerSensed)
 			{
 				bPlayerSensed = false;
 				TimerInterval = 0.5f;
 				StartTimer(TimerInterval);
 			}
-		
+			// Was detected- player escaped
 			if (bPlayerDetected)
 			{
 				bPlayerDetected = false;
@@ -63,9 +65,10 @@ void UPlayerSensingComponent::Update()
 			}
 			return;
 		}
-
+		// Outside detection radius, within search radius
 		if (DistanceToPawn > GetDetectionRadius())
 		{
+			// Wasn't sensed - player sensed not detected
 			if (!bPlayerSensed)
 			{
 				bPlayerSensed = true;
@@ -73,17 +76,15 @@ void UPlayerSensingComponent::Update()
 				StartTimer(TimerInterval);
 				BroadcastPlayerSensed(ESensingRange::Search);
 			}
-
+			// Player left detection radius
 			if (bPlayerDetected && LastSensingRange == ESensingRange::Detection)
 			{
 				BroadcastPlayerSensed(ESensingRange::Search);
 			}
-		
 			return;
 		}
-	
 		if (bPlayerDetected) return;
-	
+		// Detected
 		bPlayerDetected = true;
 		BroadcastPlayerSensed(ESensingRange::Detection);
 	}

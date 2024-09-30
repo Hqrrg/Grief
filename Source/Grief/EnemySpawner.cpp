@@ -44,14 +44,14 @@ void AEnemySpawner::OnConstruction(const FTransform& Transform)
 void AEnemySpawner::Spawn()
 {
 	UWorld* World = GetWorld();
-
 	if (!World) return;
 	
 	SpawnTransform = GetActorTransform();
+	// Spawn
 	EnemyPawn = World->SpawnActorDeferred<AEnemyPawn>(EnemyClass->GetAuthoritativeClass(), SpawnTransform);
-
 	if (!EnemyPawn) return;
 
+	// Set enemy spawn paramaters & finish spawning
 	EnemyPawn->SetSpawnParamaters(EnemySpawnParamaters);
 	EnemyPawn->FinishSpawning(SpawnTransform);
 }

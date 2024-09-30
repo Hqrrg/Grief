@@ -76,24 +76,28 @@ UBehaviorTree* AEnemyPawn::GetBehaviourTree()
 
 bool AEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 {
+	// Don't continue if dying, already attacking, or no attacks available
 	if (IsDying() || Attacking || AttackInfoArray.IsEmpty()) return false;
-
+	// Don't continue if attackID is out of bounds
 	if (AttackID > AttackInfoArray.Num()-1) return false;
 	
 	const FAttackInfo* AttackInfo = &AttackInfoArray[AttackID];
-	
+	//Don't continue if attack is on cooldown
 	if (AttackInfo->IsCooldown) return false;
 	
 	Attacking = true;
 
 	if (Controller)
 	{
+		// Stop movement input if StopMovement is true (defaults false)
 		Controller->SetIgnoreMoveInput(StopMovement);
 	}
-	
+
+	//Set the attacking flipbook
 	AttackingFlipbook = AttackInfo->Flipbook;
 	UpdateFlipbook();
 
+	//Start timer to conclude attack at the end of the animation (calls StopAttacking)
 	float AttackDuration = 1.0f;
 	if (AttackingFlipbook) AttackDuration = AttackingFlipbook->GetTotalDuration();
 
@@ -104,6 +108,7 @@ bool AEnemyPawn::Attack(uint8 AttackID, bool StopMovement)
 	
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDuration, false, AttackDuration);
 
+	//Call notify event
 	OnBeginAttack(AttackID);
 	return true;
 }
@@ -123,6 +128,9 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 
 	FVector FinalWorldDirection = FVector::ZeroVector;
 
+	/* Iterate through WorldDirection components
+	 * Check if each component is within movement bounds
+	 * Discard if false, assign to FinalWorldDirection if true */
 	for (int32 C = 0; C < 3; C++)
 	{
 		FVector Temp = FVector::ZeroVector; Temp.Component(C) = WorldDirection.Component(C);
@@ -135,6 +143,7 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 		FinalWorldDirection.Component(C) = WorldDirection.Component(C);
 	}
 
+	// Account for collision component box extent so all of pawn is within bounds
 	FVector ActorLocation = GetActorLocation();
 	FVector CollisionBoxExtent = GetCollisionComponent()->GetScaledBoxExtent();
 	FVector Direction = MovementBoundingBox->GetActorLocation() - ActorLocation;
@@ -156,7 +165,7 @@ void AEnemyPawn::AddMovementInput(FVector WorldDirection, float ScaleValue, bool
 			FinalWorldDirection = FVector(0.0f, MovementDirectionY, MovementDirectionZ);
 		}
 	}
-	
+	// Call parent with FinalWorldDirection
 	Super::AddMovementInput(FinalWorldDirection, ScaleValue, bForce);
 }
 

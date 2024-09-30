@@ -138,7 +138,6 @@ void AAngerBossPawn::Attack_Fireball()
 
 		OnAttack(AttackID);
 	}
-	
 }
 
 void AAngerBossPawn::Attack_Beam()
@@ -147,30 +146,35 @@ void AAngerBossPawn::Attack_Beam()
 
 	const uint8 AttackID = GetAttackID(EAngerBossAttack::Beam);
 	const FAttackInfo* BeamAttackInfo = &AttackInfoArray[AttackID];
-	
-	if (!DoAttack(AttackID, BeamAttackTimerHandle,BeamAttackTimerDelegate, BeamAttackInfo->BeginFrame, BeamAttackInfo->EndFrame, PlaybackBegin, PlaybackEnd)) return;
 
-	if (!BeamTriggered)
+	// Don't continue if DoAttack returns false
+	if (!DoAttack(AttackID,
+		BeamAttackTimerHandle,BeamAttackTimerDelegate,
+		BeamAttackInfo->BeginFrame,BeamAttackInfo->EndFrame,
+		PlaybackBegin,PlaybackEnd)) return;
+
+	if (!BeamTriggered) // Call once when attack starts
 	{
 		BeamTriggered = true;
-		
-		OnAttack(AttackID);
+		OnAttack(AttackID); // Call notify event
 	}
-	
+	// Rotate beam spline
 	BeamRail->AddRelativeRotation(FRotator(0.0f, 0.0f, BeamRotationSpeed), true);
 	
 	float SplineLength = BeamRail->GetSplineLength();
-
+	
 	for (int32 Index = 1; Index <= BeamCount; Index++)
 	{
+		// Get Location @ Index/BeamCount i.e. 1/3 along the spline
 		FVector Origin = BeamRail->GetLocationAtDistanceAlongSpline(SplineLength * Index / BeamCount, ESplineCoordinateSpace::World);
 		FVector ForwardVector = (Origin - BeamRail->GetComponentLocation()).GetSafeNormal();
 		float TraceLength = 5000.0f;
 
 		FVector TraceEnd = Origin + ForwardVector * TraceLength;
-
+		
 		if (NiagaraComponents.Num() < Index)
 		{
+			// Spawn niagara at location along spline if one has not already been spawned
 			UNiagaraComponent* BeamNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 			BeamNiagaraSystem,
 			BeamRail,
@@ -180,19 +184,16 @@ void AAngerBossPawn::Attack_Beam()
 			EAttachLocation::KeepWorldPosition,
 			true, true
 			);
-
+			
 			NiagaraComponents.Add(BeamNiagaraComponent);
 		}
-		
+
+		// Update latest niagara beam end paramater
 		UNiagaraComponent* BeamNiagaraComponent = NiagaraComponents[Index-1];
+		if (BeamNiagaraComponent) BeamNiagaraComponent->SetVectorParameter(FName("BeamEnd"), Origin + ForwardVector * 1000.0f);
 
-		if (BeamNiagaraComponent)
-		{
-			BeamNiagaraComponent->SetVectorParameter(FName("BeamEnd"), Origin + ForwardVector * 1000.0f);
-		}
-
+		// Box trace from locations along spline
 		FCollisionShape CollisionShape = FCollisionShape::MakeBox(FVector(10.0f, 10.0f, 10.0f));
-	
 		FHitResult* SweepResult = new FHitResult();
 		FCollisionQueryParams QueryParams; QueryParams.AddIgnoredActor(this);
 	
@@ -207,6 +208,7 @@ void AAngerBossPawn::Attack_Beam()
 
 		if (IsBlocking)
 		{
+			// Trace hit player: apply knockback & damage
 			if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(SweepResult->GetActor()))
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
@@ -224,34 +226,39 @@ void AAngerBossPawn::Attack_Outburst()
 
 	const uint8 AttackID = GetAttackID(EAngerBossAttack::Outburst);
 	const FAttackInfo* OutburstAttackInfo = &AttackInfoArray[AttackID];
+	
+	// Don't continue if DoAttack returns false
+	if (!DoAttack(AttackID,
+		OutburstAttackTimerHandle,OutburstAttackTimerDelegate,
+		OutburstAttackInfo->BeginFrame, OutburstAttackInfo->EndFrame,
+		PlaybackBegin, PlaybackEnd)) return;
 
-	if (!DoAttack(AttackID, OutburstAttackTimerHandle,OutburstAttackTimerDelegate, OutburstAttackInfo->BeginFrame, OutburstAttackInfo->EndFrame,PlaybackBegin, PlaybackEnd)) return;
-
-
+	// Call once when attack flipbook enters damage animation
 	if (CanOutburst)
 	{
+		// Set niagara duration/lifetime to duration of flipbook damage range
 		const float OutburstDuration = PlaybackEnd - PlaybackBegin;
 		OutburstNiagara->SetVariableFloat(FName("Duration"), OutburstDuration);
-		
 		OutburstNiagara->Activate(true);
-		
+
+		// Get all actors within attack area
 		TArray<AActor*> ContainedActors = OutburstAttackArea->GetContainedActors();
 
 		for (int32 Index = 0; Index < ContainedActors.Num(); Index++)
 		{
+			// If the player is within the attack area
 			if (IPlatformPlayer* Player = Cast<IPlatformPlayer>(ContainedActors[Index]))
 			{
 				ICombatantInterface* Combatant = Player->GetCombatant();
-
+				// Don't apply knockback or damage if player is behind object
 				if (Combatant->IsObscured(this)) continue;
-				
+				// Else 
 				Combatant->Knockback(GetActorLocation(), OutburstAttackInfo->KnockbackMultiplier);
 				Combatant->Damage(OutburstAttackInfo->Damage);
 			}
 		}
 		CanOutburst = false;
-
-		OnAttack(AttackID);
+		OnAttack(AttackID); // Call notify event
 	}
 }
 

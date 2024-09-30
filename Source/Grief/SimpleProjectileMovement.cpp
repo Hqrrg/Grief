@@ -34,6 +34,7 @@ void USimpleProjectileMovement::TickComponent(float DeltaTime, ELevelTick TickTy
 
 void USimpleProjectileMovement::HandleMovement(float DeltaTime)
 {
+	// Don't continue if movement vector has no direction or shouldn't move
 	if (!ShouldMove) return;
 	if (MovementVector == FVector::ZeroVector) return;
 
@@ -41,13 +42,15 @@ void USimpleProjectileMovement::HandleMovement(float DeltaTime)
 	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
 	FVector TargetLocation = CurrentLocation + MovementVector * Speed * DeltaTime;
 	FRotator TargetRotation = FRotationMatrix::MakeFromX(TargetLocation - CurrentLocation).Rotator(); TargetRotation.Roll = 0.0f;
-	
+
+	//If collided, handle projectile hit
 	if (CheckCollided(CollisionHitResult, TargetLocation))
 	{
 		TargetLocation = CollisionHitResult.Location;
 		HandleProjectileHit(CollisionHitResult.GetActor());
 	};
-	
+
+	// Move
 	FLatentActionInfo LatentInfo; LatentInfo.CallbackTarget = this;
 
 	UKismetSystemLibrary::MoveComponentTo(
@@ -86,6 +89,7 @@ bool USimpleProjectileMovement::CheckCollided(FHitResult& HitResult, FVector Tra
 
 void USimpleProjectileMovement::HandleProjectileHit(AActor* HitActor)
 {
+	//Broadcast dispatcher and stop moving
 	OnProjectileHit.Broadcast(HitActor);
 	ShouldMove = false;
 }

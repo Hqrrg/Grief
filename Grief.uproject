@@ -29,6 +29,11 @@
 		{
 			"Name": "ElectraPlayer",
 			"Enabled": true
+		},
+		{
+			"Name": "BlueprintScreenshotTool",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/42fe1c4fc1c149c39ddeee891d75b50c"
 		}
 	]
 }
